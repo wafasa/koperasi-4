@@ -1,0 +1,200 @@
+/*!!!!!!!!!!! QuickMenu Core CSS [Do Not Modify!] !!!!!!!!!!!!!*/
+.qmmc .qmdivider{display:block;font-size:1px;border-width:0px;border-style:solid;position:relative;z-index:1;}.qmmc .qmdividery{float:left;width:0px;}.qmmc .qmtitle{display:block;cursor:default;white-space:nowrap;position:relative;z-index:1;}.qmclear {font-size:1px;height:0px;width:0px;clear:left;line-height:0px;display:block;float:none !important;}.qmmc {position:relative;zoom:1;z-index:10;}.qmmc a, .qmmc li {float:left;display:block;white-space:nowrap;position:relative;z-index:1;}.qmmc div a, .qmmc ul a, .qmmc ul li {float:none;}.qmsh div a {float:left;}.qmmc div{visibility:hidden;position:absolute;}.qmmc .qmcbox{cursor:default;display:block;position:relative;z-index:1;}.qmmc .qmcbox a{display:inline;}.qmmc .qmcbox div{float:none;position:static;visibility:inherit;left:auto;}
+
+
+/*!!!!!!!!!!! QuickMenu Styles [Please Modify!] !!!!!!!!!!!*/
+
+
+	/* QuickMenu 0 */
+
+	/*"""""""" (MAIN) Container""""""""*/	
+	#qm0	
+	{	
+		width:auto;
+		background-color:transparent;
+	}
+
+	/*"""""""" (MAIN) Items""""""""*/	
+	#qm0 a	
+	{
+		/*width:90px;
+		padding:5px 40px 5px 8px;
+		*/
+		padding:4px 35px 4px 8px;
+		color:#FFFFFF;
+		font-family:Arial;
+		font-size:12px;
+		text-decoration:none;
+		border-width:0px;
+		border-style:solid;
+		border-color:#A6A6A6;
+		font-weight: bold;
+	}
+
+
+	/*"""""""" (MAIN) Hover State""""""""*/	
+	#qm0 a:hover	
+	{
+		background-color:#70a9df;
+		color: #FFFFFF;
+	}
+
+
+	/*"""""""" (MAIN) Hover State - (duplicated for pure CSS)""""""""*/	
+	#qm0 li:hover>a	
+	{	
+		background-color:#E6E6E6;
+	}
+
+
+
+	/*"""""""" (MAIN) Active State""""""""*/	
+	body #qm0 .qmactive, body #qm0 .qmactive:hover	
+	{
+		background-color:#70a9df;
+		text-decoration:none;
+		font-family:Arial;
+		font-size:12px;
+		text-decoration:none;
+		border-width:0px;
+		border-style:solid;
+		border-color:#FFFFFF;
+		font-weight: bold;
+		color: #FFFFFF;
+		-moz-radius-border: 4px;
+	}
+
+
+	/*"""""""" (SUB) Container""""""""*/	
+	#qm0 div	
+	{	
+		padding:5px;
+		margin:-1px 0px 0px 0px;
+		background-color:#caddff;
+		border-width:0px;
+		border-style:solid;
+		border-color:#FFFFFF;
+	}
+
+	#qm0 .sub a{
+		font-family: Arial, Helvetica, sans-serif;
+		font-size: 11px;
+		font-weight: normal;
+		color: #000000;
+		text-decoration: none;		
+	}
+	
+	#qm0 .sub a:hover{
+		background-color:#63a7e0;
+		font-family: Arial, Helvetica, sans-serif;
+		font-size: 11px;
+		font-weight: normal;
+		color: #ffffff;
+		text-decoration: none;	
+	}
+
+	/*"""""""" (SUB) Items""""""""*/	
+	#qm0 div a	
+	{
+		/*width:110px;*/
+		padding:2px 40px 2px 5px;
+		background-color:transparent;
+		font-family: Arial, Helvetica, sans-serif;
+		font-size: 11px;
+		text-decoration: none;
+		border-bottom-width: 1px;
+		border-bottom-style: solid;
+		border-bottom-color: #C5C5C5;
+	}
+
+
+	/*"""""""" (SUB) Hover State""""""""*/	
+	#qm0 div a:hover	
+	{
+		text-decoration:none;
+		color: #0868ca;
+	}
+
+
+	/*"""""""" (SUB) Hover State - (duplicated for pure CSS)""""""""*/	
+	#qm0 div a:hover	
+	{	
+		text-decoration:none;
+		font-family: Arial, Helvetica, sans-serif;
+		font-size: 11px;
+		font-weight: normal;
+		color: #000000;
+		text-decoration: none;	
+	}
+
+
+	/*"""""""" (SUB) Active State""""""""*/	
+	body #qm0 div .qmactive, body #qm0 div .qmactive:hover	
+	{
+		background-color: #70a9df;
+		
+	}
+
+
+	/*"""""""" Individual Titles""""""""*/	
+	#qm0 .qmtitle	
+	{	
+		cursor:default;
+		padding:3px 0px 3px 4px;
+		color:#444444;
+		font-family:arial;
+		font-size:11px;
+		font-weight:bold;
+	}
+
+
+	/*"""""""" Individual Horizontal Dividers""""""""*/	
+	#qm0 .qmdividerx	
+	{	
+		border-top-width:1px;
+		margin:4px 0px 4px 0px;
+		border-color:#BFBFBF;
+	}
+
+
+	/*"""""""" Individual Vertical Dividers""""""""*/	
+	#qm0 .qmdividery	
+	{	
+		border-left-width:1px;
+		height:15px;
+		margin:4px 2px 0px 2px;
+		border-color:#AAAAAA;
+	}
+
+
+	/*"""""""" Custom Rule""""""""*/	
+	ul#qm0 ul li:hover > a.qmparent	
+	{	
+		background-image:url(images/panah_sub.gif);
+	}
+
+
+	/*"""""""" Custom Rule""""""""*/	
+	ul#qm0 ul .qmparent	
+	{	
+		background-image:url(images/panah_sub.gif);
+	}
+
+
+	/*"""""""" Custom Rule""""""""*/	
+	ul#qm0 li:hover > a.qmparent	
+	{	
+		background-image:url(images/bawah.gif);
+		text-decoration:underline;
+	}
+
+
+	/*"""""""" Custom Rule""""""""*/	
+	ul#qm0 .qmparent	
+	{	
+		background-image:url(images/bawah.gif);
+		background-repeat:no-repeat;
+		background-position:97% 50%;
+	}
+
+

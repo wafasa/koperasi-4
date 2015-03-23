@@ -1,0 +1,396 @@
+/* Halaman Utama */
+body, table, select { font-family:tahoma, "Trebuchet MS"; font-size: 11px; font-weight: normal;color: #000000;text-decoration: none;margin: 0 px; }
+a {text-decoration:none; 
+	color:#000066;
+}
+a:hover {color:#009900;
+}
+h1{font-size:36px;
+}
+th{
+	background-image: url(../images/bg_header.jpg);
+	text-align: center;
+	padding: 0px;
+
+}
+img {border:none;
+}
+#footer { color: #000000; font-size: 11px; text-align: right; padding-right:10px; background:#a0d1eb;}
+#sapaan { text-align:right; padding-right:10px; font-family:tahoma, "Trebuchet MS"; font-size: 13px; font-style: italic; bfont-weight: bold;
+	color: #bfdcf5; text-decoration: none; }
+#sapaan .nama { font-style: normal; color: #FFFFFF; text-decoration: underline;	}
+#gambar{ vertical-align: middle; }
+#home { color: #0033CC; }
+
+.verd11{
+	font-family:tahoma, "Trebuchet MS";
+	font-size: 11px;
+	font-weight: normal;
+	color: #000000;
+	text-decoration: none;
+}
+
+/* Pencarian */
+#cari {
+	background-image: url(../images/cari.gif);
+	border: 1px solid #0068c1;
+	padding: 5px;
+}
+#cari .kata{
+	font-size: 11px;
+	font-weight: bold;
+	color: #000000;
+}
+#cari .tutup{
+	font-size: 10px;	
+}
+#inisial td{
+	border: 1px solid #CCCCCC;
+	background-color: #FFFFFF;
+	width:21px;
+}
+#cari a{
+	color: #000000;
+	text-decoration: none;
+	font-size: 11px;
+}
+#cari a:hover{
+	color: #0068c1;
+}
+
+/* Header */
+#header {
+	font-size: 16px;
+	font-weight: bold;
+	color: #000000;
+	text-decoration: none;
+}
+#header .judul{
+	color: #0068c1;
+	text-decoration: none;
+}
+#header .judul a{
+	color: #0068c1;
+	text-decoration: none;
+	border-bottom-width: 1px;
+	border-bottom-style: dotted;
+	border-bottom-color: #0068c1;
+}
+#header .judul a:hover{
+	text-decoration: none;
+	border-bottom-width: 1px;
+	border-bottom-style: dotted;
+	border-bottom-color: #0068c1;
+}
+#lingheader a{
+	color: #0068c1;
+	text-decoration: none;
+	border-bottom-width: 1px;
+	border-bottom-style: dotted;
+	border-bottom-color: #0068c1;
+	font-weight: bold;
+}
+
+
+/* login */
+.body-login { margin: 80px 0px 0px 0px; background: url(../images/tile.jpg); }
+
+.login-wrapper { width:528px; margin: 0px auto; height: auto; }
+.login-header { background: url(../images/login-head.jpg); width: 528px; height: 86px; }
+.login-body { background: url(../images/login-body.jpg); width: 528px; height: auto; padding: 10px 0px 40px 0px; text-align: center }
+.login-body h1 { font-family: arial; font-size: 2em; color: #3366CC; letter-spacing: -1px }
+.login-footer { background: url(../images/login-foot.jpg); width: 528px; height: 63px; text-align: center; padding-top: 25px; color: #666666; font-size: 0.9em }
+.login-footer a { color: #3366CC; text-decoration: none }
+.login-footer a:hover { color: #00CCFF }
+.login-button { background-image: url(../images/login-button.jpg); background-position: 100% -76px; width: 96px; height: 38px; border: 0px; }
+.login-button:hover { background-position: 100% -38px; }
+
+
+/* Text Box */
+.TextBox {
+	font-family:tahoma, "Trebuchet MS";
+	font-size: 11px;
+	color: #000000;
+	border:1px solid #bababa;
+	padding-left:5px;
+	padding:3px 3px 2px 3px;
+	/* width:90%; */
+	background-color:#ffffff;
+}
+
+.TextBoxOn {
+	font-family:tahoma, "Trebuchet MS";
+	font-size: 11px;
+	color: #000000;
+	border:1px solid #bababa;
+	padding-left:5px;
+	padding:3px 3px 2px 3px;
+	/*width:90%;*/
+	background-color:#ffffdd;
+}
+
+.TextBoxError{
+	font-family:tahoma, "Trebuchet MS";
+	font-size: 11px;
+	color: #000000;
+	border:1px solid #FF0000;
+	padding-left:5px;
+	/*width:90%;*/
+	background-color:#ddf7ff;
+}
+
+/* Form */
+.CellLabel {
+	background-color:#c9e9fa;
+	padding-right:10px;
+	padding-left:10px;
+	color:#003366;
+	white-space:nowrap;
+	border-top-width: 1px;
+	border-bottom-width: 1px;
+	border-top-style: solid;
+	border-bottom-style: solid;
+	border-top-color: #ffffff;
+	border-bottom-color: #a4cfe5;
+	width:200px;
+}
+
+.cellIsian {
+	padding-left:10px;
+	padding-right:10px;
+	white-space:nowrap;
+	height: 25px;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #EAEAEA;
+}
+.merah {
+	color: #FF0000;
+	text-decoration: none;
+}
+.tombol{
+	font-size: 11px;
+	font-weight: bold;
+	color: #FFFFFF;
+	margin-top: 10px;
+	padding: 3px 10px 3px 10px;
+	text-decoration: none;
+	background-color: #70a9df;
+	border: 1px solid #3377b8;
+}
+.judulform{
+	font-weight: bold;
+	text-transform: uppercase;
+	color: #000000;
+	text-decoration: none;
+	background-color: #a0d1eb;
+	padding-bottom:3px;
+	padding-left:10px;
+	padding-top:3px;
+	height:23px;
+	border-bottom-width: 2px;
+	border-bottom-style: solid;
+	border-bottom-color: #1d5498;
+}
+
+/* Tabel */
+.kotaktabel{
+	background-color:#96c8e8;
+	border:0px solid #96c8e8; 
+}
+
+/* judul halaman */
+.kepala {font-size:14px;
+	font-weight:bold;
+	padding-bottom:8px;
+}
+.kepala a{
+	text-decoration:none;
+	color:#0066FF;
+}
+.kepala a:hover{
+	text-decoration:underline;
+	color:#0066FF;
+}
+/*#tabel{
+	width: 100%;
+	padding: 0;
+	border-left: 1px solid #C1DAD7;
+	border-collapse:collapse;
+	margin-top: 0;
+	margin-right: auto;
+	margin-bottom: 7px;
+	margin-left: auto;
+}*/
+.ori {
+	background-color: #FFFFFF;
+	text-decoration: none;
+}
+.alt {
+	background-color: #ebf6ff;
+	text-decoration: none;
+}
+.over {
+	background-color: #c0ddf5;
+	text-decoration: none;
+}
+#tabel a{
+	color: #0093d8;
+	text-decoration: none;
+}
+#tabel a:hover{
+	text-decoration: underline;
+}
+#tanggal {
+	color: #0084ff;
+	padding-top: 85px;
+	padding-right:15px;
+	text-align: right;	
+}
+
+/* pesan */
+#kotakpesan{
+	background-color: #daf2fe;
+	border: 2px solid #0082fc;	
+	padding:5px;
+}
+#pesan{
+	font-weight: bold;
+	text-transform: uppercase;
+	color: #CC0000;
+	text-decoration: none;
+	text-align:center;
+}
+
+/* kotak slider */
+#akutansi #balance .kotakslider {
+  width:200px
+}
+
+#akutansi #balance {
+  position:absolute;
+  /*top:100px; is set by js*/
+  left:10px
+}
+.headerslider{
+	background-color: #CCCCCC;
+}
+#balance .tabelslider {
+	width:150px;
+	border: 1px solid #CCCCCC;
+}
+#content{
+	background-color: #ccf6ff;
+	text-align:left;
+	padding:5px;
+}
+.close{
+	font-family:tahoma, "Trebuchet MS";
+	font-size: 9px;
+	font-weight: normal;
+	text-decoration: none;
+	vertical-align: top;
+	background-color: #CCCCCC;
+}
+
+/*============
+Laporan
+============*/
+#laporan{
+	border: 1px solid #666666;
+	font-family: tahoma, "Trebuchet MS";
+	font-size: 11px;
+	color: #000000;
+	padding:5px;
+	width:100%;
+	text-decoration: none;
+}
+.data {
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #454545;
+	font-family: tahoma, "Trebuchet MS";
+	font-size: 11px;
+	color: #000000;
+	text-decoration: none;
+}
+.headlaporan{
+	font-family: tahoma, "Trebuchet MS";
+	font-size: 14px;
+	font-weight: bold;
+	color: #000000;
+	text-decoration: none;
+}
+#isi_laporan{
+	font-family: tahoma, "Trebuchet MS";
+	font-size: 11px;
+	font-weight: normal;
+	color: #000000;
+	text-decoration: none;
+}
+
+/*===================
+Scroll
+===================*/
+#scroller {
+	overflow: auto;
+	position: relative;
+	width: 100%;
+	height: 300px;
+	color: #333333;
+	text-align: center;
+	background-color: #F2FFEA;
+	background-position: top;
+	vertical-align: top;
+}
+#scrollerinner {
+	padding: 5px;
+}
+#TabelCari{
+	width:100%;
+}
+#search { background-color:#99FFCC;
+	color:#000000;
+	padding:10px;
+	border:1px dotted #999900;
+}
+
+/* mulai dari sini yang baru*/
+.form input , textarea{text-transform:capitalize;
+	font-weight:normal;
+	font-size:11px;
+	padding-top:1px;
+	padding-bottom:1px;
+	padding-left:3px;
+}
+.detail {line-height:20px;
+	border:1px solid #400000;
+	font-size:11px;
+	padding:5px;
+	float:left;
+}
+#underline { border-bottom:1px dotted #999999;
+	padding:2px 3px 1px 3px;
+	width:175px;
+	text-transform:uppercase;
+	text-align:left;
+	
+}
+.kecil {font-size:10px;
+	text-decoration:none;
+	font-weight:normal;
+}
+.form .tmbl {
+	font-weight:normal;
+	text-transform:capitalize;
+	padding:1 2 1 2;
+}
+.penting {background-color:#FF0000;
+	color:#FFFFFF;
+	text-decoration:blink;
+}
+.ok {background:url(../images/s_success.png) no-repeat left;
+	color:#0000FF;
+	padding-left:20px;
+	height:17px;
+}
