@@ -18,7 +18,7 @@ class template
 		$this->CONTENT=implode("",$this->CONTENT);
 			while (list($key,$val)=each($this->TAGS))
 			{
-			$this->CONTENT=ereg_replace($key,$val,$this->CONTENT);
+			$this->CONTENT=preg_replace($key,$val,$this->CONTENT);
 			}
 		}
 				
@@ -30,4 +30,5 @@ class template
 include "../__conf/config.db.php";
 include "menu.php";
 include "../function/function.php";
+
 ?>

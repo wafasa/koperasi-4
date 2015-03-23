@@ -59,7 +59,7 @@ function ceklogin(isian){
 
     <td align="left" valign="middle">
 
-      <input name="username" type="text" class="TextBox" id="username" onfocus="this.className='TextBoxOn'" onblur="this.className='TextBox'" value="<?=$username;?>" size="25" maxlength="25" />    </td>
+      <input name="username" type="text" class="TextBox" id="username" onfocus="this.className='TextBoxOn'" onblur="this.className='TextBox'" value="" size="25" maxlength="25" />    </td>
 
   </tr>
 
@@ -69,7 +69,7 @@ function ceklogin(isian){
 
     <td align="left" valign="middle">
 
-      <input name="passwd" type="password" class="TextBox" id="passwd" onfocus="this.className='TextBoxOn'" onblur="this.className='TextBox'" value="<?=$pass;?>" size="25" maxlength="25" />    </td>
+      <input name="passwd" type="password" class="TextBox" id="passwd" onfocus="this.className='TextBoxOn'" onblur="this.className='TextBox'" value="" size="25" maxlength="25" />    </td>
 
   </tr>
 

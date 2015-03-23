@@ -1,7 +1,8 @@
 <?php
 session_start();
-if ((session_is_registered(user)) and (session_is_registered(pass)) and ($_SESSION['leve'] == '2')) {
+if ($_SESSION['user'] and $_SESSION['pass'] and $_SESSION['leve'] == '2') {
 include "template.php";
+$isi = "";
 $isi.="<div class=kepala>Data Nasabah &raquo; <a href='list_anggota.php'>List Nasabah</a></div>";
 
 $isi.="
