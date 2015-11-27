@@ -3,7 +3,7 @@ session_start();
 include "__conf/config.db.php";
 if (($_POST['username']) and ($_POST['passwd'])) {
 	$password = md5($_POST['passwd']);
-	$sql = mysql_query("select * from tb_usersystem where username = '$_POST[username]' and password = '$password'",$conn);
+	$sql = mysql_query("select * from tb_usersystem where username = '$_POST[username]' and password = '$password'");
 	$bar = mysql_fetch_array($sql);
 	if (($bar['username'] == $_POST['username']) and ($bar['password'] == $password)) {
 		if ($bar['status'] == '1') {

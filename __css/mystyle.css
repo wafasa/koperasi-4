@@ -96,7 +96,7 @@ img {border:none;
 .body-login { margin: 80px 0px 0px 0px; background: url(../images/tile.jpg); }
 
 .login-wrapper { width:528px; margin: 0px auto; height: auto; }
-.login-header { background: url(../images/login-head.jpg); width: 528px; height: 86px; }
+.login-header { background: url(../images/login-head.png); width: 528px; height: 86px; }
 .login-body { background: url(../images/login-body.jpg); width: 528px; height: auto; padding: 10px 0px 40px 0px; text-align: center }
 .login-body h1 { font-family: arial; font-size: 2em; color: #3366CC; letter-spacing: -1px }
 .login-footer { background: url(../images/login-foot.jpg); width: 528px; height: 63px; text-align: center; padding-top: 25px; color: #666666; font-size: 0.9em }

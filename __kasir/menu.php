@@ -1,4 +1,5 @@
 <?php
+$menu = '';
 $menu.="<div id=qm0 class=qmmc>
 
 <a class=home href='utama.php'>Home</a>
@@ -43,4 +44,3 @@ $menu.="<div id=qm0 class=qmmc>
 
 </div>
 ";
-?>

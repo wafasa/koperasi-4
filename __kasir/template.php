@@ -30,6 +30,7 @@ class template
 include "../__conf/config.db.php";
 include "menu.php";
 include "../function/function.php";
+$sess = '';
 $dt = mysql_fetch_array(mysql_query("select nama from tb_usersystem where username = '$_SESSION[user]'"));
 $sess.="$dt[nama]";
 ?>

@@ -55,4 +55,3 @@ $menu.="<div id=qm0 class=qmmc>
 
 </div>
 ";
-?>

@@ -1,6 +1,6 @@
 <?php
 session_start();
-if ((session_is_registered(user)) and (session_is_registered(pass)) and ($_SESSION['leve'] == '1')) {
+if ($_SESSION['user'] and $_SESSION['pass'] and $_SESSION['leve'] == '1') {
 include "template.php";
 	header("location:list_nasabah.php");
 include "instansiasi.php";

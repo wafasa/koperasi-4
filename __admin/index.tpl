@@ -56,10 +56,10 @@ function FormNum(obj) {
 		<script type="text/javascript" src="../__js/dropdown.js"></script>
         <script type="text/javascript" src="../__js/lib/dhtmlgoodies_calendar/dhtmlgoodies_calendar.js"></script>
         <script type='text/javascript' src='../__js/quickmenu.js'></script>
-        <script type="text/javascript" src="../__js/lib/prototype/prototype.js"></script>
-        <script type="text/javascript" src="../__js/lib/scriptaculous/src/scriptaculous.js?load=effects"></script>
+        <!--<script type="text/javascript" src="../__js/lib/prototype/prototype.js"></script>
+        <script type="text/javascript" src="../__js/lib/scriptaculous/src/scriptaculous.js?load=effects"></script>-->
         <script type='text/javascript' src='../__js/main.js'></script>
-        <link rel="stylesheet" href="../__css/autocomplete.css" type="text/css" media="screen">
+        <link rel="stylesheet" href="../__css/autocomplete.css" type="text/css" media="screen" />
         <script src="../__js/jquery.js" type="text/javascript"></script>
         <script src="../__js/dimensions.js" type="text/javascript"></script>
         <script src="../__js/autocomplete.js" type="text/javascript"></script>
@@ -150,12 +150,12 @@ function FormNum(obj) {
             <tr>
                 <td colspan="3" background="../images/backheader_02.gif"><table width="100%" border="0" cellspacing="0" cellpadding="0">
                         <tr>
-                            <td width="72%"><img src="../images/head.gif" height="110" /></td>
+                            <td width="72%"><img src="../images/head.png" height="110" /></td>
                             <td width="28%" align="right">
                             <div></div>		</td>
                         </tr>
                         <tr>
-                            <td height="28" style="padding-left:5px;">{menu}</td>
+                            <td height="28" style="padding-left:5px;">menu</td>
                             <td height="28"><div id="sapaan">Selamat datang, <span class="nama"></span></div></td>
                         </tr>
                 </table></td>
@@ -165,7 +165,7 @@ function FormNum(obj) {
             </tr>
             <tr>
                 <td width="1%">&nbsp;</td>
-                <td width="96%">{isi}</td>
+                <td width="96%">isi</td>
                 <td width="1%">&nbsp;</td>
             </tr>
             <tr>

@@ -1,6 +1,6 @@
 <?php
 session_start();
-if ($_SESSION['user'] and $_SESSION['pass'] and $_SESSION['leve'] == '2') {
+//if ($_SESSION['user'] and $_SESSION['pass'] and $_SESSION['leve'] == '2') {
 include "template.php";
 $isi = "";
 $isi.="<div class=kepala>Data Nasabah &raquo; <a href='list_anggota.php'>List Nasabah</a></div>";
@@ -29,30 +29,33 @@ $isi.="<table cellpadding=0 cellspacing=0 border=0 id=table class=sortable>
 		<tbody>
 ";
 	$no  = 1;
-	if ((trim($_POST[nama]) != '') and (trim($_POST[rek_tab]) == '') and (trim($_POST[no_pinj]) == '')) {
-	$sql = mysql_query("select * from tb_nasabah where nama like ('%$_POST[nama]%')");
-	}
-	else if ((trim($_POST[nama]) == '') and (trim($_POST[rek_tab]) != '') and (trim($_POST[no_pinj]) == '')) {
-	$sql = mysql_query("select * from tb_nasabah where no_rekening = '$_POST[rek_tab]'");
-	}
-	else if ((trim($_POST[nama]) == '') and (trim($_POST[rek_tab]) == '') and (trim($_POST[no_pinj]) != '')) {
-	$sql = mysql_query("select * from tb_nasabah where rek_pinjaman = '$_POST[no_pinj]'");
-	}
-	else {
-	$sql = mysql_query("select * from tb_nasabah");
-	}
+        $q = NULL;
+        if (isset($_POST['nama'])) {
+            if ($_POST['nama'] !== '') {
+                $q.= "and nama like ('%".$_POST['nama']."%')";
+            }
+            if ($_POST['rek_tab'] !== '') {
+            //$sql = mysql_query("select * from tb_nasabah where no_rekening = '$_POST[rek_tab]'");
+                $q.="and no_rekening = '".$_POST['rek_tab']."'";
+            }
+            if ($_POST['no_pinj'] !== '') {
+                //$sql = mysql_query("select * from tb_nasabah where rek_pinjaman = '$_POST[no_pinj]'");
+                $q.="and rek_pinjaman = '".$_POST['no_pinj']."'";
+            }
+        }
+        $sql = mysql_query("select * from tb_nasabah where no_anggota is not NULL $q");
 	while ($bar = mysql_fetch_array($sql)) {
-		$tgl = explode("-",$bar[tgl_masuk]);
+		$tgl = explode("-",$bar['tgl_masuk']);
 		$tgl = "$tgl[2]/$tgl[1]/$tgl[0]";
 		$isi.="
 		<tr>
 		<td align=center>$no</td>
-		<td align=center>"; if ($bar[rek_pinjaman] == '') { $isi.="-"; } else { $isi.="".strtoupper($bar[rek_pinjaman]).""; } $isi.="</td>
-		<td>".strtoupper($bar[nama])."</td>
-		<td>".ucwords($bar[alamat])."</td>
-		<td>".strtoupper($bar[no_ktp])."</td>
-		<td align=center>$bar[no_telp]</td>
-		<td align=center>$tgl</td>
+		<td align=center>"; if ($bar['rek_pinjaman'] == '') { $isi.="-"; } else { $isi.="".strtoupper($bar['rek_pinjaman']).""; } $isi.="</td>
+		<td>".strtoupper($bar['nama'])."</td>
+		<td>".ucwords($bar['alamat'])."</td>
+		<td>".strtoupper($bar['no_ktp'])."</td>
+		<td align=center>".$bar['no_telp']."</td>
+		<td align=center>".$tgl."</td>
 		
 		</tr>
 		";
@@ -77,11 +80,13 @@ $isi.="<table cellpadding=0 cellspacing=0 border=0 id=table class=sortable>
 		</div>
 		<div id='text'>Halaman <span id='currentpage'></span> dari <span id='pagelimit'></span></div>
 	</div>";
-	if ($_GET['aksi'] == 'delete') {
-		$sql = mysql_query("delete from tb_nasabah where no_anggota = '$_GET[id]'",$conn);
-		echo "<script>history.go(-1)</script>";
-		//$isi.="<meta http-equiv=refresh content=0;url=list_anggota.php>";
-	}
+        if (isset($_GET['aksi'])) {
+            if ($_GET['aksi'] == 'delete') {
+                    $sql = mysql_query("delete from tb_nasabah where no_anggota = '".$_GET['id']."'");
+                    echo "<script>history.go(-1)</script>";
+                    //$isi.="<meta http-equiv=refresh content=0;url=list_anggota.php>";
+            }
+        }
 	include_once "instansiasi.php";
 	?>
     <script type="text/javascript" src="../__js/script.js"></script>
@@ -99,11 +104,10 @@ $isi.="<table cellpadding=0 cellspacing=0 border=0 id=table class=sortable>
 	sorter.limitid = "pagelimit";
 	sorter.init("table",0);
   </script>
-    <?
+    <?php
 
-include_once "instansiasi.php";
-}
-else {
-	header("location:../login.php");
-}
-?>
+//include_once "instansiasi.php";
+//}
+//else {
+    //header("location:../login.php");
+//}
