@@ -1,0 +1,43 @@
+body {
+        margin: 0;
+        padding: 0;
+        background-color: #FAFAFA;
+    }
+    * {
+        font: 11pt Arial;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+    }
+    
+    @page {
+        size: A4;
+        margin: 1cm;
+    }
+    @media print {
+        .page {
+            margin: 0;
+            border: initial;
+            border-radius: initial;
+            width: initial;
+            min-height: initial;
+            box-shadow: initial;
+            background: initial;
+            page-break-after: always;
+        }
+    }
+h1 { font-size: 17px; margin-bottom: 0; }
+hr { border-color: #333; }
+.tabel-laporan { border: 1px solid #000;empty-cells: show; border-radius:5px; margin-top:5px; clear: both; border-collapse: collapse; background: #fff; color: #000}
+.tabel-laporan th{text-align: center; }
+.tabel-laporan td, th{border: 1px solid #333;padding-left:5px;padding-right:5px;line-height: 20px;}
+.tabel-laporan .number{text-align: center;}
+.tabel-laporan th rowspan, td rowspan{vertical-align: middle;}
+.tabel-laporan td table td { border: none; }
+
+.tabel-hasil { empty-cells: show; border-radius:5px; margin-top:5px; clear: both; border-collapse: collapse; background: #fff; color: #000}
+.tabel-hasil th{text-align: center;}
+.tabel-hasil th{border-top: 1px solid #000;border-left:none;border-right:none;font-weight:bold;line-height: 20px;font-size: 11px;}
+.tabel-hasil .number{text-align: center;}
+.tabel-hasil th rowspan, td rowspan{vertical-align: middle;}
+.table-hasil td {padding-top: 5px;}
+.tabel-hasil td table td { border: none; }
