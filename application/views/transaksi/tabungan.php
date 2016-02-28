@@ -1,9 +1,10 @@
 <title><?= $title ?></title>
+<script src="<?= base_url('assets/js/wizard/bwizard.js') ?>"></script>
 <script type="text/javascript">
     $(function() {
-        
-        get_list_penerimaan_pajak(1);
-        $('#add_penerimaan_pajak').click(function() {
+        $("#wizard").bwizard();
+        get_list_tabungan(1);
+        $('#add_tabungan').click(function() {
             reset_form();
             $('#datamodal').modal('show');
             $('#datamodal h4.modal-title').html('Tambah <?= $title ?>');
@@ -15,15 +16,15 @@
             $(this).datepicker('hide');
         });
 
-        $('#reload_penerimaan_pajak').click(function() {
+        $('#reload_tabungan').click(function() {
             reset_form();
-            get_list_penerimaan_pajak(1);
+            get_list_tabungan(1);
         });
         
         $('#parent_code').select2({
             width: '100%',
             ajax: {
-                url: "<?= base_url('api/masterdata_auto/penerimaan_pajak_auto') ?>",
+                url: "<?= base_url('api/masterdata_auto/tabungan_auto') ?>",
                 dataType: 'json',
                 quietMillis: 100,
                 data: function (term, page) { // page is the one-based page number tracked by Select2
@@ -50,12 +51,12 @@
         });
     });
     
-    function get_list_penerimaan_pajak(p, id) {
+    function get_list_tabungan(p, id) {
         $('#form-pencarian').modal('hide');
         var id = '';
         $.ajax({
             type : 'GET',
-            url: '<?= base_url("api/transaksi/penerimaan_pajaks") ?>/page/'+p+'/id/'+id,
+            url: '<?= base_url("api/transaksi/tabungans") ?>/page/'+p+'/id/'+id,
             data: '',
             cache: false,
             dataType: 'json',
@@ -65,7 +66,7 @@
             },
             success: function(data) {
                 if ((p > 1) & (data.data.length === 0)) {
-                    get_list_penerimaan_pajak(p-1);
+                    get_list_tabungan(p-1);
                     return false;
                 };
 
@@ -83,16 +84,15 @@
                     };
                     str+= '<tr data-tt-id='+i+' class="'+highlight+'">'+
                             '<td align="center">'+((i+1) + ((data.page - 1) * data.limit))+'</td>'+
-                            '<td align="center">'+datefmysql(v.tanggal)+'</td>'+
-                            '<td>'+v.kode_akun_pajak+'</td>'+
-                            '<td>'+v.no_bukti+'</td>'+
-                            '<td align="right">'+numberToCurrency(v.hasil_pajak)+'</td>'+
-                            '<td>'+v.jenis_transaksi+'</td>'+
-                            '<td>'+v.jenis_pajak+'</td>'+
+                            '<td align="center">'+datefmysql(v.tgl_masuk)+'</td>'+
+                            '<td>'+v.no_rekening+'</td>'+
+                            '<td>'+v.no_ktp+'</td>'+
+                            '<td>'+v.nama+'</td>'+
+                            '<td>'+v.alamat+'</td>'+
+                            '<td align="right">'+money_format(v.saldo)+'</td>'+
                             '<td align="center" class=aksi>'+
-                                '<button type="button" class="btn btn-default btn-mini" onclick="print_pajak(\''+v.id+'\')"><i class="fa fa-print"></i></button> '+
-                                '<button type="button" class="btn btn-default btn-mini" onclick="edit_penerimaan_pajak(\''+v.id+'\')"><i class="fa fa-pencil"></i></button> '+
-                                '<button type="button" class="btn btn-default btn-mini" onclick="delete_penerimaan_pajak(\''+v.id+'\','+data.page+');"><i class="fa fa-trash-o"></i></button>'+
+                                '<button type="button" class="btn btn-default btn-mini" onclick="edit_tabungan(\''+v.id+'\')"><i class="fa fa-pencil"></i></button> '+
+                                '<button type="button" class="btn btn-default btn-mini" onclick="delete_tabungan(\''+v.id+'\','+data.page+');"><i class="fa fa-trash-o"></i></button>'+
                             '</td>'+
                         '</tr>';
                     $('#example-advanced tbody').append(str);
@@ -124,13 +124,13 @@
         $('#tanggal').val('<?= date("d/m/Y") ?>');
     }
 
-    function edit_penerimaan_pajak(id) {
+    function edit_tabungan(id) {
         $('#oldpict').html('');
         $('#datamodal').modal('show');
         $('#datamodal h4.modal-title').html('Edit <?= $title ?>');
         $.ajax({
             type: 'GET',
-            url: '<?= base_url('api/transaksi/penerimaan_pajaks') ?>/page/1/id/'+id,
+            url: '<?= base_url('api/transaksi/tabungans') ?>/page/1/id/'+id,
             dataType: 'json',
             success: function(data) {
                 $('#id').val(data.data[0].id);
@@ -147,11 +147,11 @@
     }
         
     function paging(p) {
-        get_list_penerimaan_pajak(p);
+        get_list_tabungan(p);
     }
 
     function konfirmasi_save() {
-        //$('#isi_penerimaan_pajak').val(tinyMCE.get('isi').getContent());
+        //$('#isi_tabungan').val(tinyMCE.get('isi').getContent());
         bootbox.dialog({
             message: "Anda yakin akan menyimpan data ini?",
             title: "Konfirmasi Simpan",
@@ -167,17 +167,17 @@
                 label: '<i class="fa fa-save"></i>  Ya',
                 className: "btn-primary",
                 callback: function() {
-                    save_penerimaan_pajak();
+                    save_tabungan();
                 }
               }
             }
           });
       }
 
-    function save_penerimaan_pajak() {
+    function save_tabungan() {
         $.ajax({
             type: 'POST',
-            url: '<?= base_url('api/transaksi/penerimaan_pajak') ?>',
+            url: '<?= base_url('api/transaksi/tabungan') ?>',
             dataType: 'json',
             data: $('#formadd').serialize(),
             beforeSend: function() {
@@ -191,23 +191,23 @@
                 if (msg.act === 'add') {
                     $('#datamodal').modal('hide');
                     message_add_success();
-                    get_list_penerimaan_pajak(1);
+                    get_list_tabungan(1);
                 } else {
                     $('#datamodal').modal('hide');
                     message_edit_success();
-                    get_list_penerimaan_pajak(page);
+                    get_list_tabungan(page);
                 }
             },
             error: function() {
                 $('#datamodal').modal('hide');
                 var page = $('.pagination .active a').html();
-                get_list_penerimaan_pajak(page);
+                get_list_tabungan(page);
                 hide_ajax_indicator();
             }
         });
     }
 
-    function delete_penerimaan_pajak(id, page) {
+    function delete_tabungan(id, page) {
         bootbox.dialog({
             message: "Anda yakin akan menghapus data ini?",
             title: "Konfirmasi Hapus",
@@ -225,39 +225,17 @@
                 callback: function() {
                     $.ajax({
                         type: 'DELETE',
-                        url: '<?= base_url('api/transaksi/penerimaan_pajak') ?>/id/'+id,
+                        url: '<?= base_url('api/transaksi/tabungan') ?>/id/'+id,
                         dataType: 'json',
                         success: function(data) {
                             message_delete_success();
-                            get_list_penerimaan_pajak(page);
+                            get_list_tabungan(page);
                         }
                     });
                 }
               }
             }
         });
-    }
-
-    function paging(page, tab, search) {
-        get_list_penerimaan_pajak(page, search);
-    }
-    
-    function hitungPajak() {
-        var jumlah = currencyToNumber($('#nominal').val());
-        var pajak  = $('#jenis_pajak').val();
-        if (pajak === 'PPN') {
-            hasil = 0.1*parseFloat(jumlah);
-        }
-        if (pajak === 'PPh21') {
-            hasil = '0';
-        }
-        if (pajak === 'PPh22') {
-            hasil = (jumlah- (jumlah*0.1))*(1.5/100);
-        }
-        if (pajak === 'PPh23') {
-            hasil = 0.02*jumlah;
-        }
-        $('#perhitungan').val(money_format(hasil));
     }
 
 </script>
@@ -274,9 +252,9 @@
             <div class="grid-title">
               <h4>Daftar List <?= $title ?></h4>
                 <div class="tools"> 
-                    <button id="add_penerimaan_pajak" class="btn btn-info btn-mini"><i class="fa fa-plus-circle"></i> Tambah</button>
+                    <button id="add_tabungan" class="btn btn-info btn-mini"><i class="fa fa-plus-circle"></i> Tambah</button>
                     <!--<button id="cari_button" class="btn btn-mini"><i class="fa fa-search"></i> Cari</button>-->
-                    <button id="reload_penerimaan_pajak" class="btn btn-mini"><i class="fa fa-refresh"></i> Reload</button>
+                    <button id="reload_tabungan" class="btn btn-mini"><i class="fa fa-refresh"></i> Reload</button>
                 </div>
             </div>
             <div class="grid-body">
@@ -286,13 +264,13 @@
                         <thead>
                         <tr>
                             <th width="3%">No</th>
-                            <th width="7%">Tanggal</th>
+                            <th width="7%">Tgl Masuk</th>
                             <th width="10%" class="left">No. Rek</th>
                             <th width="10%" class="left">No. KTP</th>
                             <th width="15%" class="left">Nama</th>
-                            <th width="20%" class="left">Alamat</th>
+                            <th width="30%" class="left">Alamat</th>
                             <th width="10%" class="right">Saldo</th>
-                            <th width="10%"></th>
+                            <th width="7%"></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -305,8 +283,8 @@
             </div>
           </div>
         </div>
-        <div id="datamodal" class="modal fade">
-            <div class="modal-dialog" style="width: 700px">
+        <div id="datamodal" class="modal fade" style="overflow-y: auto">
+            <div class="modal-dialog" style="width: 800px">
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -314,20 +292,50 @@
             </div>
             <div class="modal-body">
                 <form id="formadd" method="post" role="form">
-                <input type="hidden" name="id" id="id" />
-                <div class="form-group">
-                    <label class="control-label">Tanggal:</label>
-                    <input type="text" name="tanggal" class="form-control" style="width: 145px;" id="tanggal" value="<?= date("d/m/Y") ?>" />
-                </div>
-                <div class="form-group">
-                    <label for="recipient-name" class="control-label">No. Kode Akun Pajak:</label>
-                    <input type="text" name="nokode"  class="form-control" id="nokode">
-                </div>
-                <div class="form-group">
-                    <label for="recipient-name" class="control-label">No. Bukti:</label>
-                    <input type="text" name="nobukti"  class="form-control" id="nobukti">
-                </div>
-            </form>
+                    <div id="wizard">
+                        <ol>
+                          <li>Data Nasabah</li>
+                          <li>Data Tabungan</li>
+                        </ol>
+                        <div>
+                            <input type="hidden" name="id" id="id" />
+                            <div class="form-group tight">
+                                <label class="control-label">Tanggal Daftar:</label>
+                                <input type="text" name="tanggal" class="form-control" style="width: 145px;" id="tanggal" value="<?= date("d/m/Y") ?>" />
+                            </div>
+                            <div class="form-group tight">
+                                <label class="control-label">Nomor Rekening:</label>
+                                <input type="text" name="norek"  class="form-control" id="norek" placeholder="Otomatis" readonly="">
+                            </div>
+                            <div class="form-group tight">
+                                <label class="control-label">Nama nasabah:</label>
+                                <input type="text" name="nama"  class="form-control" id="nama">
+                            </div>
+                            <div class="form-group tight">
+                                <label class="control-label">No. KTP:</label>
+                                <input type="text" name="noktp"  class="form-control" id="noktp">
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Alamat:</label>
+                                <textarea name="alamat" id="alamat" class="form-control"></textarea>
+                            </div>
+<!--                            <div class="form-group tight">
+                                <label class="control-label">No. Telp:</label>
+                                <input type="text" name="telp"  class="form-control" id="telp">
+                            </div>
+                            <div class="form-group tight">
+                                <label class="control-label">Pekerjaan:</label>
+                                <input type="text" name="pekerjaan"  class="form-control" id="pekerjaan">
+                            </div>-->
+                        </div>
+                        <div>
+                            <div class="form-group tight">
+                                <label class="control-label">Jumlah Pembukaan Tabungan:</label>
+                                <input type="text" name="jumlah" onblur="FormNum(this);" class="form-control" id="jumlah" />
+                            </div>
+                        </div>
+                    </div>
+                </form>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-refresh"></i> Batal</button>

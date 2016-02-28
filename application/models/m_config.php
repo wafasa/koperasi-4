@@ -86,6 +86,10 @@ class M_config extends CI_Model {
         return $result;
     }
     
+    function get_institusi_name() {
+        return $this->db->get('tb_institusi')->row();
+    }
+    
     function save_config_institusi($data) {
         $check= $this->db->get('tb_sekolah')->num_rows();
         if ($check === 0) {

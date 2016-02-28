@@ -6,15 +6,13 @@ class Masterdata extends CI_Controller {
         parent::__construct();
     }
     
-    function rka() {
-        $data['title'] = 'Rencana Kegiatan dan Anggaran';
-        $data['thn_anggaran'] = $this->db->get_where('tb_tahun_anggaran', array('aktifasi' => 'Ya'))->row();
-        $this->load->view('masterdata/rka', $data);
+    function anggota() {
+        $data['title'] = 'Data Utama Anggota';
+        $this->load->view('masterdata/anggota', $data);
     }
     
-    function penerimaan(){
-        $data['title'] = 'Penerimaan Sumber dana';
-        $data['thn_anggaran'] = $this->db->get_where('tb_tahun_anggaran', array('aktifasi' => 'Ya'))->row();
-        $this->load->view('masterdata/penerimaan', $data);
+    function debitur() {
+        $data['title'] = 'Data Utama Debitur';
+        $this->load->view('masterdata/debitur', $data);
     }
 }

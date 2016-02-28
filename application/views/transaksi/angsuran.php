@@ -2,8 +2,8 @@
 <script type="text/javascript">
     $(function() {
         
-        get_list_penerimaan_pajak(1);
-        $('#add_penerimaan_pajak').click(function() {
+        get_list_angsuran(1);
+        $('#add_angsuran').click(function() {
             reset_form();
             $('#datamodal').modal('show');
             $('#datamodal h4.modal-title').html('Tambah <?= $title ?>');
@@ -15,22 +15,21 @@
             $(this).datepicker('hide');
         });
 
-        $('#reload_penerimaan_pajak').click(function() {
+        $('#reload_angsuran').click(function() {
             reset_form();
-            get_list_penerimaan_pajak(1);
+            get_list_angsuran(1);
         });
         
-        $('#parent_code').select2({
+        $('#norek').select2({
             width: '100%',
             ajax: {
-                url: "<?= base_url('api/masterdata_auto/penerimaan_pajak_auto') ?>",
+                url: "<?= base_url('api/masterdata_auto/norek_pinjaman_auto') ?>",
                 dataType: 'json',
                 quietMillis: 100,
                 data: function (term, page) { // page is the one-based page number tracked by Select2
                     return {
                         q: term, //search term
-                        page: page, // page number
-                        jenissppb: $('#jenisbarang2').val()
+                        page: page // page number
                     };
                 },
                 results: function (data, page) {
@@ -41,21 +40,37 @@
                 }
             },
             formatResult: function(data){
-                var markup = data.kode+' - '+data.nama_program;
+                var markup = data.nomor_rekening+' - '+data.nama+'<br/>'+data.alamat;
                 return markup;
             }, 
             formatSelection: function(data){
-                return data.kode+' - '+data.nama_program;
+                $('#total_pinjam').val(money_format(data.jml_pinjaman));
+                $('#total_pengembalian').val(money_format(data.ttl_pengembalian));
+                $('#sisa_angsuran').val(money_format(data.sisa_angsuran));
+                $('#tagihan_perbulan').val(data.bsr_angsuran);
+                $('#jml_kali_angsur').html('<option value="">Pilih ...</option>');
+                var j = 1;
+                $.each(data.sisa_kali_angsuran, function(i, v) {
+                    $('#jml_kali_angsur').append('<option value="'+(j)+'">'+(++i)+'</option>');
+                    j++;
+                });
+                return data.nomor_rekening+' - '+data.nama;
             }
+        });
+        
+        $('#jml_kali_angsur').change(function() {
+            var kali = parseInt($(this).val());
+            var tagihan = parseFloat($('#tagihan_perbulan').val());
+            $('#nominal_angsuran').val(money_format(kali*tagihan));
         });
     });
     
-    function get_list_penerimaan_pajak(p, id) {
+    function get_list_angsuran(p, id) {
         $('#form-pencarian').modal('hide');
         var id = '';
         $.ajax({
             type : 'GET',
-            url: '<?= base_url("api/transaksi/penerimaan_pajaks") ?>/page/'+p+'/id/'+id,
+            url: '<?= base_url("api/transaksi/angsurans") ?>/page/'+p+'/id/'+id,
             data: '',
             cache: false,
             dataType: 'json',
@@ -65,7 +80,7 @@
             },
             success: function(data) {
                 if ((p > 1) & (data.data.length === 0)) {
-                    get_list_penerimaan_pajak(p-1);
+                    get_list_angsuran(p-1);
                     return false;
                 };
 
@@ -83,16 +98,17 @@
                     };
                     str+= '<tr data-tt-id='+i+' class="'+highlight+'">'+
                             '<td align="center">'+((i+1) + ((data.page - 1) * data.limit))+'</td>'+
-                            '<td align="center">'+datefmysql(v.tanggal)+'</td>'+
-                            '<td>'+v.kode_akun_pajak+'</td>'+
-                            '<td>'+v.no_bukti+'</td>'+
-                            '<td align="right">'+numberToCurrency(v.hasil_pajak)+'</td>'+
-                            '<td>'+v.jenis_transaksi+'</td>'+
-                            '<td>'+v.jenis_pajak+'</td>'+
+                            '<td align="center">'+datefmysql(v.tgl_bayar)+'</td>'+
+                            '<td align="center">'+v.nomor_rekening+'</td>'+
+                            '<td>'+v.nama+'</td>'+
+                            '<td align="right">'+money_format(v.bsr_angsuran)+'</td>'+
+                            '<td align="right">'+money_format(v.angsuran_pokok)+'</td>'+
+                            '<td align="right">'+money_format(v.jasa_angsuran)+'</td>'+
+                            '<td align="right">'+money_format(v.sisa_angsuran)+'</td>'+
                             '<td align="center" class=aksi>'+
-                                '<button type="button" class="btn btn-default btn-mini" onclick="print_pajak(\''+v.id+'\')"><i class="fa fa-print"></i></button> '+
-                                '<button type="button" class="btn btn-default btn-mini" onclick="edit_penerimaan_pajak(\''+v.id+'\')"><i class="fa fa-pencil"></i></button> '+
-                                '<button type="button" class="btn btn-default btn-mini" onclick="delete_penerimaan_pajak(\''+v.id+'\','+data.page+');"><i class="fa fa-trash-o"></i></button>'+
+                                '<button type="button" class="btn btn-mini" onclick="print_angsuran(\''+v.id+'\')"><i class="fa fa-print"></i></button> '+
+                                //'<button type="button" class="btn btn-default btn-mini" onclick="edit_angsuran(\''+v.id+'\')"><i class="fa fa-pencil"></i></button> '+
+                                //'<button type="button" class="btn btn-default btn-mini" onclick="delete_angsuran(\''+v.id+'\','+data.page+');"><i class="fa fa-trash-o"></i></button>'+
                             '</td>'+
                         '</tr>';
                     $('#example-advanced tbody').append(str);
@@ -103,55 +119,57 @@
                 //$("#example-advanced").treetable({ expandable: true });
             },
             error: function(e){
+                dinamic_message('Warning','Failed to load data !');
                 hide_ajax_indicator();
             }
         });
     }
     
-    function print_pajak(id) {
+    function print_angsuran(id) {
         var wWidth = $(window).width();
         var dWidth = wWidth * 1;
         var wHeight= $(window).height();
         var dHeight= wHeight * 1;
         var x = screen.width/2 - dWidth/2;
         var y = screen.height/2 - dHeight/2;
-        window.open('<?= base_url('transaksi/print_pajak/') ?>?id='+id,'Cetak Transaksi Pajak','width='+dWidth+', height='+dHeight+', left='+x+',top='+y);
+        window.open('<?= base_url('printing/print_angsuran/') ?>?id='+id,'Cetak Transaksi Pajak','width='+dWidth+', height='+dHeight+', left='+x+',top='+y);
     }
 
     function reset_form() {
         $('input, select, textarea').val('');
         $('input[type=checkbox], input[type=radio]').removeAttr('checked');
         $('#tanggal').val('<?= date("d/m/Y") ?>');
+        $('#s2id_norek a .select2-chosen').html('&nbsp;');
     }
 
-    function edit_penerimaan_pajak(id) {
+    function edit_angsuran(id) {
         $('#oldpict').html('');
         $('#datamodal').modal('show');
         $('#datamodal h4.modal-title').html('Edit <?= $title ?>');
         $.ajax({
             type: 'GET',
-            url: '<?= base_url('api/transaksi/penerimaan_pajaks') ?>/page/1/id/'+id,
+            url: '<?= base_url('api/transaksi/angsurans') ?>/page/1/id/'+id,
             dataType: 'json',
             success: function(data) {
                 $('#id').val(data.data[0].id);
                 $('#tanggal').val(datefmysql(data.data[0].tanggal));
-                $('#nokode').val(data.data[0].kode_akun_pajak);
+                $('#nokode').val(data.data[0].kode_akun_angsuran);
                 $('#nobukti').val(data.data[0].no_bukti);
                 $('#nominal').val(numberToCurrency(data.data[0].nominal));
-                $('#perhitungan').val(money_format(data.data[0].hasil_pajak));
+                $('#perhitungan').val(money_format(data.data[0].hasil_angsuran));
                 $('#jenis_transaksi').val(data.data[0].jenis_transaksi);
-                $('#jenis_pajak').val(data.data[0].jenis_pajak);
+                $('#jenis_angsuran').val(data.data[0].jenis_angsuran);
                 $('#uraian').val(data.data[0].uraian);
             }
         });
     }
         
     function paging(p) {
-        get_list_penerimaan_pajak(p);
+        get_list_angsuran(p);
     }
 
     function konfirmasi_save() {
-        //$('#isi_penerimaan_pajak').val(tinyMCE.get('isi').getContent());
+        //$('#isi_angsuran').val(tinyMCE.get('isi').getContent());
         bootbox.dialog({
             message: "Anda yakin akan menyimpan data ini?",
             title: "Konfirmasi Simpan",
@@ -167,17 +185,17 @@
                 label: '<i class="fa fa-save"></i>  Ya',
                 className: "btn-primary",
                 callback: function() {
-                    save_penerimaan_pajak();
+                    save_angsuran();
                 }
               }
             }
           });
       }
 
-    function save_penerimaan_pajak() {
+    function save_angsuran() {
         $.ajax({
             type: 'POST',
-            url: '<?= base_url('api/transaksi/penerimaan_pajak') ?>',
+            url: '<?= base_url('api/transaksi/angsuran') ?>',
             dataType: 'json',
             data: $('#formadd').serialize(),
             beforeSend: function() {
@@ -191,23 +209,23 @@
                 if (msg.act === 'add') {
                     $('#datamodal').modal('hide');
                     message_add_success();
-                    get_list_penerimaan_pajak(1);
+                    get_list_angsuran(1);
                 } else {
                     $('#datamodal').modal('hide');
                     message_edit_success();
-                    get_list_penerimaan_pajak(page);
+                    get_list_angsuran(page);
                 }
             },
             error: function() {
                 $('#datamodal').modal('hide');
                 var page = $('.pagination .active a').html();
-                get_list_penerimaan_pajak(page);
+                get_list_angsuran(page);
                 hide_ajax_indicator();
             }
         });
     }
 
-    function delete_penerimaan_pajak(id, page) {
+    function delete_angsuran(id, page) {
         bootbox.dialog({
             message: "Anda yakin akan menghapus data ini?",
             title: "Konfirmasi Hapus",
@@ -225,39 +243,17 @@
                 callback: function() {
                     $.ajax({
                         type: 'DELETE',
-                        url: '<?= base_url('api/transaksi/penerimaan_pajak') ?>/id/'+id,
+                        url: '<?= base_url('api/transaksi/angsuran') ?>/id/'+id,
                         dataType: 'json',
                         success: function(data) {
                             message_delete_success();
-                            get_list_penerimaan_pajak(page);
+                            get_list_angsuran(page);
                         }
                     });
                 }
               }
             }
         });
-    }
-
-    function paging(page, tab, search) {
-        get_list_penerimaan_pajak(page, search);
-    }
-    
-    function hitungPajak() {
-        var jumlah = currencyToNumber($('#nominal').val());
-        var pajak  = $('#jenis_pajak').val();
-        if (pajak === 'PPN') {
-            hasil = 0.1*parseFloat(jumlah);
-        }
-        if (pajak === 'PPh21') {
-            hasil = '0';
-        }
-        if (pajak === 'PPh22') {
-            hasil = (jumlah- (jumlah*0.1))*(1.5/100);
-        }
-        if (pajak === 'PPh23') {
-            hasil = 0.02*jumlah;
-        }
-        $('#perhitungan').val(money_format(hasil));
     }
 
 </script>
@@ -274,9 +270,9 @@
             <div class="grid-title">
               <h4>Daftar List <?= $title ?></h4>
                 <div class="tools"> 
-                    <button id="add_penerimaan_pajak" class="btn btn-info btn-mini"><i class="fa fa-plus-circle"></i> Tambah</button>
+                    <button id="add_angsuran" class="btn btn-info btn-mini"><i class="fa fa-plus-circle"></i> Tambah</button>
                     <!--<button id="cari_button" class="btn btn-mini"><i class="fa fa-search"></i> Cari</button>-->
-                    <button id="reload_penerimaan_pajak" class="btn btn-mini"><i class="fa fa-refresh"></i> Reload</button>
+                    <button id="reload_angsuran" class="btn btn-mini"><i class="fa fa-refresh"></i> Reload</button>
                 </div>
             </div>
             <div class="grid-body">
@@ -287,11 +283,14 @@
                         <tr>
                           <th width="3%">No</th>
                           <th width="7%">Tanggal</th>
-                          <th width="15%" class="left">Nama</th>
+                          <th width="7%">No. Rek.</th>
+                          <th width="35%" class="left">Nama</th>
+                          <th width="10%" class="right">Angsuran</th>
                           <th width="10%" class="left">Angs.&nbsp;Pokok</th>
-                          <th width="10%" class="left">Jasa&nbsp;Angs.</th>
+                          <th width="8%" class="left">Bunga</th>
+                          <!--<th width="10%" class="left">Jenis</th>-->
                           <th width="10%" class="left">Sisa&nbsp;Pinj.</th>
-                          <th width="10%"></th>
+                          <th width="5%"></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -304,7 +303,7 @@
             </div>
           </div>
         </div>
-        <div id="datamodal" class="modal fade">
+        <div id="datamodal" class="modal fade" style="overflow-y: auto">
             <div class="modal-dialog" style="width: 700px">
           <div class="modal-content">
             <div class="modal-header">
@@ -313,18 +312,37 @@
             </div>
             <div class="modal-body">
                 <form id="formadd" method="post" role="form">
-                <input type="hidden" name="id" id="id" />
+                <!--<input type="hidden" name="id" id="id" />-->
+                <input type="hidden" id="tagihan_perbulan" />
                 <div class="form-group">
                     <label class="control-label">Tanggal:</label>
-                    <input type="text" name="tanggal" class="form-control" style="width: 145px;" id="tanggal" value="<?= date("d/m/Y") ?>" />
+                    <input type="text" name="tanggal" class="form-control" style="width: 145px;" id="tanggal" value="<?= date("d/m/Y") ?>" readonly="" />
                 </div>
                 <div class="form-group">
-                    <label for="recipient-name" class="control-label">No. Kode Akun Pajak:</label>
-                    <input type="text" name="nokode"  class="form-control" id="nokode">
+                    <label class="control-label">Nomor Rekening / Nama Debitur:</label>
+                    <input type="text" name="norek"  class="select2-input" id="norek">
                 </div>
                 <div class="form-group">
-                    <label for="recipient-name" class="control-label">No. Bukti:</label>
-                    <input type="text" name="nobukti"  class="form-control" id="nobukti">
+                    <label class="control-label">Total Pinjaman:</label>
+                    <input type="text" class="form-control" id="total_pinjam" readonly="">
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Total Pengembalian:</label>
+                    <input type="text" class="form-control" id="total_pengembalian" readonly="">
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Sisa Angsuran:</label>
+                    <input type="text" class="form-control" id="sisa_angsuran" readonly="">
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Jumlah Kali Angsuran:</label>
+                    <select name="jml_kali_angsur" id="jml_kali_angsur" class="form-control">
+                        
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Nominal Angsuran:</label>
+                    <input name="nominal_angsuran" id="nominal_angsuran" class="form-control" />
                 </div>
             </form>
             </div>

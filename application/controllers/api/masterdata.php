@@ -15,7 +15,7 @@ class Masterdata extends REST_Controller {
         }
     }
     
-    function rkas_get() {
+    function debiturs_get() {
         if (!$this->get('page')) {
             $this->response(NULL, 400);
         }
@@ -26,7 +26,7 @@ class Masterdata extends REST_Controller {
             'id' => $this->get('id')
         );
         
-        $data = $this->m_masterdata->get_list_rka($this->limit, $start, $search);
+        $data = $this->m_masterdata->get_list_debiturs($this->limit, $start, $search);
         $data['page'] = (int)$this->get('page');
         $data['limit'] = $this->limit;
         
@@ -37,54 +37,16 @@ class Masterdata extends REST_Controller {
         }
     }
     
-    function rka_get() {
-        $data = $this->m_masterdata->get_rka($this->get('id'));
-        $this->response($data, 200);
-    }
-    
-    function rka_post() {
-        $data = $this->m_masterdata->save_rka();
-        $this->response($data, 200);
-    }
-    
-    function rka_delete() {
-        $this->db->delete('tb_rka', array('id' => $this->get('id')));
-    }
-    
-    /*Penerimaan*/
-    function penerimaans_get() {
-        if (!$this->get('page')) {
-            $this->response(NULL, 400);
-        }
-        
-        $start = ($this->get('page') - 1) * $this->limit;
-        
-        $search= array(
-            'id' => $this->get('id')
+    function anggota_post() {
+        $param = array(
+            'id' => post_safe('id'),
+            'no_rekening' => post_safe('norek'),
+            'no_ktp' => post_safe('noktp'),
+            'nama' => post_safe('nama'),
+            'alamat' => post_safe('alamat'),
+            'tgl_masuk' => date2mysql(post_safe('tanggal'))
         );
-        
-        $data = $this->m_masterdata->get_list_penerimaan($this->limit, $start, $search);
-        $data['page'] = (int)$this->get('page');
-        $data['limit'] = $this->limit;
-        
-        if($data){
-            $this->response($data, 200); // 200 being the HTTP response code
-        }else{
-            $this->response(array('error' => 'Data tidak ditemukan'), 404);
-        }
-    }
-    
-    function penerimaan_get() {
-        $data = $this->m_masterdata->get_penerimaan($this->get('id'));
+        $data = $this->m_masterdata->save_data_anggota($param);
         $this->response($data, 200);
-    }
-    
-    function penerimaan_post() {
-        $data = $this->m_masterdata->save_penerimaan();
-        $this->response($data, 200);
-    }
-    
-    function penerimaan_delete() {
-        $this->db->delete('tb_penerimaan', array('id' => $this->get('id')));
     }
 }

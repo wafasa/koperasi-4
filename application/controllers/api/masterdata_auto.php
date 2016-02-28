@@ -17,38 +17,24 @@ class Masterdata_auto extends REST_Controller{
         return (($page - 1) * $this->limit);
     }
     
+    function norek_pinjaman_auto_get() {
+        $param['search']    = get_safe('q');
+        $start = $this->start(get_safe('page'));
+        $data = $this->m_transaksi->get_auto_rekening_pinjaman($param, $start, $this->limit);
+        if ((get_safe('page') == 1) & (get_safe('q') == '')) {
+            $pilih[] = array('id'=>'', 'nomor_rekening' => '', 'nama' =>'', 'alamat' => '');
+            $data['data'] = array_merge($pilih, $data['data']);
+            $data['total'] += 1;
+        }
+        $this->response($data, 200);
+    }
+    
     function rka_auto_get() {
         $param['search']    = get_safe('q');
         $start = $this->start(get_safe('page'));
         $data = $this->m_masterdata->get_auto_rka($param, $start, $this->limit);
         if ((get_safe('page') == 1) & (get_safe('q') == '')) {
-            $pilih[] = array('id'=>'', 'kode' => '', 'nama_program' =>'');
-            $data['data'] = array_merge($pilih, $data['data']);
-            $data['total'] += 1;
-        }
-        $this->response($data, 200);
-    }
-    
-    function rka_trans_auto_get() {
-        $param['search']    = get_safe('q');
-        $param['level']     = get_safe('level');
-        $param['parent']    = get_safe('parent');
-        $start = $this->start(get_safe('page'));
-        $data = $this->m_masterdata->get_auto_rka_trans($param, $start, $this->limit);
-        if ((get_safe('page') == 1) & (get_safe('q') == '')) {
-            $pilih[] = array('id'=>'', 'kode' => '', 'nama_program' =>'');
-            $data['data'] = array_merge($pilih, $data['data']);
-            $data['total'] += 1;
-        }
-        $this->response($data, 200);
-    }
-    
-    function penerimaan_auto_get() {
-        $param['search']    = get_safe('q');
-        $start = $this->start(get_safe('page'));
-        $data = $this->m_masterdata->get_auto_penerimaan($param, $start, $this->limit);
-        if ((get_safe('page') == 1) & (get_safe('q') == '')) {
-            $pilih[] = array('id'=>'', 'kode' => '', 'nama_program' =>'');
+            $pilih[] = array('id'=>'', 'nomor_rekening' => '', 'nama' =>'', 'alamat' => '');
             $data['data'] = array_merge($pilih, $data['data']);
             $data['total'] += 1;
         }

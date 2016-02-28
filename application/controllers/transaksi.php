@@ -3,8 +3,15 @@
 class Transaksi extends CI_Controller {
     
     /*PEMBAYARAN*/
+    function __construct() {
+        parent::__construct();
+        $this->load->model(array('m_masterdata'));
+    }
     function pembiayaan() {
         $data['title'] = 'Pembiayaan Pinjaman';
+        $data['agama'] = $this->m_masterdata->get_agama();
+        $data['status_rumah'] = $this->m_masterdata->get_status_rumah();
+        $data['lama_pembiayaan'] = $this->m_masterdata->get_lama_pembiayaan();
         $this->load->view('transaksi/pembiayaan', $data);
     }
 
@@ -14,7 +21,8 @@ class Transaksi extends CI_Controller {
     }
 
     function pembayaran_beban() {
-        $data['title'] = 'Pembayaran Tagihan Rutin';
+        $data['title'] = 'Pemasukkan & Pengeluaran';
+        $data['jenis'] = $this->m_masterdata->get_data_jenis_transaksi();
         $this->load->view('transaksi/pembayaran-beban', $data);
     }
 
@@ -33,9 +41,9 @@ class Transaksi extends CI_Controller {
         $this->load->view('transaksi/penarikan-tabungan', $data);
     }
 
-    function koreksi_tabungan() {
-        $data['title'] = 'Koreksi Tabungan';
-        $this->load->view('transaksi/koreksi-tabungan', $data);
+    function koreksi_saldo() {
+        $data['title'] = 'Koreksi Saldo';
+        $this->load->view('transaksi/koreksi-saldo', $data);
     }
 
 }

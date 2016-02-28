@@ -2,8 +2,8 @@
 <script type="text/javascript">
     $(function() {
         
-        get_list_penerimaan_pajak(1);
-        $('#add_penerimaan_pajak').click(function() {
+        get_list_koreksi_saldo(1);
+        $('#add_koreksi_saldo').click(function() {
             reset_form();
             $('#datamodal').modal('show');
             $('#datamodal h4.modal-title').html('Tambah <?= $title ?>');
@@ -15,15 +15,15 @@
             $(this).datepicker('hide');
         });
 
-        $('#reload_penerimaan_pajak').click(function() {
+        $('#reload_koreksi_saldo').click(function() {
             reset_form();
-            get_list_penerimaan_pajak(1);
+            get_list_koreksi_saldo(1);
         });
         
         $('#parent_code').select2({
             width: '100%',
             ajax: {
-                url: "<?= base_url('api/masterdata_auto/penerimaan_pajak_auto') ?>",
+                url: "<?= base_url('api/masterdata_auto/koreksi_saldo_auto') ?>",
                 dataType: 'json',
                 quietMillis: 100,
                 data: function (term, page) { // page is the one-based page number tracked by Select2
@@ -50,12 +50,12 @@
         });
     });
     
-    function get_list_penerimaan_pajak(p, id) {
+    function get_list_koreksi_saldo(p, id) {
         $('#form-pencarian').modal('hide');
         var id = '';
         $.ajax({
             type : 'GET',
-            url: '<?= base_url("api/transaksi/penerimaan_pajaks") ?>/page/'+p+'/id/'+id,
+            url: '<?= base_url("api/transaksi/koreksi_saldos") ?>/page/'+p+'/id/'+id,
             data: '',
             cache: false,
             dataType: 'json',
@@ -65,7 +65,7 @@
             },
             success: function(data) {
                 if ((p > 1) & (data.data.length === 0)) {
-                    get_list_penerimaan_pajak(p-1);
+                    get_list_koreksi_saldo(p-1);
                     return false;
                 };
 
@@ -91,8 +91,8 @@
                             '<td>'+v.jenis_pajak+'</td>'+
                             '<td align="center" class=aksi>'+
                                 '<button type="button" class="btn btn-default btn-mini" onclick="print_pajak(\''+v.id+'\')"><i class="fa fa-print"></i></button> '+
-                                '<button type="button" class="btn btn-default btn-mini" onclick="edit_penerimaan_pajak(\''+v.id+'\')"><i class="fa fa-pencil"></i></button> '+
-                                '<button type="button" class="btn btn-default btn-mini" onclick="delete_penerimaan_pajak(\''+v.id+'\','+data.page+');"><i class="fa fa-trash-o"></i></button>'+
+                                '<button type="button" class="btn btn-default btn-mini" onclick="edit_koreksi_saldo(\''+v.id+'\')"><i class="fa fa-pencil"></i></button> '+
+                                '<button type="button" class="btn btn-default btn-mini" onclick="delete_koreksi_saldo(\''+v.id+'\','+data.page+');"><i class="fa fa-trash-o"></i></button>'+
                             '</td>'+
                         '</tr>';
                     $('#example-advanced tbody').append(str);
@@ -124,13 +124,13 @@
         $('#tanggal').val('<?= date("d/m/Y") ?>');
     }
 
-    function edit_penerimaan_pajak(id) {
+    function edit_koreksi_saldo(id) {
         $('#oldpict').html('');
         $('#datamodal').modal('show');
         $('#datamodal h4.modal-title').html('Edit <?= $title ?>');
         $.ajax({
             type: 'GET',
-            url: '<?= base_url('api/transaksi/penerimaan_pajaks') ?>/page/1/id/'+id,
+            url: '<?= base_url('api/transaksi/koreksi_saldos') ?>/page/1/id/'+id,
             dataType: 'json',
             success: function(data) {
                 $('#id').val(data.data[0].id);
@@ -147,11 +147,11 @@
     }
         
     function paging(p) {
-        get_list_penerimaan_pajak(p);
+        get_list_koreksi_saldo(p);
     }
 
     function konfirmasi_save() {
-        //$('#isi_penerimaan_pajak').val(tinyMCE.get('isi').getContent());
+        //$('#isi_koreksi_saldo').val(tinyMCE.get('isi').getContent());
         bootbox.dialog({
             message: "Anda yakin akan menyimpan data ini?",
             title: "Konfirmasi Simpan",
@@ -167,17 +167,17 @@
                 label: '<i class="fa fa-save"></i>  Ya',
                 className: "btn-primary",
                 callback: function() {
-                    save_penerimaan_pajak();
+                    save_koreksi_saldo();
                 }
               }
             }
           });
       }
 
-    function save_penerimaan_pajak() {
+    function save_koreksi_saldo() {
         $.ajax({
             type: 'POST',
-            url: '<?= base_url('api/transaksi/penerimaan_pajak') ?>',
+            url: '<?= base_url('api/transaksi/koreksi_saldo') ?>',
             dataType: 'json',
             data: $('#formadd').serialize(),
             beforeSend: function() {
@@ -191,23 +191,23 @@
                 if (msg.act === 'add') {
                     $('#datamodal').modal('hide');
                     message_add_success();
-                    get_list_penerimaan_pajak(1);
+                    get_list_koreksi_saldo(1);
                 } else {
                     $('#datamodal').modal('hide');
                     message_edit_success();
-                    get_list_penerimaan_pajak(page);
+                    get_list_koreksi_saldo(page);
                 }
             },
             error: function() {
                 $('#datamodal').modal('hide');
                 var page = $('.pagination .active a').html();
-                get_list_penerimaan_pajak(page);
+                get_list_koreksi_saldo(page);
                 hide_ajax_indicator();
             }
         });
     }
 
-    function delete_penerimaan_pajak(id, page) {
+    function delete_koreksi_saldo(id, page) {
         bootbox.dialog({
             message: "Anda yakin akan menghapus data ini?",
             title: "Konfirmasi Hapus",
@@ -225,11 +225,11 @@
                 callback: function() {
                     $.ajax({
                         type: 'DELETE',
-                        url: '<?= base_url('api/transaksi/penerimaan_pajak') ?>/id/'+id,
+                        url: '<?= base_url('api/transaksi/koreksi_saldo') ?>/id/'+id,
                         dataType: 'json',
                         success: function(data) {
                             message_delete_success();
-                            get_list_penerimaan_pajak(page);
+                            get_list_koreksi_saldo(page);
                         }
                     });
                 }
@@ -239,7 +239,7 @@
     }
 
     function paging(page, tab, search) {
-        get_list_penerimaan_pajak(page, search);
+        get_list_koreksi_saldo(page, search);
     }
     
     function hitungPajak() {
@@ -274,9 +274,9 @@
             <div class="grid-title">
               <h4>Daftar List <?= $title ?></h4>
                 <div class="tools"> 
-                    <button id="add_penerimaan_pajak" class="btn btn-info btn-mini"><i class="fa fa-plus-circle"></i> Tambah</button>
+                    <button id="add_koreksi_saldo" class="btn btn-info btn-mini"><i class="fa fa-plus-circle"></i> Tambah</button>
                     <!--<button id="cari_button" class="btn btn-mini"><i class="fa fa-search"></i> Cari</button>-->
-                    <button id="reload_penerimaan_pajak" class="btn btn-mini"><i class="fa fa-refresh"></i> Reload</button>
+                    <button id="reload_koreksi_saldo" class="btn btn-mini"><i class="fa fa-refresh"></i> Reload</button>
                 </div>
             </div>
             <div class="grid-body">

@@ -164,7 +164,7 @@
 		 <li class="dropdown"> <a id="main-menu-toggle" href="#main-menu"  class="" > <div class="iconset top-menu-toggle-white"></div> </a> </li>		 
 		</ul>
       <!-- BEGIN LOGO -->	
-      <div class="logo">SIA <span>BOS</span></div>
+      <div class="logo">KOPERASI <span>MICRO FINANCE</span></div>
       <!-- END LOGO --> 
       <ul class="nav pull-right notifcation-center">	
           <li class="dropdown" id="header_task_bar"> <a href="<?= base_url('user') ?>" class="dropdown-toggle active" data-toggle=""> <div class="iconset top-home"></div> </a> </li>
@@ -314,7 +314,7 @@
   <!-- BEGIN MINI-PROFILE -->
    <div class="user-info-wrapper">	
 	<div class="profile-wrapper">
-            <img src="<?= base_url('assets/img/profiles/logo.png') ?>"  alt="" data-src="<?= base_url('assets/img/profiles/logo.png') ?>" width="69" height="69" />
+            <img src="<?= base_url('assets/img/profiles/logo.png') ?>"  alt="" data-src="<?= base_url('assets/img/profiles/logo.png') ?>" width="50" height="50" />
 	</div>
     <div class="user-info">
       <div class="greeting">Welcome</div>
@@ -330,7 +330,7 @@
         
         <li class="start active "> <a class="home" href="<?= base_url('user') ?>"> <i class="icon-custom-home"></i> <span class="title">Dashboard<br/><div>Beranda sistem informasi</div></span> <span class="selected"></span></a> </li>
         <?php foreach ($master_menu as $data) { ?>
-        <li class=" "> <a href="javascript:;;"> <i class="<?= $data->icon ?>"></i> <span class="title"><?= $data->nama ?> <span class="arrow "></span><div><?= $data->keterangan ?></div></span> <span class="selected"></span> </a> 
+        <li class=" "> <a href="javascript:;;"> <i class="<?= $data->icon ?>"></i> <span class="title"><b><?= $data->nama ?></b> <span class="arrow "></span><div><?= $data->keterangan ?></div></span> <span class="selected"></span> </a> 
             <ul class="sub-menu">
                 <?php foreach ($data->detail_menu as $data2) { ?>
                 <li><a onclick="load_menu('<?= base_url($data2->url) ?>'); return false;" href="<?= base_url('') ?>"> <?= $data2->form_nama ?> </a> </li>
