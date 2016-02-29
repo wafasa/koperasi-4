@@ -8,6 +8,7 @@ class Laporan extends CI_Controller {
     }
     
     function kas_harian() {
-        $this->load->view('laporan/kas-harian');
+        $data['title'] = 'Rekap Kas Harian';
+        $this->load->view('laporan/kas-harian', $data);
     }
 }
