@@ -8,6 +8,8 @@
             reset_form();
             $('#datamodal').modal('show');
             $('#datamodal h4.modal-title').html('Tambah <?= $title ?>');
+            $('#jumlah').removeAttr('disabled');
+            $("#wizard").bwizard('show', 0);
         });
         
         $('#tanggal').datepicker({
@@ -133,15 +135,14 @@
             url: '<?= base_url('api/transaksi/tabungans') ?>/page/1/id/'+id,
             dataType: 'json',
             success: function(data) {
-                $('#id').val(data.data[0].id);
-                $('#tanggal').val(datefmysql(data.data[0].tanggal));
-                $('#nokode').val(data.data[0].kode_akun_pajak);
-                $('#nobukti').val(data.data[0].no_bukti);
-                $('#nominal').val(numberToCurrency(data.data[0].nominal));
-                $('#perhitungan').val(money_format(data.data[0].hasil_pajak));
-                $('#jenis_transaksi').val(data.data[0].jenis_transaksi);
-                $('#jenis_pajak').val(data.data[0].jenis_pajak);
-                $('#uraian').val(data.data[0].uraian);
+                var data = data.data[0];
+                $('#id').val(data.id);
+                $('#tanggal').val(datefmysql(data.tgl_masuk));
+                $('#nama').val(data.nama);
+                $('#norek').val(data.no_rekening);
+                $('#noktp').val(data.no_ktp);
+                $('#alamat').val(data.alamat);
+                $('#jumlah').val(money_format(data.saldo)).attr('disabled','disabled');
             }
         });
     }
