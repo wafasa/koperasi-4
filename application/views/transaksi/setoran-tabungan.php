@@ -20,17 +20,16 @@
             get_list_setoran_tabungan(1);
         });
         
-        $('#parent_code').select2({
+        $('#norek').select2({
             width: '100%',
             ajax: {
-                url: "<?= base_url('api/masterdata_auto/setoran_tabungan_auto') ?>",
+                url: "<?= base_url('api/masterdata_auto/norek_tabungan_auto') ?>",
                 dataType: 'json',
                 quietMillis: 100,
                 data: function (term, page) { // page is the one-based page number tracked by Select2
                     return {
                         q: term, //search term
-                        page: page, // page number
-                        jenissppb: $('#jenisbarang2').val()
+                        page: page // page number
                     };
                 },
                 results: function (data, page) {
@@ -41,11 +40,12 @@
                 }
             },
             formatResult: function(data){
-                var markup = data.kode+' - '+data.nama_program;
+                var markup = data.no_rekening+' - '+data.nama+'<br/>'+data.alamat;
                 return markup;
             }, 
             formatSelection: function(data){
-                return data.kode+' - '+data.nama_program;
+                $('#sisa_saldo').val(money_format(data.saldo));
+                return data.no_rekening+' - '+data.nama;
             }
         });
     });
@@ -88,9 +88,9 @@
                             '<td>'+v.nama+'</td>'+
                             '<td align="right">'+money_format(v.awal)+'</td>'+
                             '<td align="right">'+money_format(v.masuk)+'</td>'+
-                            '<td align="right">'+money_format(v.saldo)+'</td>'+
+                            '<td align="right">'+money_format(parseFloat(v.awal)+parseFloat(v.masuk))+'</td>'+
                             '<td align="center" class=aksi>'+
-                                '<button type="button" class="btn btn-default btn-mini" onclick="print_pajak(\''+v.id+'\')"><i class="fa fa-print"></i></button> '+
+                                //'<button type="button" class="btn btn-default btn-mini" onclick="history_tabungan(\''+v.id+'\')"><i class="fa fa-eye"></i></button> '+
                                 '<button type="button" class="btn btn-default btn-mini" onclick="edit_setoran_tabungan(\''+v.id+'\')"><i class="fa fa-pencil"></i></button> '+
                                 '<button type="button" class="btn btn-default btn-mini" onclick="delete_setoran_tabungan(\''+v.id+'\','+data.page+');"><i class="fa fa-trash-o"></i></button>'+
                             '</td>'+
@@ -317,15 +317,27 @@
                 <input type="hidden" name="id" id="id" />
                 <div class="form-group">
                     <label class="control-label">Tanggal:</label>
-                    <input type="text" name="tanggal" class="form-control" style="width: 145px;" id="tanggal" value="<?= date("d/m/Y") ?>" />
+                    <input type="text" name="tanggal" class="form-control" disabled="" style="width: 145px;" id="tanggal" value="<?= date("d/m/Y") ?>" />
                 </div>
                 <div class="form-group">
-                    <label for="recipient-name" class="control-label">No. Kode Akun Pajak:</label>
-                    <input type="text" name="nokode"  class="form-control" id="nokode">
+                    <label class="control-label">Nomor Rekening / Nama Anggota:</label>
+                    <input type="text" name="norek"  class="select2-input" id="norek">
                 </div>
                 <div class="form-group">
-                    <label for="recipient-name" class="control-label">No. Bukti:</label>
-                    <input type="text" name="nobukti"  class="form-control" id="nobukti">
+                    <label class="control-label">Sisa Saldo:</label>
+                    <input type="text" class="form-control" id="sisa_saldo" readonly="">
+                </div>
+<!--                <div class="form-group">
+                    <label class="control-label">Jenis Transaksi:</label>
+                    <select name="jenis" id="jenis" class="form-control">
+                        <option value="">Pilih ...</option>
+                        <option value="Setoran">Setoran</option>
+                        <option value="Penarikan">Penarikan</option>
+                    </select>
+                </div>-->
+                <div class="form-group">
+                    <label class="control-label">Nominal:</label>
+                    <input name="nominal_tabungan" id="nominal_tabungan" onblur="FormNum(this)" class="form-control" />
                 </div>
             </form>
             </div>

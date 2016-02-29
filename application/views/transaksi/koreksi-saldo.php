@@ -7,10 +7,11 @@
             reset_form();
             $('#datamodal').modal('show');
             $('#datamodal h4.modal-title').html('Tambah <?= $title ?>');
+            load_sisa_saldo();
         });
         
         $('#tanggal').datepicker({
-                format: 'dd/mm/yyyy'
+            format: 'dd/mm/yyyy'
         }).on('changeDate', function(){
             $(this).datepicker('hide');
         });
@@ -50,6 +51,23 @@
         });
     });
     
+    function load_sisa_saldo() {
+        $.ajax({
+            type: 'GET',
+            url: '<?= base_url('api/transaksi/sisa_saldo') ?>',
+            success: function(data) {
+                $('#sisa_saldo').val(data);  
+            }
+        });
+    }
+    
+    function hitung_penyesuaian() {
+        var sisa_komputer = parseFloat($('#sisa_saldo').val());
+        var sisa_kenyataan= parseFloat($('#sisa_saldo_asli').val());
+        var penyesuaian = sisa_kenyataan - sisa_komputer;
+        $('#penyesuaian').val(penyesuaian);
+    }
+    
     function get_list_koreksi_saldo(p, id) {
         $('#form-pencarian').modal('hide');
         var id = '';
@@ -83,15 +101,12 @@
                     };
                     str+= '<tr data-tt-id='+i+' class="'+highlight+'">'+
                             '<td align="center">'+((i+1) + ((data.page - 1) * data.limit))+'</td>'+
-                            '<td align="center">'+datefmysql(v.tanggal)+'</td>'+
-                            '<td>'+v.kode_akun_pajak+'</td>'+
-                            '<td>'+v.no_bukti+'</td>'+
-                            '<td align="right">'+numberToCurrency(v.hasil_pajak)+'</td>'+
-                            '<td>'+v.jenis_transaksi+'</td>'+
-                            '<td>'+v.jenis_pajak+'</td>'+
+                            '<td align="center">'+datetimefmysql(v.waktu)+'</td>'+
+                            '<td>'+v.transaksi+'</td>'+
+                            '<td>'+v.keterangan+'</td>'+
+                            '<td align="right">'+money_format(v.masuk)+'</td>'+
+                            '<td align="right">'+money_format(v.keluar)+'</td>'+
                             '<td align="center" class=aksi>'+
-                                '<button type="button" class="btn btn-default btn-mini" onclick="print_pajak(\''+v.id+'\')"><i class="fa fa-print"></i></button> '+
-                                '<button type="button" class="btn btn-default btn-mini" onclick="edit_koreksi_saldo(\''+v.id+'\')"><i class="fa fa-pencil"></i></button> '+
                                 '<button type="button" class="btn btn-default btn-mini" onclick="delete_koreksi_saldo(\''+v.id+'\','+data.page+');"><i class="fa fa-trash-o"></i></button>'+
                             '</td>'+
                         '</tr>';
@@ -106,16 +121,6 @@
                 hide_ajax_indicator();
             }
         });
-    }
-    
-    function print_pajak(id) {
-        var wWidth = $(window).width();
-        var dWidth = wWidth * 1;
-        var wHeight= $(window).height();
-        var dHeight= wHeight * 1;
-        var x = screen.width/2 - dWidth/2;
-        var y = screen.height/2 - dHeight/2;
-        window.open('<?= base_url('transaksi/print_pajak/') ?>?id='+id,'Cetak Transaksi Pajak','width='+dWidth+', height='+dHeight+', left='+x+',top='+y);
     }
 
     function reset_form() {
@@ -186,17 +191,11 @@
             success: function(msg) {
                 var page = $('.pagination .active a').html();
                 hide_ajax_indicator();
-                $('#judul, #isi, #nominal').val('');
-                //reset_form();
-                if (msg.act === 'add') {
-                    $('#datamodal').modal('hide');
-                    message_add_success();
-                    get_list_koreksi_saldo(1);
-                } else {
-                    $('#datamodal').modal('hide');
-                    message_edit_success();
-                    get_list_koreksi_saldo(page);
-                }
+
+                $('#datamodal').modal('hide');
+                message_add_success();
+                get_list_koreksi_saldo(1);
+                
             },
             error: function() {
                 $('#datamodal').modal('hide');
@@ -241,24 +240,6 @@
     function paging(page, tab, search) {
         get_list_koreksi_saldo(page, search);
     }
-    
-    function hitungPajak() {
-        var jumlah = currencyToNumber($('#nominal').val());
-        var pajak  = $('#jenis_pajak').val();
-        if (pajak === 'PPN') {
-            hasil = 0.1*parseFloat(jumlah);
-        }
-        if (pajak === 'PPh21') {
-            hasil = '0';
-        }
-        if (pajak === 'PPh22') {
-            hasil = (jumlah- (jumlah*0.1))*(1.5/100);
-        }
-        if (pajak === 'PPh23') {
-            hasil = 0.02*jumlah;
-        }
-        $('#perhitungan').val(money_format(hasil));
-    }
 
 </script>
     <div class="content">
@@ -286,14 +267,12 @@
                         <thead>
                         <tr>
                             <th width="3%">No</th>
-                            <th width="7%">Tanggal</th>
-                            <th width="10%" class="left">No. Rek</th>
-                            <th width="15%" class="left">Nama</th>
-                            <th width="10%" class="right">Awal</th>
+                            <th width="15%">Tanggal</th>
+                            <th width="15%" class="left">Nama Transaksi</th>
+                            <th width="40%" class="left">Keterangan</th>
                             <th width="10%" class="right">Masuk</th>
                             <th width="10%" class="right">keluar</th>
-                            <th width="10%" class="right">Saldo</th>
-                            <th width="10%"></th>
+                            <th width="5%"></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -321,12 +300,20 @@
                     <input type="text" name="tanggal" class="form-control" style="width: 145px;" id="tanggal" value="<?= date("d/m/Y") ?>" />
                 </div>
                 <div class="form-group">
-                    <label for="recipient-name" class="control-label">No. Kode Akun Pajak:</label>
-                    <input type="text" name="nokode"  class="form-control" id="nokode">
+                    <label class="control-label">Sisa Saldo Koperasi:</label>
+                    <input type="text"  class="form-control" id="sisa_saldo" readonly="">
                 </div>
                 <div class="form-group">
-                    <label for="recipient-name" class="control-label">No. Bukti:</label>
-                    <input type="text" name="nobukti"  class="form-control" id="nobukti">
+                    <label class="control-label">Sisa Saldo Sebenarnya:</label>
+                    <input type="text"  class="form-control" id="sisa_saldo_asli" onblur="hitung_penyesuaian();">
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Penyesuaian:</label>
+                    <input type="text" name="penyesuaian"  class="form-control" id="penyesuaian" readonly="">
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Keterangan:</label>
+                    <textarea name="keterangan" id="keterangan" class="form-control"></textarea>
                 </div>
             </form>
             </div>

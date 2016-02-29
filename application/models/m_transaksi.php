@@ -2,6 +2,10 @@
 
 class M_transaksi extends CI_Model {
     
+    function get_sisa_saldo_koperasi() {
+        $sql = "select SUM(masuk)-SUM(keluar) as sisa from tb_arus_kas";
+        return $this->db->query($sql)->row()->sisa;
+    }
     /*Pembiayaan*/
     function get_list_pembiayaans($limit = null, $start = null, $search = null) {
         $q = null;
@@ -318,6 +322,70 @@ class M_transaksi extends CI_Model {
         return $data;
     }
     
+    function get_auto_rekening_tabungan($search, $start, $limit) {
+        $q = NULL;
+        
+        $limitation = " limit $start, $limit";
+        $select = "select t.*, a.nama, a.alamat, a.no_rekening ";
+        $count = "select count(*) as count ";
+        $sql = "from tb_tabungan t
+            join tb_anggota a on (t.id_anggota = a.id)
+            where (a.nama like ('%".$search['search']."%') or a.no_rekening like ('%".$search['search']."%')) 
+            $q 
+            order by a.no_rekening";
+        $result = $this->db->query($select.$sql.$limitation)->result();
+        foreach ($result as $key => $value) {
+            $sql_child = "select IFNULL(sum(masuk)-sum(keluar),0) as saldo 
+                from tb_detail_tabungan 
+                where id_tabungan = '".$value->id."'";
+            $result[$key]->saldo = $this->db->query($sql_child)->row()->saldo;
+        }
+        $data['data'] = $result;
+        $data['total'] = $this->db->query($count.$sql)->row()->count;
+        
+        return $data;
+    }
+    
+    function save_setoran_tabungan() {
+        $this->db->trans_begin();
+        $param = array(
+            'id_tabungan' => post_safe('norek'),
+            'tanggal' => date("Y-m-d"),
+            'masuk' => currencyToNumber(post_safe('nominal_tabungan')),
+            'sandi' => '1'
+        );
+        $this->db->insert('tb_detail_tabungan', $param);
+        $id_detail_tabungan = $this->db->insert_id();
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            $result['status'] = FALSE;
+        }
+        
+        $sql = "select a.nama, a.no_rekening 
+            from tb_anggota a
+            join tb_tabungan t on (t.id_anggota = a.id)
+            where t.id = '".  post_safe('norek')."'
+            ";
+        $data_anggota = $this->db->query($sql)->row();
+        $arus_kas = array(
+            'transaksi' => 'Tabungan',
+            'id_transaksi' => $id_detail_tabungan,
+            'masuk' => currencyToNumber(post_safe('nominal_tabungan')),
+            'keterangan' => 'Tabungan '.$data_anggota->no_rekening.' '.$data_anggota->nama,
+            'id_user' => $this->session->userdata('id_user')
+        );
+        $this->m_transaksi->save_arus_kas($arus_kas);
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            $result['status'] = FALSE;
+        } else {
+            $this->db->trans_commit();
+            $result['status'] = TRUE;
+            $result['id'] = $id_detail_tabungan;
+        }
+        return $result;
+    }
+    
     function create_nomor_rek_tabungan() {
         $sql = "select convert(SUBSTR(no_rekening, 1, 5),decimal) as nomor from tb_anggota where tgl_masuk like ('%".date("Y-m")."%') order by nomor desc limit 1";
         $get = $this->db->query($sql)->row();
@@ -333,13 +401,13 @@ class M_transaksi extends CI_Model {
         $this->db->trans_begin();
         $data_anggota = array(
             'id' => post_safe('id'),
-            'no_rekening' => $this->create_nomor_rek_tabungan(),
             'no_ktp' => post_safe('noktp'),
             'nama' => post_safe('nama'),
             'alamat' => post_safe('alamat'),
             'tgl_masuk' => date2mysql(post_safe('tanggal'))
         );
         if ($data_anggota['id'] === '') {
+            $data_anggota['no_rekening'] = $this->create_nomor_rek_tabungan();
             $this->db->insert('tb_anggota', $data_anggota);
             $id_anggota = $this->db->insert_id();
             if ($this->db->trans_status() === FALSE) {
@@ -416,7 +484,7 @@ class M_transaksi extends CI_Model {
             //$q.=" and dp.tgl_bayar between '".$search['awal']."' and '".$search['akhir']."'";
         }
         
-        $select = "select a.*, t.id as id_tabungan, dt.id as id_dt, dt.tanggal, dt.masuk, dt.keluar, dt.saldo ";
+        $select = "select a.*, t.id as id_tabungan, dt.id as id_dt, dt.tanggal, dt.masuk, dt.keluar ";
         $count  = "select count(*) as count ";
         $sql = " 
             from tb_detail_tabungan dt
@@ -436,6 +504,11 @@ class M_transaksi extends CI_Model {
                 where id < '".$value->id_dt ."'
                 and id_tabungan = '".$value->id_tabungan."'";
             $result[$key]->awal = $this->db->query($sql_child)->row()->awal;
+            
+            $sql_child2 = "select IFNULL(sum(masuk)-sum(keluar),0) as saldo 
+                from tb_detail_tabungan 
+                where id_tabungan = '".$value->id_tabungan."'";
+            $result[$key]->saldo = $this->db->query($sql_child2)->row()->saldo;
         }
         $data['data'] = $result;
         $data['jumlah'] = $this->db->query($count.$sql.$q)->row()->count;
@@ -451,7 +524,7 @@ class M_transaksi extends CI_Model {
             //$q.=" and dp.tgl_bayar between '".$search['awal']."' and '".$search['akhir']."'";
         }
         
-        $select = "select a.*, t.id as id_tabungan, dt.id as id_dt, dt.tanggal, dt.masuk, dt.keluar, dt.saldo ";
+        $select = "select a.*, t.id as id_tabungan, dt.id as id_dt, dt.tanggal, dt.masuk, dt.keluar ";
         $count  = "select count(*) as count ";
         $sql = " 
             from tb_detail_tabungan dt
@@ -471,10 +544,55 @@ class M_transaksi extends CI_Model {
                 where id < '".$value->id_dt ."'
                 and id_tabungan = '".$value->id_tabungan."'";
             $result[$key]->awal = $this->db->query($sql_child)->row()->awal;
+            
+            $sql_child2 = "select IFNULL(sum(masuk)-sum(keluar),0) as saldo 
+                from tb_detail_tabungan 
+                where id_tabungan = '".$value->id_tabungan."'";
+            $result[$key]->saldo = $this->db->query($sql_child2)->row()->saldo;
         }
         $data['data'] = $result;
         $data['jumlah'] = $this->db->query($count.$sql.$q)->row()->count;
         return $data;
+    }
+    
+    function save_penarikan_tabungan() {
+        $this->db->trans_begin();
+        $param = array(
+            'id_tabungan' => post_safe('norek'),
+            'tanggal' => date("Y-m-d"),
+            'keluar' => currencyToNumber(post_safe('nominal_tabungan')),
+            'sandi' => '1'
+        );
+        $this->db->insert('tb_detail_tabungan', $param);
+        $id_detail_tabungan = $this->db->insert_id();
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            $result['status'] = FALSE;
+        }
+        
+        $sql = "select a.nama, a.no_rekening 
+            from tb_anggota a
+            join tb_tabungan t on (t.id_anggota = a.id)
+            where t.id = '".  post_safe('norek')."'
+            ";
+        $data_anggota = $this->db->query($sql)->row();
+        $arus_kas = array(
+            'transaksi' => 'Tabungan',
+            'id_transaksi' => $id_detail_tabungan,
+            'keluar' => currencyToNumber(post_safe('nominal_tabungan')),
+            'keterangan' => 'Tabungan '.$data_anggota->no_rekening.' '.$data_anggota->nama,
+            'id_user' => $this->session->userdata('id_user')
+        );
+        $this->save_arus_kas($arus_kas);
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            $result['status'] = FALSE;
+        } else {
+            $this->db->trans_commit();
+            $result['status'] = TRUE;
+            $result['id'] = $id_detail_tabungan;
+        }
+        return $result;
     }
     
     function get_list_koreksi_saldos($limit = null, $start = null, $search = null) {
@@ -486,7 +604,7 @@ class M_transaksi extends CI_Model {
             $q.=" and date(waktu) between '".$search['awal']."' and '".$search['akhir']."'";
         }
         
-        $select = "select *";
+        $select = "select * ";
         $count  = "select count(*) as count ";
         $sql = " 
             from tb_arus_kas
@@ -501,6 +619,28 @@ class M_transaksi extends CI_Model {
         $data['data'] = $result;
         $data['jumlah'] = $this->db->query($count.$sql.$q)->row()->count;
         return $data;
+    }
+    
+    function save_koreksi_saldo() {
+        if (post_safe('penyesuaian') < 0) {
+            $arus_kas = array(
+                'transaksi' => 'Koreksi',
+                'id_transaksi' => NULL,
+                'keluar' => currencyToNumber(abs(post_safe('penyesuaian'))),
+                'keterangan' => post_safe('keterangan'),
+                'id_user' => $this->session->userdata('id_user')
+            );
+        } else {
+            $arus_kas = array(
+                'transaksi' => 'Koreksi',
+                'id_transaksi' => NULL,
+                'masuk' => currencyToNumber(abs(post_safe('penyesuaian'))),
+                'keterangan' => post_safe('keterangan'),
+                'id_user' => $this->session->userdata('id_user')
+            );
+        }
+        $this->save_arus_kas($arus_kas);
+        return TRUE;
     }
     
     

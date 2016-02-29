@@ -15,6 +15,10 @@ class Transaksi extends REST_Controller {
         }
     }
     
+    function sisa_saldo_get() {
+        $data = $this->m_transaksi->get_sisa_saldo_koperasi();
+        $this->response($data, 200);
+    }
     /*Pembiayaan*/
     
     function pembiayaans_get() {
@@ -260,6 +264,11 @@ class Transaksi extends REST_Controller {
     
     /*Setoran Tabungan*/
     
+    function setoran_tabungan_post() {
+        $data = $this->m_transaksi->save_setoran_tabungan();
+        $this->response($data, 200);
+    }
+    
     function setoran_tabungans_get() {
         if (!$this->get('page')) {
             $this->response(NULL, 400);
@@ -310,6 +319,11 @@ class Transaksi extends REST_Controller {
         }
     }
     
+    function penarikan_tabungan_post() {
+        $data = $this->m_transaksi->save_penarikan_tabungan();
+        $this->response($data, 200);
+    }
+    
     /*Koreksi saldo*/
     
     function koreksi_saldos_get() {
@@ -334,6 +348,15 @@ class Transaksi extends REST_Controller {
         }else{
             $this->response(array('error' => 'Data tidak ditemukan'), 404);
         }
+    }
+    
+    function koreksi_saldo_post() {
+        $data = $this->m_transaksi->save_koreksi_saldo();
+        $this->response($data, 200);
+    }
+    
+    function koreksi_saldo_delete() {
+        $this->db->delete('tb_arus_kas', array('id' => $this->get('id')));
     }
     
 }
