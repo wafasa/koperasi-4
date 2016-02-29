@@ -16,4 +16,15 @@ class Printing extends CI_Controller {
         $data['inst'] = $this->m_config->get_institusi_name();
         $this->load->view('transaksi/print-kwitansi-angsuran', $data);
     }
+    
+    function print_terlambat_angsuran() {
+        
+        $search= array(
+            'id' => '',
+            'awal' => ''
+        );
+        $data = $this->m_laporan->get_list_terlambat_angsuran(NULL, NULL, $search);
+        $data['inst'] = $this->m_config->get_institusi_name();
+        $this->load->view('transaksi/print-terlambat', $data);
+    }
 }

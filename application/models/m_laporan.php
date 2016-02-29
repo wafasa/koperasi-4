@@ -47,4 +47,29 @@ class M_laporan extends CI_Model {
         $data['today'] = date("d/m/Y");
         return $data;
     }
+    
+    function get_list_terlambat_angsuran($limit = null, $start = null, $search = null) {
+        $q = null;
+        if ($search['id'] !== '') {
+            $q.=" and id = '".$search['id']."'";
+        }
+        
+        $select = "select dp.*, db.nama, db.alamat, db.nomor_rekening ";
+        $count  = "select count(*) as count ";
+        $sql = " 
+            from tb_detail_pinjaman dp
+            join tb_pinjaman pj on (dp.id_pinjaman = pj.id)
+            join tb_debitur db on (pj.id_debitur = db.id)
+            where dp.tgl_bayar is NULL and status_bayar = 'Belum' and dp.jatuh_tempo <= NOW()";
+        $limitation = null;
+        if ($limit !== NULL) {
+            $limitation.=" limit $start , $limit";
+        }
+        $order=" order by id asc";
+        //echo $count.$sql.$q;
+        $result = $this->db->query($select.$sql.$q.$order.$limitation)->result();
+        $data['data'] = $result;
+        $data['jumlah'] = $this->db->query($count.$sql.$q)->row()->count;
+        return $data;
+    }
 }

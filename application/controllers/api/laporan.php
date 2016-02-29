@@ -29,7 +29,30 @@ class Laporan extends REST_Controller {
         
         $data = $this->m_laporan->get_list_kas_harian($this->limit, $start, $search);
         $data['page'] = (int)$this->get('page');
-        $data['limit'] = $data['jumlah'];
+        $data['limit'] = $this->limit;
+        
+        if($data){
+            $this->response($data, 200); // 200 being the HTTP response code
+        }else{
+            $this->response(array('error' => 'Data tidak ditemukan'), 404);
+        }
+    }
+    
+    function terlambat_angsurans_get() {
+        if (!$this->get('page')) {
+            $this->response(NULL, 400);
+        }
+        
+        $start = ($this->get('page') - 1) * $this->limit;
+        
+        $search= array(
+            'id' => $this->get('id'),
+            'awal' => date2mysql(get_safe('awal'))
+        );
+        
+        $data = $this->m_laporan->get_list_terlambat_angsuran($this->limit, $start, $search);
+        $data['page'] = (int)$this->get('page');
+        $data['limit'] = $this->limit;
         
         if($data){
             $this->response($data, 200); // 200 being the HTTP response code
