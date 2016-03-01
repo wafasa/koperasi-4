@@ -24,4 +24,24 @@ class Laporan extends CI_Controller {
         $data['lama_pembiayaan'] = $this->m_masterdata->get_lama_pembiayaan();
         $this->load->view('laporan/rekap-pembiayaan', $data);
     }
+    
+    function tabungan() {
+        $data['title'] = 'Data Tabungan';
+        $this->load->view('laporan/rekap-tabungan', $data);
+    }
+    
+    function angsuran() {
+        $data['title'] = 'Data Tabungan';
+        $this->load->view('laporan/rekap-tabungan', $data);
+    }
+    
+    function administrasi() {
+        $data['title'] = 'Data Tabungan';
+        $this->load->view('laporan/rekap-tabungan', $data);
+    }
+    
+    function arus_kas() {
+        $data['title'] = 'Data Tabungan';
+        $this->load->view('laporan/rekap-tabungan', $data);
+    }
 }

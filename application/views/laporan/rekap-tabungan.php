@@ -1,33 +1,31 @@
 <title><?= $title ?></title>
+<script src="<?= base_url('assets/js/wizard/bwizard.js') ?>"></script>
 <script type="text/javascript">
     $(function() {
-        
-        get_list_pembiayaan(1);
-        $('#bt-search').click(function() {
+        get_list_tabungan(1);
+        $('#add_tabungan').click(function() {
+            reset_form();
             $('#datamodal').modal('show');
-            $('#datamodal h4.modal-title').html('Pencarian');
-            $('#tanggal_disetujui, #jumlah, #lama').removeAttr('disabled');
+            $('#datamodal h4.modal-title').html('Tambah <?= $title ?>');
+            $('#jumlah').removeAttr('disabled');
+            $("#wizard").bwizard('show', 0);
         });
         
-        $('#awal, #akhir').datepicker({
+        $('#tanggal').datepicker({
                 format: 'dd/mm/yyyy'
         }).on('changeDate', function(){
             $(this).datepicker('hide');
         });
 
-        $('#reload_pembiayaan').click(function() {
+        $('#reload_tabungan').click(function() {
             reset_form();
-            get_list_pembiayaan(1);
-        });
-        
-        $('#export-excel').click(function() {
-            location.href='<?= base_url('printing/excel_rekap_pembiayaan') ?>/?'+$('#form_search').serialize();
+            get_list_tabungan(1);
         });
         
         $('#parent_code').select2({
             width: '100%',
             ajax: {
-                url: "<?= base_url('api/masterdata_auto/pembiayaan_auto') ?>",
+                url: "<?= base_url('api/masterdata_auto/tabungan_auto') ?>",
                 dataType: 'json',
                 quietMillis: 100,
                 data: function (term, page) { // page is the one-based page number tracked by Select2
@@ -54,13 +52,13 @@
         });
     });
     
-    function get_list_pembiayaan(p, id) {
-        $('#datamodal').modal('hide');
+    function get_list_tabungan(p, id) {
+        $('#form-pencarian').modal('hide');
         var id = '';
         $.ajax({
             type : 'GET',
-            url: '<?= base_url("api/transaksi/pembiayaans") ?>/page/'+p+'/id/'+id,
-            data: $('#form_search').serialize(),
+            url: '<?= base_url("api/transaksi/tabungans") ?>/page/'+p+'/id/'+id,
+            data: '',
             cache: false,
             dataType: 'json',
             beforeSend: function() {
@@ -69,7 +67,7 @@
             },
             success: function(data) {
                 if ((p > 1) & (data.data.length === 0)) {
-                    get_list_pembiayaan(p-1);
+                    get_list_tabungan(p-1);
                     return false;
                 };
 
@@ -87,15 +85,15 @@
                     };
                     str+= '<tr data-tt-id='+i+' class="'+highlight+'">'+
                             '<td align="center">'+((i+1) + ((data.page - 1) * data.limit))+'</td>'+
-                            '<td align="center">'+datefmysql(v.tgl_pinjam)+'</td>'+
-                            '<td align="center">'+v.nomor_rekening+'</td>'+
+                            '<td align="center">'+datefmysql(v.tgl_masuk)+'</td>'+
+                            '<td>'+v.no_rekening+'</td>'+
+                            '<td>'+v.no_ktp+'</td>'+
                             '<td>'+v.nama+'</td>'+
-                            '<td align="right">'+money_format(v.jml_pinjaman)+'</td>'+
-                            '<td align="right">'+money_format(v.bsr_angsuran)+'</td>'+
-                            //'<td align="right">'+money_format(v.angsuran_pokok)+'</td>'+
-                            //'<td align="right">'+money_format(v.jasa_angsuran)+'</td>'+
-                            '<td align="right">'+money_format(v.sisa_angsuran)+'</td>'+
-                            
+                            '<td>'+v.alamat+'</td>'+
+                            '<td align="right">'+money_format(v.saldo)+'</td>'+
+                            '<td align="center" class=aksi>'+
+                                '<button type="button" class="btn btn-default btn-mini" onclick="detail_tabungan(\''+v.id+'\')"><i class="fa fa-eye"></i></button> '+
+                            '</td>'+
                         '</tr>';
                     $('#example-advanced tbody').append(str);
                 });
@@ -123,55 +121,36 @@
     function reset_form() {
         $('input, select, textarea').val('');
         $('input[type=checkbox], input[type=radio]').removeAttr('checked');
-        $('#awal, #akhir').val('<?= date("d/m/Y") ?>');
+        $('#tanggal').val('<?= date("d/m/Y") ?>');
     }
 
-    function detail_pembiayaan(id) {
+    function edit_tabungan(id) {
         $('#oldpict').html('');
         $('#datamodal').modal('show');
-        $('#wizard').bwizard('show','0');
         $('#datamodal h4.modal-title').html('Edit <?= $title ?>');
         $.ajax({
             type: 'GET',
-            url: '<?= base_url('api/transaksi/pembiayaans') ?>/page/1/id/'+id,
+            url: '<?= base_url('api/transaksi/tabungans') ?>/page/1/id/'+id,
             dataType: 'json',
             success: function(data) {
-                //$('#tanggal_disetujui, #jumlah, #lama').removeAttr('disabled');
                 var data = data.data[0];
                 $('#id').val(data.id);
+                $('#tanggal').val(datefmysql(data.tgl_masuk));
                 $('#nama').val(data.nama);
+                $('#norek').val(data.no_rekening);
                 $('#noktp').val(data.no_ktp);
                 $('#alamat').val(data.alamat);
-                $('#telp').val(data.no_telp);
-                $('#pekerjaan').val(data.pekerjaan);
-                
-                $('#agama').val(data.agama);
-                $('#nama_psg').val(data.nama_psg);
-                $('#pekerjaan_psg').val(data.pekerjaan_psg);
-                $('#status_rumah').val(data.status_rumah);
-                $('#penghasilan').val(numberToCurrency(data.penghasilan_bln));
-                $('#pengeluaran').val(numberToCurrency(data.pengeluaran_bln));
-                $('#jaminan').val(data.jaminan);
-                $('#rencana_pembiayaan').val(data.rencana_pembiayaan);
-                $('#infodari').val(data.info_dari);
-                
-                $('#tanggal_disetujui').val(datefmysql(data.tgl_pinjam));
-                $('#jumlah').val(money_format(data.jml_pinjaman));
-                $('#lama').val(data.lama_pinjaman);
-                
-                //if (parseFloat(data.sisa_angsuran) !== parseFloat(data.ttl_pengembalian)) {
-                    $('#tanggal_disetujui, #jumlah, #lama').attr('disabled','disabled');
-                //}
+                $('#jumlah').val(money_format(data.saldo)).attr('disabled','disabled');
             }
         });
     }
         
     function paging(p) {
-        get_list_pembiayaan(p);
+        get_list_tabungan(p);
     }
 
     function konfirmasi_save() {
-        //$('#isi_pembiayaan').val(tinyMCE.get('isi').getContent());
+        //$('#isi_tabungan').val(tinyMCE.get('isi').getContent());
         bootbox.dialog({
             message: "Anda yakin akan menyimpan data ini?",
             title: "Konfirmasi Simpan",
@@ -187,17 +166,17 @@
                 label: '<i class="fa fa-save"></i>  Ya',
                 className: "btn-primary",
                 callback: function() {
-                    save_pembiayaan();
+                    save_tabungan();
                 }
               }
             }
           });
       }
 
-    function save_pembiayaan() {
+    function save_tabungan() {
         $.ajax({
             type: 'POST',
-            url: '<?= base_url('api/transaksi/pembiayaan') ?>',
+            url: '<?= base_url('api/transaksi/tabungan') ?>',
             dataType: 'json',
             data: $('#formadd').serialize(),
             beforeSend: function() {
@@ -208,22 +187,26 @@
                 hide_ajax_indicator();
                 $('#judul, #isi, #nominal').val('');
                 //reset_form();
-                if (msg.status === true) {
+                if (msg.act === 'add') {
                     $('#datamodal').modal('hide');
                     message_add_success();
-                    get_list_pembiayaan(1);
+                    get_list_tabungan(1);
+                } else {
+                    $('#datamodal').modal('hide');
+                    message_edit_success();
+                    get_list_tabungan(page);
                 }
             },
             error: function() {
                 $('#datamodal').modal('hide');
                 var page = $('.pagination .active a').html();
-                get_list_pembiayaan(page);
+                get_list_tabungan(page);
                 hide_ajax_indicator();
             }
         });
     }
 
-    function delete_pembiayaan(id, page) {
+    function delete_tabungan(id, page) {
         bootbox.dialog({
             message: "Anda yakin akan menghapus data ini?",
             title: "Konfirmasi Hapus",
@@ -241,11 +224,11 @@
                 callback: function() {
                     $.ajax({
                         type: 'DELETE',
-                        url: '<?= base_url('api/transaksi/pembiayaan') ?>/id/'+id,
+                        url: '<?= base_url('api/transaksi/tabungan') ?>/id/'+id,
                         dataType: 'json',
                         success: function(data) {
                             message_delete_success();
-                            get_list_pembiayaan(page);
+                            get_list_tabungan(page);
                         }
                     });
                 }
@@ -268,9 +251,9 @@
             <div class="grid-title">
               <h4>Daftar List <?= $title ?></h4>
                 <div class="tools"> 
-                    <button id="bt-search" class="btn btn-info btn-mini"><i class="fa fa-search"></i> Cari</button>
+                    <button id="cari_button" class="btn btn-info btn-mini"><i class="fa fa-search"></i> Cari</button>
                     <button id="export-excel" class="btn btn-mini"><i class="fa fa-file-excel-o"></i> Export Excel</button>
-                    <button id="reload_pembiayaan" class="btn btn-mini"><i class="fa fa-refresh"></i> Reload</button>
+                    <button id="reload_tabungan" class="btn btn-mini"><i class="fa fa-refresh"></i> Reload</button>
                 </div>
             </div>
             <div class="grid-body">
@@ -279,16 +262,14 @@
                     <table class="table table-bordered table-stripped table-hover tabel-advance" id="example-advanced">
                         <thead>
                         <tr>
-                          <th width="3%">No</th>
-                          <th width="7%">Tanggal</th>
-                          <th width="7%">No. Rek.</th>
-                          <th width="25%" class="left">Nama</th>
-                          <th width="10%" class="left">Jumlah</th>
-                          <th width="10%" class="right">Angsuran</th>
-                          <!--<<th width="10%" class="left">Angs.&nbsp;Pokok</th>
-                          <th width="8%" class="left">Bunga</th>
-                          th width="10%" class="left">Jenis</th>-->
-                          <th width="10%" class="left">Sisa&nbsp;Pinj.</th>
+                            <th width="3%">No</th>
+                            <th width="7%">Tgl Masuk</th>
+                            <th width="10%" class="left">No. Rek</th>
+                            <th width="10%" class="left">No. KTP</th>
+                            <th width="15%" class="left">Nama</th>
+                            <th width="35%" class="left">Alamat</th>
+                            <th width="10%" class="right">Saldo</th>
+                            <th width="5%"></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -302,14 +283,14 @@
           </div>
         </div>
         <div id="datamodal" class="modal fade" style="overflow-y: auto">
-            <div class="modal-dialog" style="width: 500px">
+            <div class="modal-dialog" style="width: 800px">
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
               <h4 class="modal-title"></h4>
             </div>
             <div class="modal-body">
-                <form id="form_search" method="post" role="form">
+                <form id="formadd" method="post" role="form">
                     
                     <input type="hidden" name="id" id="id" />
                     <div class="form-group tight">
@@ -318,26 +299,22 @@
                         <span><input type="text" name="akhir" class="form-control" style="width: 145px;" id="akhir" value="<?= date("d/m/Y") ?>" /></span>
                     </div>
                     <div class="form-group tight">
-                        <label class="control-label">Nama Debitur:</label>
-                        <input type="text" name="nama"  class="form-control">
+                        <label class="control-label">Nomor Rekening:</label>
+                        <input type="text" name="norek"  class="form-control" id="norek" placeholder="Otomatis" readonly="">
                     </div>
                     <div class="form-group tight">
-                        <label class="control-label">No. Rekening:</label>
-                        <input type="text" name="norek"  class="form-control">
+                        <label class="control-label">Nama Anggota:</label>
+                        <input type="text" name="nama"  class="form-control" id="nama">
                     </div>
                     <div class="form-group">
                         <label class="control-label">Alamat:</label>
-                        <textarea name="alamat" class="form-control"></textarea>
-                    </div>
-                    <div class="form-group tight">
-                        <label class="control-label">Pekerjaan:</label>
-                        <input type="text" name="pekerjaan"  class="form-control" />
+                        <textarea name="alamat" id="alamat" class="form-control"></textarea>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-refresh"></i> Batal</button>
-              <button type="button" class="btn btn-primary" onclick="get_list_pembiayaan(1);"><i class="fa fa-search"></i> Tampilkan</button>
+              <button type="button" class="btn btn-primary" onclick="konfirmasi_save();"><i class="fa fa-save"></i> Simpan</button>
             </div>
           </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
