@@ -62,7 +62,7 @@ class Config extends REST_Controller {
     }
     
     function institusi_get() {
-        $data = $this->db->get('tb_sekolah')->row();
+        $data = $this->db->get('tb_institusi')->row();
         $this->response($data, 200);
     }
     
@@ -74,15 +74,25 @@ class Config extends REST_Controller {
             'provinsi' => post_safe('provinsi'),
             'kabupaten' => post_safe('kabupaten'),
             'kecamatan' => post_safe('kecamatan'),
-            'kelurahan' => post_safe('kelurahan'),
-            'kepala' => post_safe('kepsek'),
-            'nip_kepala' => post_safe('nipkepsek'),
-            'ketua_komite' => post_safe('ketua_komite'),
-            'bendahara' => post_safe('bendahara'),
-            'nip_bendahara' => post_safe('nip_bendahara'),
-            'nsm' => post_safe('nsm')
+            'kelurahan' => post_safe('kelurahan')
         );
         $data = $this->m_config->save_config_institusi($array);
+        $this->response($data, 200);
+    }
+    
+    function administrasi_get() {
+        $data = $this->db->get('tb_setting_administrasi')->row();
+        $this->response($data, 200);
+    }
+    
+    function save_administrasi_post() {
+        $array = array(
+            'administrasi' => post_safe('administrasi'),
+            'calon_agt' => currencyToNumber(post_safe('calon_anggota')),
+            'survey' => currencyToNumber(post_safe('survey')),
+            'stofmap' => currencyToNumber(post_safe('stofmap'))
+        );
+        $data = $this->m_config->save_config_administrasi($array);
         $this->response($data, 200);
     }
 }

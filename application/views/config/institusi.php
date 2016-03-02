@@ -67,6 +67,9 @@
             </div>
             <div class="grid-body">
                 <div class="row">
+                    <div class="col-md-1 col-sm-1 col-xs-1">
+                        
+                    </div>
                     <div class="col-md-8 col-sm-8 col-xs-8">
                         <form id="chpass">
                         <div class="form-group">
@@ -103,42 +106,6 @@
                         <label class="form-label">Kelurahan / Desa:</label>
                             <div class="controls">
                                 <input type="text" name="kelurahan" id="kelurahan" class="form-control" />
-                            </div>
-                        </div>
-                        <div class="form-group">
-                        <label class="form-label">Kepala Sekolah:</label>
-                            <div class="controls">
-                                <input type="text" name="kepsek" id="kepsek" class="form-control" />
-                            </div>
-                        </div>
-                        <div class="form-group">
-                        <label class="form-label">NIP Kepala Sekolah:</label>
-                            <div class="controls">
-                                <input type="text" name="nipkepsek" id="nipkepsek" class="form-control" />
-                            </div>
-                        </div>
-                        <div class="form-group">
-                        <label class="form-label">Ketua Komite:</label>
-                            <div class="controls">
-                                <input type="text" name="ketua_komite" id="ketua_komite" class="form-control" />
-                            </div>
-                        </div>
-                        <div class="form-group">
-                        <label class="form-label">Bendahara:</label>
-                            <div class="controls">
-                                <input type="text" name="bendahara" id="bendahara" class="form-control" />
-                            </div>
-                        </div>
-                        <div class="form-group">
-                        <label class="form-label">NIP Bendahara:</label>
-                            <div class="controls">
-                                <input type="text" name="nip_bendahara" id="nip_bendahara" class="form-control" />
-                            </div>
-                        </div>
-                        <div class="form-group">
-                        <label class="form-label">NSM:</label>
-                            <div class="controls">
-                                <input type="text" name="nsm" id="nsm" class="form-control" />
                             </div>
                         </div>
                         <div class="form-group">

@@ -126,7 +126,13 @@ class M_transaksi extends CI_Model {
             $q.=" and dp.id = '".$search['id']."'";
         }
         if ($search['awal'] !== '' and $search['akhir'] !== '') {
-            //$q.=" and dp.tgl_bayar between '".$search['awal']."' and '".$search['akhir']."'";
+            $q.=" and dp.tgl_bayar between '".date2mysql($search['awal'])."' and '".date2mysql($search['akhir'])."'";
+        }
+        if ($search['norek'] !== '') {
+            $q.=" and d.nomor_rekening = '".$search['norek']."'";
+        }
+        if ($search['nama'] !== '') {
+            $q.=" and d.nama like ('%".$search['nama']."%')";
         }
         
         $select = "select p.*, d.nama, d.nomor_rekening, dp.tgl_bayar, dp.angsuran_ke ";

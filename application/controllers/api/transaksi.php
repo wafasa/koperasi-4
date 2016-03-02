@@ -173,8 +173,10 @@ class Transaksi extends REST_Controller {
         
         $search= array(
             'id' => $this->get('id'),
-            'awal' => date("Y-m-01"),
-            'akhir' => date("Y-m-d")
+            'awal' => get_safe('awal'),
+            'akhir' => get_safe('akhir'),
+            'nama' => get_safe('nama'),
+            'norek' => get_safe('norek')
         );
         
         $data = $this->m_transaksi->get_list_angsurans($this->limit, $start, $search);

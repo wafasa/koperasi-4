@@ -91,11 +91,22 @@ class M_config extends CI_Model {
     }
     
     function save_config_institusi($data) {
-        $check= $this->db->get('tb_sekolah')->num_rows();
+        $check= $this->db->get('tb_institusi')->num_rows();
         if ($check === 0) {
-            $this->db->insert('tb_sekolah', $data);
+            $this->db->insert('tb_institusi', $data);
         } else {
-            $this->db->update('tb_sekolah', $data);
+            $this->db->update('tb_institusi', $data);
+        }
+        $result['status'] = true;
+        return $result;
+    }
+    
+    function save_config_administrasi($data) {
+        $check= $this->db->get('tb_setting_administrasi')->num_rows();
+        if ($check === 0) {
+            $this->db->insert('tb_setting_administrasi', $data);
+        } else {
+            $this->db->update('tb_setting_administrasi', $data);
         }
         $result['status'] = true;
         return $result;

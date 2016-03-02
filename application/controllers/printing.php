@@ -42,4 +42,30 @@ class Printing extends CI_Controller {
         $data = $this->m_transaksi->get_list_pembiayaans(NULL, NULL, $search);
         $this->load->view('laporan/excel/excel-pembiayaan', $data);
     }
+    
+    function excel_rekap_angsuran() {
+        $search= array(
+            'id' => '',
+            'awal' => get_safe('awal'),
+            'akhir' => get_safe('akhir'),
+            'nama' => get_safe('nama'),
+            'norek' => get_safe('norek')
+        );
+        
+        $data = $this->m_transaksi->get_list_angsurans(NULL, NULL, $search);
+        $this->load->view('laporan/excel/excel-angsuran', $data);
+    }
+    
+    function excel_rekap_pendapatan_administrasi() {
+        $search= array(
+            'id' => '',
+            'awal' => get_safe('awal'),
+            'akhir' => get_safe('akhir'),
+            'nama' => get_safe('nama'),
+            'norek' => get_safe('norek')
+        );
+        
+        $data = $this->m_laporan->get_list_pendapatan_administrasi(NULL, NULL, $search);
+        $this->load->view('laporan/excel/excel-pendapatan-admin', $data);
+    }
 }

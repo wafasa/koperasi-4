@@ -72,4 +72,39 @@ class M_laporan extends CI_Model {
         $data['jumlah'] = $this->db->query($count.$sql.$q)->row()->count;
         return $data;
     }
+    
+    function get_list_pendapatan_administrasi($limit, $start, $search) {
+        $q = null;
+        if ($search['id'] !== '') {
+            $q.=" and d.id = '".$search['id']."'";
+        }
+        if ($search['awal'] !== '' and $search['akhir'] !== '') {
+            $q.=" and ap.tgl_input between '".date2mysql($search['awal'])."' and '".  date2mysql($search['akhir'])."'";
+        }
+        if ($search['nama'] !== '') {
+            $q.=" and d.nama like ('%".$search['nama']."%')";
+        }
+        if ($search['norek'] !== '') {
+            $q.=" and d.nomor_rekening = '".$search['norek']."'";
+        }
+        
+        $select = "select ap.*, d.nama, d.nomor_rekening";
+        $count  = "select count(p.id) as count ";
+        $sql = "
+            from tb_adpro ap 
+            join tb_pinjaman p on (ap.id_pinjaman = p.id)
+            join tb_debitur d on (p.id_debitur = d.id)
+            join tb_detail_debitur dd on (dd.id_debitur = d.id)
+            where p.id is not NULL ";
+        $limitation = null;
+        if ($limit !== NULL) {
+            $limitation.=" limit $start , $limit";
+        }
+        $order=" order by p.id desc";
+        //echo $sql . $q . $order. $limitation;
+        
+        $data['data'] = $this->db->query($select . $sql . $q . $order. $limitation)->result();
+        $data['jumlah'] = $this->db->query($count . $sql . $q)->row()->count;
+        return $data;
+    }
 }

@@ -21,4 +21,14 @@ class Config extends CI_Controller {
         $data['title'] = 'Institusi';
         $this->load->view('config/institusi', $data);
     }
+    
+    function administrasi() {
+        $data['title'] = 'Setting Administrasi';
+        $this->load->view('config/setting-administrasi', $data);
+    }
+    
+    function generate_bunga() {
+        $data['title'] = 'Generate Bunga Tabungan';
+        $this->load->view('config/bunga-tabungan', $data);
+    }
 }

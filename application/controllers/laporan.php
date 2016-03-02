@@ -26,22 +26,22 @@ class Laporan extends CI_Controller {
     }
     
     function tabungan() {
-        $data['title'] = 'Data Tabungan';
+        $data['title'] = 'Rekap Tabungan';
         $this->load->view('laporan/rekap-tabungan', $data);
     }
     
     function angsuran() {
-        $data['title'] = 'Data Tabungan';
-        $this->load->view('laporan/rekap-tabungan', $data);
+        $data['title'] = 'Rekap Angsuran';
+        $this->load->view('laporan/rekap-angsuran', $data);
     }
     
     function administrasi() {
-        $data['title'] = 'Data Tabungan';
-        $this->load->view('laporan/rekap-tabungan', $data);
+        $data['title'] = 'Rekap Pendapatan Administrasi & Profisi';
+        $this->load->view('laporan/rekap-administrasi', $data);
     }
     
     function arus_kas() {
-        $data['title'] = 'Data Tabungan';
-        $this->load->view('laporan/rekap-tabungan', $data);
+        $data['title'] = 'Rekap Arus Kas';
+        $this->load->view('laporan/rekap-arus-kas', $data);
     }
 }

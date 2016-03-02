@@ -61,4 +61,30 @@ class Laporan extends REST_Controller {
         }
     }
     
+    function pendapatan_administrasis_get() {
+        if (!$this->get('page')) {
+            $this->response(NULL, 400);
+        }
+        
+        $start = ($this->get('page') - 1) * $this->limit;
+        
+        $search= array(
+            'id' => $this->get('id'),
+            'awal' => get_safe('awal'),
+            'akhir' => get_safe('akhir'),
+            'nama' => get_safe('nama'),
+            'norek' => get_safe('norek')
+        );
+        
+        $data = $this->m_laporan->get_list_pendapatan_administrasi($this->limit, $start, $search);
+        $data['page'] = (int)$this->get('page');
+        $data['limit'] = $this->limit;
+        
+        if($data){
+            $this->response($data, 200); // 200 being the HTTP response code
+        }else{
+            $this->response(array('error' => 'Data tidak ditemukan'), 404);
+        }
+    }
+    
 }
