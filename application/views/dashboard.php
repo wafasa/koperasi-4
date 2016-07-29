@@ -164,7 +164,7 @@
 		 <li class="dropdown"> <a id="main-menu-toggle" href="#main-menu"  class="" > <div class="iconset top-menu-toggle-white"></div> </a> </li>		 
 		</ul>
       <!-- BEGIN LOGO -->	
-      <div class="logo">KOPERASI <span>MICRO FINANCE</span></div>
+      <div class="logo">KOPERASI <span>BAITUL MAKMUR</span></div>
       <!-- END LOGO --> 
       <ul class="nav pull-right notifcation-center">	
           <li class="dropdown" id="header_task_bar"> <a href="<?= base_url('user') ?>" class="dropdown-toggle active" data-toggle=""> <div class="iconset top-home"></div> </a> </li>
