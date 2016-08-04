@@ -14,7 +14,7 @@
 <link href="<?= base_url('assets/plugins/jquery-slider/css/jquery.sidr.light.css') ?>" rel="stylesheet" type="text/css" media="screen"/>
 <!-- END PLUGIN CSS -->
 <!-- BEGIN CORE CSS FRAMEWORK -->
-<link href="<?= base_url('assets/plugins/bootstrap-3.3.5-dist/css/bootstrap.min.css') ?>" rel="stylesheet" type="text/css"/>
+<link href="<?= base_url('assets/plugins/bootstrap-3.3.5-dist/css/bootstrap.css') ?>" rel="stylesheet" type="text/css"/>
 <link href="<?= base_url('assets/plugins/bootstrap-3.3.5-dist/css/bootstrap-theme.min.css') ?>" rel="stylesheet" type="text/css"/>
 <link href="<?= base_url('assets/plugins/font-awesome-4.3.0/css/font-awesome.css') ?>" rel="stylesheet" type="text/css"/>
 <link href="<?= base_url('assets/css/select2.css') ?>" rel="stylesheet" type="text/css"/>
@@ -164,7 +164,11 @@
 		 <li class="dropdown"> <a id="main-menu-toggle" href="#main-menu"  class="" > <div class="iconset top-menu-toggle-white"></div> </a> </li>		 
 		</ul>
       <!-- BEGIN LOGO -->	
+<<<<<<< HEAD
       <div class="logo">KOPERASI <span>MICRO FINANCE</span></div>
+=======
+      <div class="logo">KOPERASI <span><?= strtoupper($title) ?></span></div>
+>>>>>>> 86ebbc6... update koperasi sempurnakan
       <!-- END LOGO --> 
       <ul class="nav pull-right notifcation-center">	
           <li class="dropdown" id="header_task_bar"> <a href="<?= base_url('user') ?>" class="dropdown-toggle active" data-toggle=""> <div class="iconset top-home"></div> </a> </li>
@@ -333,7 +337,7 @@
         <li class=" "> <a href="javascript:;;"> <i class="<?= $data->icon ?>"></i> <span class="title"><b><?= $data->nama ?></b> <span class="arrow "></span><div><?= $data->keterangan ?></div></span> <span class="selected"></span> </a> 
             <ul class="sub-menu">
                 <?php foreach ($data->detail_menu as $data2) { ?>
-                <li><a onclick="load_menu('<?= base_url($data2->url) ?>'); return false;" href="<?= base_url('') ?>"> <?= $data2->form_nama ?> </a> </li>
+                <li><a onclick="load_menu('<?= base_url($data2->url) ?>'); return false;" href="<?= base_url($data2->url) ?>"> <?= $data2->form_nama ?> </a> </li>
                 <?php } ?>
             </ul>
         </li>

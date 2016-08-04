@@ -87,4 +87,9 @@ class Laporan extends REST_Controller {
         }
     }
     
+    function detail_tabungan_get() {
+        $data = $this->m_laporan->get_detail_tabungan($this->get('id'));
+        $this->response($data, 200);
+    }
+    
 }

@@ -10,7 +10,7 @@ www.amitjakhu.com
 
 <!--META-->
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Login Form | Anggaran</title>
+<title>Login Form | <?= $title ?></title>
 
 <!--STYLESHEETS-->
 <link href="<?= base_url('assets/css/login.css') ?>" rel="stylesheet" type="text/css" />
@@ -96,7 +96,11 @@ www.amitjakhu.com
 
 	<!--HEADER-->
     <div class="header">
+<<<<<<< HEAD
     <!--TITLE--><h1>Login Koperasi</h1><!--END TITLE-->
+=======
+        <!--TITLE--><h3>Koperasi </h3><h1><?= $title ?></h1><!--END TITLE-->
+>>>>>>> 86ebbc6... update koperasi sempurnakan
     <!--DESCRIPTION--><span>Fill out the form below to login to administrator's system.</span><!--END DESCRIPTION-->
     </div>
     <!--END HEADER-->

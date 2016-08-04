@@ -32,9 +32,7 @@ class Transaksi extends REST_Controller {
             'id' => $this->get('id'),
             'awal' => get_safe('awal'),
             'akhir' => get_safe('akhir'),
-            'nama' => get_safe('nama'),
-            'norek' => get_safe('norek'),
-            'alamat' => get_safe('alamat')
+            'norek' => get_safe('koderekening'),
         );
         
         $data = $this->m_transaksi->get_list_pembiayaans($this->limit, $start, $search);
@@ -248,8 +246,8 @@ class Transaksi extends REST_Controller {
         
         $search= array(
             'id' => $this->get('id'),
-            'awal' => date("Y-m-01"),
-            'akhir' => date("Y-m-d"),
+            'awal' => get_safe('awal'),
+            'akhir' => get_safe('akhir'),
             'id_anggota' => get_safe('id_anggota')
         );
         
@@ -285,8 +283,9 @@ class Transaksi extends REST_Controller {
         
         $search= array(
             'id' => $this->get('id'),
-            'awal' => date("Y-m-01"),
-            'akhir' => date("Y-m-d")
+            'awal' => get_safe('awal'),
+            'akhir' => get_safe('akhir'),
+            'norek' => get_safe('id_anggota')
         );
         
         $data = $this->m_transaksi->get_list_setoran_tabungans($this->limit, $start, $search);
@@ -311,8 +310,9 @@ class Transaksi extends REST_Controller {
         
         $search= array(
             'id' => $this->get('id'),
-            'awal' => date("Y-m-01"),
-            'akhir' => date("Y-m-d")
+            'awal' => get_safe('awal'),
+            'akhir' => get_safe('akhir'),
+            'norek' => get_safe('id_anggota')
         );
         
         $data = $this->m_transaksi->get_list_penarikan_tabungans($this->limit, $start, $search);
