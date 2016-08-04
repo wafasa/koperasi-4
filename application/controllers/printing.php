@@ -7,13 +7,17 @@ class Printing extends CI_Controller {
         $this->load->model(array('m_config','m_transaksi'));
     }
     function print_angsuran() {
+        
         $param  = array(
             'id' => get_safe('id'),
             'awal' => '',
-            'akhir' => ''
+            'akhir' => '',
+            'norek' => '',
+            'nama' => ''
         );
         $data = $this->m_transaksi->get_list_angsurans(NULL, NULL, $param);
         $data['inst'] = $this->m_config->get_institusi_name();
+        $data['title'] = 'Angsuran';
         $this->load->view('transaksi/print-kwitansi-angsuran', $data);
     }
     
@@ -67,5 +71,15 @@ class Printing extends CI_Controller {
         
         $data = $this->m_laporan->get_list_pendapatan_administrasi(NULL, NULL, $search);
         $this->load->view('laporan/excel/excel-pendapatan-admin', $data);
+    }
+    
+    function cetak_transaksi_tabungan_terakhir() {
+        $data = $this->m_laporan->get_detail_tabungan(get_safe('id'), 'print');
+        $this->m_transaksi->update_tabungan_status(get_safe('id'));
+        if (count($data['data']) > 0) {
+            $this->load->view('laporan/print-tabungan', $data);
+        } else {
+            echo "Tidak ada data !";
+        }
     }
 }

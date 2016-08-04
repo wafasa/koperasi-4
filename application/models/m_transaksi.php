@@ -15,14 +15,8 @@ class M_transaksi extends CI_Model {
         if ($search['awal'] !== '' and $search['akhir'] !== '') {
             $q.=" and p.tgl_pinjam between '".date2mysql($search['awal'])."' and '".  date2mysql($search['akhir'])."'";
         }
-        if ($search['nama'] !== '') {
-            $q.=" and d.nama like ('%".$search['nama']."%')";
-        }
-        if ($search['alamat'] !== '') {
-            $q.=" and d.alamat like ('%".$search['alamat']."%')";
-        }
         if ($search['norek'] !== '') {
-            $q.=" and d.nomor_rekening = '".$search['norek']."'";
+            $q.=" and p.id = '".$search['norek']."'";
         }
         
         $select = "select d.*, p.*, dd.*, d.id ";
@@ -135,7 +129,7 @@ class M_transaksi extends CI_Model {
             $q.=" and d.nama like ('%".$search['nama']."%')";
         }
         
-        $select = "select p.*, d.nama, d.nomor_rekening, dp.tgl_bayar, dp.angsuran_ke ";
+        $select = "select p.*, d.nama, d.nomor_rekening, dp.tgl_bayar, dp.angsuran_ke, dp.id as id_detail ";
         $count  = "select count(*) as count ";
         $sql = " 
             from tb_detail_pinjaman dp
@@ -174,7 +168,7 @@ class M_transaksi extends CI_Model {
         
         foreach ($get as $value) {
             $this->db->where('id', $value->id);
-            $this->db->update('tb_detail_pinjaman', array('tgl_bayar' => date("Y-m-d")));
+            $this->db->update('tb_detail_pinjaman', array('tgl_bayar' => date("Y-m-d"), 'status_bayar' => 'Sudah'));
             if ($this->db->trans_status() === FALSE) {
                 $this->db->trans_rollback();
                 $result['status'] = FALSE;
@@ -212,7 +206,6 @@ class M_transaksi extends CI_Model {
         $sql = "from tb_pinjaman p
             join tb_debitur d on (p.id_debitur = d.id)
             where (d.nama like ('%".$search['search']."%') or d.nomor_rekening like ('%".$search['search']."%')) 
-            and p.sisa_angsuran != '0'
                 $q 
             order by d.nomor_rekening";
         $result = $this->db->query($select.$sql.$limitation)->result();
@@ -319,10 +312,10 @@ class M_transaksi extends CI_Model {
             $q.=" and a.id = '".$search['id_anggota']."'";
         }
         if ($search['awal'] !== '' and $search['akhir'] !== '') {
-            //$q.=" and dp.tgl_bayar between '".$search['awal']."' and '".$search['akhir']."'";
+            $q.=" and a.tgl_masuk between '".date2mysql($search['awal'])."' and '".date2mysql($search['akhir'])."'";
         }
         
-        $select = "select a.*, t.saldo ";
+        $select = "select a.*, t.saldo as pembukaan_saldo ";
         $count  = "select count(*) as count ";
         $sql = " 
             from tb_tabungan t
@@ -334,8 +327,15 @@ class M_transaksi extends CI_Model {
         }
         $order=" order by a.id desc";
         //echo $select . $sql . $q . $order. $limitation;
-        
-        $data['data'] = $this->db->query($select.$sql.$q.$order.$limitation)->result();
+        $result = $this->db->query($select.$sql.$q.$order.$limitation)->result();
+        foreach($result as $key => $value) {
+            $sql_child = "select sum(masuk)-sum(keluar) as total 
+                from tb_detail_tabungan 
+                where id_tabungan = '".$value->id."'
+                ";
+            $result[$key]->saldo = $this->db->query($sql_child)->row()->total;
+        }
+        $data['data'] = $result;
         $data['jumlah'] = $this->db->query($count.$sql.$q)->row()->count;
         return $data;
     }
@@ -370,7 +370,8 @@ class M_transaksi extends CI_Model {
             'id_tabungan' => post_safe('norek'),
             'tanggal' => date("Y-m-d"),
             'masuk' => currencyToNumber(post_safe('nominal_tabungan')),
-            'sandi' => '1'
+            'sandi' => '1',
+            'id_user' => $this->session->userdata('id_user')
         );
         $this->db->insert('tb_detail_tabungan', $param);
         $id_detail_tabungan = $this->db->insert_id();
@@ -499,7 +500,10 @@ class M_transaksi extends CI_Model {
             $q.=" and p.id = '".$search['id']."'";
         }
         if ($search['awal'] !== '' and $search['akhir'] !== '') {
-            //$q.=" and dp.tgl_bayar between '".$search['awal']."' and '".$search['akhir']."'";
+            $q.=" and dt.tanggal between '".date2mysql($search['awal'])."' and '".date2mysql($search['akhir'])."'";
+        }
+        if ($search['norek'] !== '') {
+            $q.=" and dt.id_tabungan = '".$search['norek']."'";
         }
         
         $select = "select a.*, t.id as id_tabungan, dt.id as id_dt, dt.tanggal, dt.masuk, dt.keluar ";
@@ -539,7 +543,10 @@ class M_transaksi extends CI_Model {
             $q.=" and p.id = '".$search['id']."'";
         }
         if ($search['awal'] !== '' and $search['akhir'] !== '') {
-            //$q.=" and dp.tgl_bayar between '".$search['awal']."' and '".$search['akhir']."'";
+            $q.=" and dt.tanggal between '".date2mysql($search['awal'])."' and '".date2mysql($search['akhir'])."'";
+        }
+        if ($search['norek'] !== '') {
+            $q.=" and dt.id_tabungan = '".$search['norek']."'";
         }
         
         $select = "select a.*, t.id as id_tabungan, dt.id as id_dt, dt.tanggal, dt.masuk, dt.keluar ";
@@ -659,6 +666,12 @@ class M_transaksi extends CI_Model {
         }
         $this->save_arus_kas($arus_kas);
         return TRUE;
+    }
+    
+    function update_tabungan_status($id_anggota) {
+        $get = $this->db->get_where('tb_tabungan', array('id_anggota' => $id_anggota))->row();
+        $this->db->where('id_tabungan', $get->id);
+        $this->db->update('tb_detail_tabungan', array('tercetak' => 'Sudah'));
     }
     
     

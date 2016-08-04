@@ -12,8 +12,8 @@
             $("#wizard").bwizard('show', 0);
         });
         
-        $('#tanggal').datepicker({
-                format: 'dd/mm/yyyy'
+        $('#tanggal, #awal, #akhir').datepicker({
+            format: 'dd/mm/yyyy'
         }).on('changeDate', function(){
             $(this).datepicker('hide');
         });
@@ -21,6 +21,10 @@
         $('#reload_tabungan').click(function() {
             reset_form();
             get_list_tabungan(1);
+        });
+        
+        $('#cari_button').click(function() {
+            $('#datamodal_search').modal('show');
         });
         
         $('#parent_code').select2({
@@ -51,17 +55,44 @@
                 return data.kode+' - '+data.nama_program;
             }
         });
+        
+        $('#norek_cari').select2({
+            width: '100%',
+            ajax: {
+                url: "<?= base_url('api/masterdata_auto/norek_tabungan_auto') ?>",
+                dataType: 'json',
+                quietMillis: 100,
+                data: function (term, page) { // page is the one-based page number tracked by Select2
+                    return {
+                        q: term, //search term
+                        page: page // page number
+                    };
+                },
+                results: function (data, page) {
+                    var more = (page * 20) < data.total; // whether or not there are more results available
+         
+                    // notice we return the value of more so Select2 knows if more results can be loaded
+                    return {results: data.data, more: more};
+                }
+            },
+            formatResult: function(data){
+                var markup = data.no_rekening+' - '+data.nama+'<br/>'+data.alamat;
+                return markup;
+            }, 
+            formatSelection: function(data){
+                $('#sisa_saldo').val(money_format(data.saldo));
+                return data.no_rekening+' - '+data.nama;
+            }
+        });
     });
     
     function get_list_tabungan(p, id) {
-        $('#form-pencarian').modal('hide');
+        $('#datamodal_search').modal('hide');
         var id = '';
         $.ajax({
             type : 'GET',
             url: '<?= base_url("api/transaksi/tabungans") ?>/page/'+p+'/id/'+id,
-            data: '',
-            cache: false,
-            dataType: 'json',
+            data: $('#form_search').serialize(),
             beforeSend: function() {
                 show_ajax_indicator();
                 $("#example-advanced").treetable('destroy');
@@ -92,7 +123,7 @@
                             '<td>'+v.nama+'</td>'+
                             '<td>'+v.alamat+'</td>'+
                             '<td align="right">'+money_format(v.saldo)+'</td>'+
-                            '<td align="center" class=aksi>'+
+                            '<td align="right" class=aksi>'+
                                 '<button type="button" class="btn btn-default btn-mini" onclick="edit_tabungan(\''+v.id+'\')"><i class="fa fa-pencil"></i></button> '+
                                 '<button type="button" class="btn btn-default btn-mini" onclick="delete_tabungan(\''+v.id+'\','+data.page+');"><i class="fa fa-trash-o"></i></button>'+
                             '</td>'+
@@ -142,7 +173,7 @@
                 $('#norek').val(data.no_rekening);
                 $('#noktp').val(data.no_ktp);
                 $('#alamat').val(data.alamat);
-                $('#jumlah').val(money_format(data.saldo)).attr('disabled','disabled');
+                $('#jumlah').val(money_format(data.pembukaan_saldo)).attr('disabled','disabled');
             }
         });
     }
@@ -254,14 +285,14 @@
               <h4>Daftar List <?= $title ?></h4>
                 <div class="tools"> 
                     <button id="add_tabungan" class="btn btn-info btn-mini"><i class="fa fa-plus-circle"></i> Tambah</button>
-                    <!--<button id="cari_button" class="btn btn-mini"><i class="fa fa-search"></i> Cari</button>-->
-                    <button id="reload_tabungan" class="btn btn-mini"><i class="fa fa-refresh"></i> Reload</button>
+                    <button id="cari_button" class="btn btn-mini"><i class="fa fa-search"></i> Cari</button>
+                    <button id="reload_tabungan" class="btn btn-mini"><i class="fa fa-refresh"></i> Reload Data</button>
                 </div>
             </div>
             <div class="grid-body">
               <div class="scroller" data-height="220px">
                 <div id="result">
-                    <table class="table table-bordered table-stripped table-hover tabel-advance" id="example-advanced">
+                    <table class="table table-stripped table-hover tabel-advance" id="example-advanced">
                         <thead>
                         <tr>
                             <th width="3%">No</th>
@@ -341,6 +372,35 @@
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-refresh"></i> Batal</button>
               <button type="button" class="btn btn-primary" onclick="konfirmasi_save();"><i class="fa fa-save"></i> Simpan</button>
+            </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+        
+        <div id="datamodal_search" class="modal fade">
+            <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title">Pencarian Data</h4>
+            </div>
+            <div class="modal-body">
+                <form id="form_search" method="post" role="form">
+                    <input type="hidden" name="id" id="id" />
+                    <div class="form-group">
+                        <label class="control-label">Tanggal:</label>
+                        <span><input type="text" name="awal" id="awal" class="form-control" value="" style="width: 145px; float: left; margin-right: 10px;" id="awal" value="<?= date("d/m/Y") ?>" /> </span>
+                        <span><input type="text" name="akhir" id="akhir" class="form-control" value="" style="width: 145px;" id="awal" value="<?= date("d/m/Y") ?>" /> </span>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">No. Rekening:</label>
+                        <input type="text" name="id_anggota"  class="select2-input" id="norek_cari">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-refresh"></i> Batal</button>
+              <button type="button" class="btn btn-primary" onclick="get_list_tabungan(1);"><i class="fa fa-eye"></i> Tampilkan</button>
             </div>
           </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->

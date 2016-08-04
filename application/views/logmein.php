@@ -10,7 +10,7 @@ www.amitjakhu.com
 
 <!--META-->
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Login Form | Anggaran</title>
+<title>Login Form | <?= $title ?></title>
 
 <!--STYLESHEETS-->
 <link href="<?= base_url('assets/css/login.css') ?>" rel="stylesheet" type="text/css" />
@@ -96,7 +96,7 @@ www.amitjakhu.com
 
 	<!--HEADER-->
     <div class="header">
-        <!--TITLE--><h3>Koperasi </h3><h1>Baitul Makmur</h1><!--END TITLE-->
+        <!--TITLE--><h3>Koperasi </h3><h1><?= $title ?></h1><!--END TITLE-->
     <!--DESCRIPTION--><span>Fill out the form below to login to administrator's system.</span><!--END DESCRIPTION-->
     </div>
     <!--END HEADER-->

@@ -81,7 +81,7 @@
                             '<td>'+v.jenis+'</td>'+
                             '<td>'+v.keterangan+'</td>'+
                             '<td align="right">'+money_format(v.nominal)+'</td>'+
-                            '<td align="center" class=aksi>'+
+                            '<td align="right" class=aksi>'+
                                 '<button type="button" class="btn btn-default btn-mini" onclick="edit_penerimaan_pengeluaran(\''+v.id+'\')"><i class="fa fa-pencil"></i></button> '+
                                 '<button type="button" class="btn btn-default btn-mini" onclick="delete_penerimaan_pengeluaran(\''+v.id+'\','+data.page+');"><i class="fa fa-trash-o"></i></button>'+
                             '</td>'+
@@ -248,14 +248,14 @@
             <div class="grid-body">
               <div class="scroller" data-height="220px">
                 <div id="result">
-                    <table class="table table-bordered table-stripped table-hover tabel-advance" id="example-advanced">
+                    <table class="table table-stripped table-hover tabel-advance" id="example-advanced">
                         <thead>
                         <tr>
                           <th width="3%">No</th>
                           <th width="7%">Tanggal</th>
                           <th width="20%" class="left">Jenis</th>
                           <th width="50%" class="left">Keterangan</th>
-                          <th width="13%" class="left">Nominal</th>
+                          <th width="13%" class="right">Nominal</th>
                           <th width="7%"></th>
                         </tr>
                         </thead>

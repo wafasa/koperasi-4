@@ -91,7 +91,7 @@
                             '<td>'+v.nama+'</td>'+
                             '<td>'+v.alamat+'</td>'+
                             '<td align="right">'+money_format(v.saldo)+'</td>'+
-                            '<td align="center" class=aksi>'+
+                            '<td align="right" class=aksi>'+
                                 '<button type="button" class="btn btn-default btn-mini" onclick="detail_tabungan(\''+v.id+'\')"><i class="fa fa-eye"></i></button> '+
                             '</td>'+
                         '</tr>';
@@ -106,6 +106,74 @@
                 hide_ajax_indicator();
             }
         });
+    }
+    
+    function cetak_transaksi_terakhir() {
+        var wWidth = $(window).width();
+        var dWidth = wWidth * 1;
+        var wHeight= $(window).height();
+        var dHeight= wHeight * 1;
+        var x = screen.width/2 - dWidth/2;
+        var y = screen.height/2 - dHeight/2;
+        var id = $('#id_anggota').val();
+        window.open('<?= base_url('printing/cetak_transaksi_tabungan_terakhir') ?>?id='+id,'Cetak Transaksi Pajak','width='+dWidth+', height='+dHeight+', left='+x+',top='+y);
+        load_data_tabungan(id);
+    }
+    
+    function load_data_tabungan(id) {
+        $.ajax({
+            type: 'GET',
+            url: '<?= base_url('api/laporan/detail_tabungan') ?>/id/'+id,
+            beforeSend: function() {
+                show_ajax_indicator();
+            },
+            success: function(data) {
+                
+                var val = data.data[0];
+                //var str = '';
+              var str = '<table class="table" width="100%">'+
+                        '<tr><td width="20%">Nama Lengkap:</td><td>'+val.nama+'</td></tr>'+
+                        '<tr><td>No. Rekening:</td><td>'+val.no_rekening+'</td></tr>'+
+                        '</table>'+
+                        '<input type="hidden" id="id_anggota" value="'+val.id_anggota+'" />'+
+                        '<table class="table">'+
+                        '<thead><tr>'+
+                            '<th width="5%">No.</th>'+
+                            '<th width="15%">Tanggal</th>'+
+                            '<th width="15%" class="right">Debet</th>'+
+                            '<th width="15%" class="right">Kredit</th>'+
+                            '<th width="15%" class="right">Saldo</th>'+
+                            '<th width="15%">Op ID</th>'+
+                            '<th width="5%"></th>'+
+                        '</tr></thead><tbody>';
+                $.each(data.data, function(i, v) {
+                    var status = '<i class="fa fa-check-circle"></i>';
+                    if (v.tercetak === 'Belum') {
+                        status = '';
+                    }
+                    str+= '<tr>'+
+                            '<td align="center">'+(++i)+'</td>'+
+                            '<td>'+datefmysql(v.tanggal)+'</td>'+
+                            '<td align="right">'+money_format(v.masuk)+'</td>'+
+                            '<td align="right">'+money_format(v.keluar)+'</td>'+
+                            '<td align="right">'+money_format(v.sisa_saldo)+'</td>'+
+                            '<td>'+v.kode+'</td>'+
+                            '<td>'+status+'</td>'+
+                          '</tr>';
+                });
+                str+='</tbody></table>';
+                $('#detail_tabungan').html(str);
+            },
+            complete: function() {
+                hide_ajax_indicator();
+            }
+        });
+    }
+    
+    function detail_tabungan(id) {
+        $('#datamodal_detail .modal-title').html('Detail Transaksi Tabungan');
+        $('#datamodal_detail').modal('show');
+        load_data_tabungan(id);
     }
     
     function print_pajak(id) {
@@ -259,7 +327,7 @@
             <div class="grid-body">
               <div class="scroller" data-height="220px">
                 <div id="result">
-                    <table class="table table-bordered table-stripped table-hover tabel-advance" id="example-advanced">
+                    <table class="table table-stripped table-hover tabel-advance" id="example-advanced">
                         <thead>
                         <tr>
                             <th width="3%">No</th>
@@ -315,6 +383,24 @@
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-refresh"></i> Batal</button>
               <button type="button" class="btn btn-primary" onclick="konfirmasi_save();"><i class="fa fa-save"></i> Simpan</button>
+            </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+        
+        <div id="datamodal_detail" class="modal fade" style="overflow-y: auto">
+            <div class="modal-dialog" style="width: 800px">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title"></h4>
+            </div>
+              <div class="modal-body" id="detail_tabungan" style="max-height: 500px; overflow-y: auto;">
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" onclick="cetak_transaksi_terakhir();"><i class="fa fa-print"></i> Print Tabungan</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-refresh"></i> Close</button>
             </div>
           </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->

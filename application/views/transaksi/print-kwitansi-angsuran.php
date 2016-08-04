@@ -10,12 +10,12 @@
     <?php foreach ($data as $value); ?>
     <div class="page">
         <table width="100%" style="color: #000;">
-        <tr><td><b><?= $inst->nama ?></b></td> <td align="right"><h2>KWITANSI</h2></td></tr>
-        <tr><td><b><?= $inst->alamat ?> <?= $inst->kabupaten ?></b></td> <td align="right">No. kwitansi: <?= $value->id ?></td></tr>
+        <tr><td><b><?= $inst->nama ?></b></td> <td align="right"></td></tr>
+        <tr><td><b><?= $inst->alamat ?> <?= $inst->kabupaten ?></b></td> <td align="right"></td></tr>
         <tr><td><b>Telp. <?= $inst->telp ?>,  Fax. <?= $inst->fax ?></b></td><td></td> </tr>
     </table>
     <br/>
-    <center><b>KWITANSI</b></center>
+    <center><b><u style="font-weight: bold;">KWITANSI</u></b></center>
     <br/>
     <div style="width:100%;display:inline-block;">
         <div style="width:50%;float:left;">

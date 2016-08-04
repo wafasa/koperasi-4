@@ -107,4 +107,31 @@ class M_laporan extends CI_Model {
         $data['jumlah'] = $this->db->query($count . $sql . $q)->row()->count;
         return $data;
     }
+    
+    function get_detail_tabungan($id_anggota, $status = FALSE) {
+        $q = NULL;
+        if ($status === 'print') {
+            $q =" and dt.tercetak = 'Belum'";
+        }
+        $sql = "select t.*, a.nama, a.no_rekening, a.tgl_masuk, a.alamat,
+            dt.id as id_detail, dt.tanggal, dt.masuk, dt.keluar, dt.sandi, dt.tercetak, u.kode
+            from tb_tabungan t
+            join tb_detail_tabungan dt on (dt.id_tabungan = t.id)
+            join tb_anggota a on (t.id_anggota = a.id)
+            join tb_usersystem u on (dt.id_user = u.id_user)
+            where t.id_anggota = '".$id_anggota."' $q
+                order by dt.id asc
+                ";
+        $result = $this->db->query($sql)->result();
+        foreach($result as $key => $value) {
+            $sql_child = "select IFNULL(sum(masuk)-sum(keluar),0) as sisa
+                from tb_detail_tabungan 
+                where id <= '".$value->id_detail."'
+                    and id_tabungan = '".$value->id."'
+                ";
+            $result[$key]->sisa_saldo = $this->db->query($sql_child)->row()->sisa;
+        }
+        $data['data'] = $result;
+        return $data;
+    }
 }

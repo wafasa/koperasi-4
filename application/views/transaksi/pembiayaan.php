@@ -12,12 +12,15 @@
             $('#tanggal_disetujui, #jumlah, #lama').removeAttr('disabled');
         });
         
-        $('#tanggal, #tanggal_disetujui').datepicker({
+        $('#tanggal, #tanggal_disetujui, #awal, #akhir').datepicker({
                 format: 'dd/mm/yyyy'
         }).on('changeDate', function(){
             $(this).datepicker('hide');
         });
 
+        $('#cari_button').click(function() {
+            $('#datamodal_search').modal('show');
+        });
         $('#reload_pembiayaan').click(function() {
             reset_form();
             get_list_pembiayaan(1);
@@ -56,17 +59,47 @@
                 return data.kode+' - '+data.nama_program;
             }
         });
+        
+        $('#koderekening').select2({
+            width: '100%',
+            ajax: {
+                url: "<?= base_url('api/masterdata_auto/norek_pinjaman_auto') ?>",
+                dataType: 'json',
+                quietMillis: 100,
+                data: function (term, page) { // page is the one-based page number tracked by Select2
+                    return {
+                        q: term, //search term
+                        page: page, // page number
+                        jenissppb: $('#jenisbarang2').val()
+                    };
+                },
+                results: function (data, page) {
+                    var more = (page * 20) < data.total; // whether or not there are more results available
+         
+                    // notice we return the value of more so Select2 knows if more results can be loaded
+                    return {results: data.data, more: more};
+                }
+            },
+            formatResult: function(data){
+                var markup = data.nomor_rekening+' - '+data.nama;
+                return markup;
+            }, 
+            formatSelection: function(data){
+                return data.nomor_rekening+' - '+data.nama;
+            }
+        });
     });
     
     function get_list_pembiayaan(p, id) {
         $('#form-pencarian').modal('hide');
-        var id = '';
+        var id_transaksi = '';
+        if (id !== undefined) {
+            id_transaksi = id;
+        }
         $.ajax({
             type : 'GET',
-            url: '<?= base_url("api/transaksi/pembiayaans") ?>/page/'+p+'/id/'+id,
-            data: '',
-            cache: false,
-            dataType: 'json',
+            url: '<?= base_url("api/transaksi/pembiayaans") ?>/page/'+p+'/id/'+id_transaksi,
+            data: $('#form_search').serialize(),
             beforeSend: function() {
                 show_ajax_indicator();
                 $("#example-advanced").treetable('destroy');
@@ -99,7 +132,7 @@
                             '<td align="right">'+money_format(v.angsuran_pokok)+'</td>'+
                             '<td align="right">'+money_format(v.jasa_angsuran)+'</td>'+
                             '<td align="right">'+money_format(v.sisa_angsuran)+'</td>'+
-                            '<td align="center" class=aksi>'+
+                            '<td align="right" class=aksi>'+
                                 //'<button type="button" class="btn btn-mini" onclick="print_pajak(\''+v.id+'\')"><i class="fa fa-print"></i></button> '+
                                 '<button type="button" class="btn btn-default btn-mini" onclick="edit_pembiayaan(\''+v.id+'\')"><i class="fa fa-pencil"></i></button> '+
                                 //'<button type="button" class="btn btn-default btn-mini" onclick="delete_pembiayaan(\''+v.id+'\','+data.page+');"><i class="fa fa-trash-o"></i></button>'+
@@ -131,7 +164,8 @@
     function reset_form() {
         $('input, select, textarea').val('');
         $('input[type=checkbox], input[type=radio]').removeAttr('checked');
-        $('#tanggal').val('<?= date("d/m/Y") ?>');
+        $('#awal').val('<?= date("01/m/Y") ?>');
+        $('#akhir').val('<?= date("d/m/Y") ?>');
     }
 
     function edit_pembiayaan(id) {
@@ -277,26 +311,26 @@
               <h4>Daftar List <?= $title ?></h4>
                 <div class="tools"> 
                     <button id="add_pembiayaan" class="btn btn-info btn-mini"><i class="fa fa-plus-circle"></i> Tambah</button>
-                    <!--<button id="cari_button" class="btn btn-mini"><i class="fa fa-search"></i> Cari</button>-->
-                    <button id="reload_pembiayaan" class="btn btn-mini"><i class="fa fa-refresh"></i> Reload</button>
+                    <button id="cari_button" class="btn btn-mini"><i class="fa fa-search"></i> Cari</button>
+                    <button id="reload_pembiayaan" class="btn btn-mini"><i class="fa fa-refresh"></i> Reload Data</button>
                 </div>
             </div>
             <div class="grid-body">
               <div class="scroller" data-height="220px">
                 <div id="result">
-                    <table class="table table-bordered table-stripped table-hover tabel-advance" id="example-advanced">
+                    <table class="table table-stripped table-hover tabel-advance" id="example-advanced">
                         <thead>
                         <tr>
                           <th width="3%">No</th>
                           <th width="7%">Tanggal</th>
                           <th width="7%">No. Rek.</th>
                           <th width="25%" class="left">Nama</th>
-                          <th width="10%" class="left">Jumlah</th>
+                          <th width="10%" class="right">Jumlah</th>
                           <th width="10%" class="right">Angsuran</th>
-                          <th width="10%" class="left">Angs.&nbsp;Pokok</th>
-                          <th width="8%" class="left">Bunga</th>
+                          <th width="10%" class="right">Angs.&nbsp;Pokok</th>
+                          <th width="8%" class="right">Bunga</th>
                           <!--<th width="10%" class="left">Jenis</th>-->
-                          <th width="10%" class="left">Sisa&nbsp;Pinj.</th>
+                          <th width="10%" class="right">Sisa&nbsp;Pinj.</th>
                           <th width="5%"></th>
                         </tr>
                         </thead>
@@ -430,6 +464,36 @@
           </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
+        
+        <div id="datamodal_search" class="modal fade">
+            <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title">Pencarian Data</h4>
+            </div>
+            <div class="modal-body">
+                <form id="form_search" method="post" role="form">
+                    <input type="hidden" name="id" id="id" />
+                    <div class="form-group">
+                        <label class="control-label">Tanggal:</label>
+                        <span><input type="text" name="awal" id="awal" class="form-control" value="<?= date("01/m/Y") ?>" style="width: 145px; float: left; margin-right: 10px;" id="awal" value="<?= date("d/m/Y") ?>" /> </span>
+                        <span><input type="text" name="akhir" id="akhir" class="form-control" value="<?= date("d/m/Y") ?>" style="width: 145px;" id="awal" value="<?= date("d/m/Y") ?>" /> </span>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">No. Rekening:</label>
+                        <input type="text" name="koderekening" id="koderekening" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-refresh"></i> Batal</button>
+              <button type="button" class="btn btn-primary" onclick="get_list_pembiayaan(1);"><i class="fa fa-eye"></i> Tampilkan</button>
+            </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+        
       </div>
       <!-- END PAGE -->
     </div>

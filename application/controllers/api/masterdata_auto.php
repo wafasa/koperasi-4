@@ -18,7 +18,9 @@ class Masterdata_auto extends REST_Controller{
     }
     
     function norek_pinjaman_auto_get() {
-        $param['search']    = get_safe('q');
+        $param = array(
+            'search' => get_safe('q')
+        );
         $start = $this->start(get_safe('page'));
         $data = $this->m_transaksi->get_auto_rekening_pinjaman($param, $start, $this->limit);
         if ((get_safe('page') == 1) & (get_safe('q') == '')) {

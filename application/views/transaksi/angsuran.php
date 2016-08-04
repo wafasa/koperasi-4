@@ -9,8 +9,8 @@
             $('#datamodal h4.modal-title').html('Tambah <?= $title ?>');
         });
         
-        $('#tanggal').datepicker({
-                format: 'dd/mm/yyyy'
+        $('#tanggal, #awal, #akhir').datepicker({
+            format: 'dd/mm/yyyy'
         }).on('changeDate', function(){
             $(this).datepicker('hide');
         });
@@ -18,6 +18,10 @@
         $('#reload_angsuran').click(function() {
             reset_form();
             get_list_angsuran(1);
+        });
+        
+        $('#cari_button').click(function() {
+            $('#datamodal_search').modal('show');
         });
         
         $('#norek').select2({
@@ -58,6 +62,35 @@
             }
         });
         
+        $('#koderekening').select2({
+            width: '100%',
+            ajax: {
+                url: "<?= base_url('api/masterdata_auto/norek_pinjaman_auto') ?>",
+                dataType: 'json',
+                quietMillis: 100,
+                data: function (term, page) { // page is the one-based page number tracked by Select2
+                    return {
+                        q: term, //search term
+                        page: page, // page number
+                        jenissppb: $('#jenisbarang2').val()
+                    };
+                },
+                results: function (data, page) {
+                    var more = (page * 20) < data.total; // whether or not there are more results available
+         
+                    // notice we return the value of more so Select2 knows if more results can be loaded
+                    return {results: data.data, more: more};
+                }
+            },
+            formatResult: function(data){
+                var markup = data.nomor_rekening+' - '+data.nama;
+                return markup;
+            }, 
+            formatSelection: function(data){
+                return data.nomor_rekening+' - '+data.nama;
+            }
+        });
+        
         $('#jml_kali_angsur').change(function() {
             var kali = parseInt($(this).val());
             var tagihan = parseFloat($('#tagihan_perbulan').val());
@@ -71,9 +104,7 @@
         $.ajax({
             type : 'GET',
             url: '<?= base_url("api/transaksi/angsurans") ?>/page/'+p+'/id/'+id,
-            data: '',
-            cache: false,
-            dataType: 'json',
+            data: $('#form_search').serialize(),
             beforeSend: function() {
                 show_ajax_indicator();
                 $("#example-advanced").treetable('destroy');
@@ -98,15 +129,15 @@
                     };
                     str+= '<tr data-tt-id='+i+' class="'+highlight+'">'+
                             '<td align="center">'+((i+1) + ((data.page - 1) * data.limit))+'</td>'+
-                            '<td align="center">'+datefmysql(v.tgl_bayar)+'</td>'+
-                            '<td align="center">'+v.nomor_rekening+'</td>'+
+                            '<td>'+datefmysql(v.tgl_bayar)+'</td>'+
+                            '<td>'+v.nomor_rekening+'</td>'+
                             '<td>'+v.nama+'</td>'+
                             '<td align="right">'+money_format(v.bsr_angsuran)+'</td>'+
                             '<td align="right">'+money_format(v.angsuran_pokok)+'</td>'+
                             '<td align="right">'+money_format(v.jasa_angsuran)+'</td>'+
                             '<td align="right">'+money_format(v.sisa_angsuran)+'</td>'+
-                            '<td align="center" class=aksi>'+
-                                '<button type="button" class="btn btn-mini" onclick="print_angsuran(\''+v.id+'\')"><i class="fa fa-print"></i></button> '+
+                            '<td align="right" class=aksi>'+
+                                '<button type="button" class="btn btn-mini" onclick="print_angsuran(\''+v.id_detail+'\')"><i class="fa fa-print"></i></button> '+
                                 //'<button type="button" class="btn btn-default btn-mini" onclick="edit_angsuran(\''+v.id+'\')"><i class="fa fa-pencil"></i></button> '+
                                 //'<button type="button" class="btn btn-default btn-mini" onclick="delete_angsuran(\''+v.id+'\','+data.page+');"><i class="fa fa-trash-o"></i></button>'+
                             '</td>'+
@@ -138,7 +169,8 @@
     function reset_form() {
         $('input, select, textarea').val('');
         $('input[type=checkbox], input[type=radio]').removeAttr('checked');
-        $('#tanggal').val('<?= date("d/m/Y") ?>');
+        $('#tanggal, #akhir').val('<?= date("d/m/Y") ?>');
+        $('#awal').val('<?= date("01/m/Y") ?>');
         $('#s2id_norek a .select2-chosen').html('&nbsp;');
     }
 
@@ -204,17 +236,10 @@
             success: function(msg) {
                 var page = $('.pagination .active a').html();
                 hide_ajax_indicator();
-                $('#judul, #isi, #nominal').val('');
-                //reset_form();
-                if (msg.act === 'add') {
-                    $('#datamodal').modal('hide');
-                    message_add_success();
-                    get_list_angsuran(1);
-                } else {
-                    $('#datamodal').modal('hide');
-                    message_edit_success();
-                    get_list_angsuran(page);
-                }
+                $('#datamodal').modal('hide');
+                message_add_success();
+                get_list_angsuran(1);
+                
             },
             error: function() {
                 $('#datamodal').modal('hide');
@@ -271,14 +296,14 @@
               <h4>Daftar List <?= $title ?></h4>
                 <div class="tools"> 
                     <button id="add_angsuran" class="btn btn-info btn-mini"><i class="fa fa-plus-circle"></i> Tambah</button>
-                    <!--<button id="cari_button" class="btn btn-mini"><i class="fa fa-search"></i> Cari</button>-->
-                    <button id="reload_angsuran" class="btn btn-mini"><i class="fa fa-refresh"></i> Reload</button>
+                    <button id="cari_button" class="btn btn-mini"><i class="fa fa-search"></i> Cari</button>
+                    <button id="reload_angsuran" class="btn btn-mini"><i class="fa fa-refresh"></i> Reload Data</button>
                 </div>
             </div>
             <div class="grid-body">
               <div class="scroller" data-height="220px">
                 <div id="result">
-                    <table class="table table-bordered table-stripped table-hover tabel-advance" id="example-advanced">
+                    <table class="table table-stripped table-hover tabel-advance" id="example-advanced">
                         <thead>
                         <tr>
                           <th width="3%">No</th>
@@ -286,10 +311,10 @@
                           <th width="7%">No. Rek.</th>
                           <th width="35%" class="left">Nama</th>
                           <th width="10%" class="right">Angsuran</th>
-                          <th width="10%" class="left">Angs.&nbsp;Pokok</th>
-                          <th width="8%" class="left">Bunga</th>
+                          <th width="10%" class="right">Angs.&nbsp;Pokok</th>
+                          <th width="8%" class="right">Bunga</th>
                           <!--<th width="10%" class="left">Jenis</th>-->
-                          <th width="10%" class="left">Sisa&nbsp;Pinj.</th>
+                          <th width="10%" class="right">Sisa&nbsp;Pinj.</th>
                           <th width="5%"></th>
                         </tr>
                         </thead>
@@ -349,6 +374,35 @@
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-refresh"></i> Batal</button>
               <button type="button" class="btn btn-primary" onclick="konfirmasi_save();"><i class="fa fa-save"></i> Simpan</button>
+            </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+        
+        <div id="datamodal_search" class="modal fade">
+            <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title">Pencarian Data</h4>
+            </div>
+            <div class="modal-body">
+                <form id="form_search" method="post" role="form">
+                    <input type="hidden" name="id" id="id" />
+                    <div class="form-group">
+                        <label class="control-label">Tanggal:</label>
+                        <span><input type="text" name="awal" id="awal" class="form-control" value="<?= date("01/m/Y") ?>" style="width: 145px; float: left; margin-right: 10px;" id="awal" value="<?= date("d/m/Y") ?>" /> </span>
+                        <span><input type="text" name="akhir" id="akhir" class="form-control" value="<?= date("d/m/Y") ?>" style="width: 145px;" id="awal" value="<?= date("d/m/Y") ?>" /> </span>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">No. Rekening:</label>
+                        <input type="text" name="koderekening" id="koderekening" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-refresh"></i> Batal</button>
+              <button type="button" class="btn btn-primary" onclick="get_list_angsuran(1);"><i class="fa fa-eye"></i> Tampilkan</button>
             </div>
           </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->

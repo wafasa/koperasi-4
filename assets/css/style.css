@@ -2238,8 +2238,8 @@ font-family: 'Open Sans';
     content: "\f105";
 }
 .page-content .content{
-  padding-left: 26px;
-  padding-right: 26px;
+  padding-left: 10px;
+  padding-right: 15px;
   padding-top:83px;
 }
 
@@ -9751,7 +9751,7 @@ font-family: 'Open Sans';
   padding:0px !important;
   border:none !important;  
   margin-bottom:0px;
-  margin-left: -11px;
+  margin-left: -5px;
   margin-top: -11px;
 }
 
@@ -9782,9 +9782,9 @@ font-family: 'Open Sans';
     content: "\f105";
 }
 .page-content .content{
-  padding-left: 26px;
+/*  padding-left: 26px;
   padding-right: 26px;
-  padding-top:83px;
+  padding-top:83px;*/
 }
 
 a.icon:hover {

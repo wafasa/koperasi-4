@@ -51,16 +51,16 @@
     
     function get_list_kas_harian(p, id) {
         $('#form-pencarian').modal('hide');
-        var id = '';
+        var id_transaksi = '';
+        if (id !== undefined) {
+            id_transaksi = id;
+        }
         $.ajax({
             type : 'GET',
-            url: '<?= base_url("api/laporan/kas_harians") ?>/page/'+p+'/id/'+id,
+            url: '<?= base_url("api/laporan/kas_harians") ?>/page/'+p+'/id/'+id_transaksi,
             data: $('#form_search').serialize(),
-            cache: false,
-            dataType: 'json',
             beforeSend: function() {
                 show_ajax_indicator();
-                $("#example-advanced").treetable('destroy');
             },
             success: function(data) {
                 if ((p > 1) & (data.data.length === 0)) {
@@ -145,7 +145,7 @@
             <div class="grid-body">
               <div class="scroller" data-height="220px">
                 <div id="result">
-                    <table class="table table-bordered table-stripped table-hover tabel-advance" id="example-advanced">
+                    <table class="table table-stripped table-hover tabel-advance" id="example-advanced">
                         <thead>
                         <tr>
                             <th width="3%">No</th>
@@ -169,7 +169,7 @@
           </div>
         </div>
         <div id="datamodal" class="modal fade">
-            <div class="modal-dialog" style="width: 400px">
+            <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -177,12 +177,12 @@
             </div>
             <div class="modal-body">
                 <form id="form_search" method="post" role="form">
-                <input type="hidden" name="id" id="id" />
-                <div class="form-group">
-                    <label class="control-label">Tanggal:</label>
-                    <input type="text" name="awal" class="form-control" style="width: 145px; float: left; margin-right: 10px;" id="awal" value="<?= date("d/m/Y") ?>" /> 
-                </div>
-            </form>
+                    <input type="hidden" name="id" id="id" />
+                    <div class="form-group">
+                        <label class="control-label">Tanggal:</label>
+                        <input type="text" name="awal" class="form-control" style="width: 145px; margin-right: 10px;" id="awal" value="<?= date("d/m/Y") ?>" /> 
+                    </div>
+                </form>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-refresh"></i> Batal</button>

@@ -12,14 +12,17 @@ class User extends CI_Controller {
         $user = $this->session->userdata('user');
         $name = explode(' ', $this->session->userdata('nama'));
         //echo "1234".$user;
+        $this->rows_institusi = $this->db->get('tb_institusi')->row()->nama;
         if (!empty($user)) {
             $id_group = $this->session->userdata('id_group');
-            $data['title'] = 'Manajemen Koperasi';
+            $data['title'] = $this->db->get('tb_institusi')->row()->nama;
             $data['first_name'] = $name[0];
             $data['last_name'] = isset($name[1])?$name[1]:NULL;
             $data['master_menu'] = $this->m_user->module_load_data($id_group);
             $this->load->view('dashboard', $data);
         }
+        
+        
         date_default_timezone_set('Asia/Jakarta');
     }
 
@@ -39,7 +42,7 @@ class User extends CI_Controller {
         fwrite($create_file, get_mac_address());
         fclose($create_file);
         
-        $data['title'] = 'Manajemen Anggaran | Login';
+        $data['title'] = $this->rows_institusi;
         $user = $this->session->userdata('user');
         $handle = fopen("assets/fonts/app.txt", "rb");
         $check  = $this->db->get('tb_smart_card')->row();
