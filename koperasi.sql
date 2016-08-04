@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Feb 29, 2016 at 08:34 AM
+-- Generation Time: Apr 22, 2016 at 01:40 PM
 -- Server version: 5.5.47-0ubuntu0.14.04.1
 -- PHP Version: 5.5.9-1ubuntu4.14
 
@@ -594,7 +594,7 @@ INSERT INTO `tb_anggota` (`id`, `no_rekening`, `no_ktp`, `nama`, `alamat`, `tgl_
 (118, '001191208TMN', '3312082001870004', 'sunarwanto', 'secang kidul rt 005/004 ngunggahan eromoko', '2009-12-31'),
 (119, '001200210TMN', '3312080408780001', 'narto', 'tukul rt 001/002 pucung eromoko', '2010-02-16'),
 (120, '001210410TMN', '331208000000000', 'Purwanti sB', 'eromoko wetan rt 004/003 eromoko', '2007-01-01'),
-(121, '000010216TMN', '330406204870002', 'FERLY MALMTEEN', 'PRAPAS RT.03/07', '2016-02-29');
+(121, '000030216TMN', '330406204870012', 'FERLY MALMTEENS', 'PRAPAS RT.03/07 NO.27', '2016-02-29');
 
 -- --------------------------------------------------------
 
@@ -605,8 +605,8 @@ INSERT INTO `tb_anggota` (`id`, `no_rekening`, `no_ktp`, `nama`, `alamat`, `tgl_
 CREATE TABLE IF NOT EXISTS `tb_arus_kas` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `waktu` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `transaksi` enum('Angsuran','Tabungan','Pembiayaan','Penarikan Tabungan','Lain-lain','Saldo Awal','Koreksi','Modal') NOT NULL,
-  `id_transaksi` int(11) NOT NULL,
+  `transaksi` enum('Angsuran','Tabungan','Pembiayaan','Penarikan Tabungan','Lain-lain','Saldo Awal','Koreksi','Modal') DEFAULT NULL,
+  `id_transaksi` int(11) DEFAULT NULL,
   `masuk` decimal(12,2) NOT NULL,
   `keluar` decimal(12,2) NOT NULL,
   `keterangan` text NOT NULL,
@@ -615,18 +615,21 @@ CREATE TABLE IF NOT EXISTS `tb_arus_kas` (
   KEY `id_user` (`id_user`),
   KEY `id_transaksi` (`id_transaksi`),
   KEY `waktu` (`waktu`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=13 ;
 
 --
 -- Dumping data for table `tb_arus_kas`
 --
 
 INSERT INTO `tb_arus_kas` (`id`, `waktu`, `transaksi`, `id_transaksi`, `masuk`, `keluar`, `keterangan`, `id_user`) VALUES
-(1, '2016-02-28 09:06:39', 'Pembiayaan', 414, 0.00, 100000000.00, 'Pembiayaan SB000415 ARVIN NIZAR', 1),
-(2, '2016-02-28 09:25:12', 'Pembiayaan', 416, 0.00, 100000000.00, 'Pembiayaan SB000415 ARVIN NIZAR', 1),
+(1, '2016-02-28 11:30:07', 'Saldo Awal', NULL, 200000000.00, 0.00, 'Saldo Awal', 1),
+(3, '2016-02-28 11:30:03', 'Pembiayaan', 414, 0.00, 100000000.00, 'Pembiayaan SB000415 ARVIN NIZAR', 1),
 (5, '2016-02-28 20:43:20', 'Lain-lain', 377, 0.00, 115500.00, 'Pengeluaran Perlengkapan Kantor', 1),
 (6, '2016-02-28 20:43:45', 'Lain-lain', 380, 0.00, 150000.00, 'Pengeluaran Pembelian ATK Buku, Ballpoint, Kertas Karton', 1),
-(7, '2016-02-28 21:10:13', 'Tabungan', 121, 15000000.00, 0.00, 'Pembukaan tabungan 000011602TMN FERLY MALMTEEN', 1);
+(7, '2016-02-28 21:10:13', 'Tabungan', 121, 15000000.00, 0.00, 'Pembukaan tabungan 000011602TMN FERLY MALMTEEN', 1),
+(8, '2016-02-29 07:58:16', 'Tabungan', 5811, 250000.00, 0.00, 'Tabungan 000030216TMN FERLY MALMTEENS', 1),
+(9, '2016-02-29 07:58:30', 'Tabungan', 5812, 0.00, 500000.00, 'Tabungan 000030216TMN FERLY MALMTEENS', 1),
+(12, '2016-02-29 08:41:44', 'Koreksi', NULL, 515500.00, 0.00, 'Koreksi akhir bulan', 1);
 
 -- --------------------------------------------------------
 
@@ -7498,7 +7501,7 @@ CREATE TABLE IF NOT EXISTS `tb_detail_tabungan` (
   `sandi` int(2) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id_tabungan` (`id_tabungan`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5810 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5813 ;
 
 --
 -- Dumping data for table `tb_detail_tabungan`
@@ -13317,7 +13320,9 @@ INSERT INTO `tb_detail_tabungan` (`id`, `id_tabungan`, `tanggal`, `masuk`, `kelu
 (5806, 120, '2010-04-07', 200000.00, 0.00, 1),
 (5807, 69, '2010-04-07', 100000.00, 0.00, 1),
 (5808, 2, '2010-04-07', 100000.00, 0.00, 1),
-(5809, 121, '2016-02-29', 15000000.00, 0.00, 1);
+(5809, 121, '2016-02-29', 15000000.00, 0.00, 1),
+(5811, 121, '2016-02-29', 250000.00, 0.00, 1),
+(5812, 121, '2016-02-29', 0.00, 500000.00, 1);
 
 -- --------------------------------------------------------
 
@@ -15047,7 +15052,7 @@ CREATE TABLE IF NOT EXISTS `tb_setting_administrasi` (
 --
 
 INSERT INTO `tb_setting_administrasi` (`id`, `administrasi`, `calon_agt`, `survey`, `stofmap`) VALUES
-(1, 3, 10000, 10000, 2000);
+(1, 3, 10000, 10000, 2500);
 
 -- --------------------------------------------------------
 
@@ -15328,13 +15333,13 @@ ALTER TABLE `tb_detail_debitur`
 -- Constraints for table `tb_detail_pinjaman`
 --
 ALTER TABLE `tb_detail_pinjaman`
-  ADD CONSTRAINT `tb_detail_pinjaman_ibfk_1` FOREIGN KEY (`id_pinjaman`) REFERENCES `tb_pinjaman` (`id`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `tb_detail_pinjaman_ibfk_1` FOREIGN KEY (`id_pinjaman`) REFERENCES `tb_pinjaman` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `tb_detail_tabungan`
 --
 ALTER TABLE `tb_detail_tabungan`
-  ADD CONSTRAINT `tb_detail_tabungan_ibfk_1` FOREIGN KEY (`id_tabungan`) REFERENCES `tb_tabungan` (`id`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `tb_detail_tabungan_ibfk_1` FOREIGN KEY (`id_tabungan`) REFERENCES `tb_tabungan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `tb_grant_privileges`
@@ -15353,7 +15358,7 @@ ALTER TABLE `tb_operasional`
 -- Constraints for table `tb_pinjaman`
 --
 ALTER TABLE `tb_pinjaman`
-  ADD CONSTRAINT `tb_pinjaman_ibfk_1` FOREIGN KEY (`id_debitur`) REFERENCES `tb_debitur` (`id`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `tb_pinjaman_ibfk_1` FOREIGN KEY (`id_debitur`) REFERENCES `tb_debitur` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `tb_privileges`
@@ -15365,7 +15370,7 @@ ALTER TABLE `tb_privileges`
 -- Constraints for table `tb_tabungan`
 --
 ALTER TABLE `tb_tabungan`
-  ADD CONSTRAINT `tb_tabungan_ibfk_1` FOREIGN KEY (`id_anggota`) REFERENCES `tb_anggota` (`id`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `tb_tabungan_ibfk_1` FOREIGN KEY (`id_anggota`) REFERENCES `tb_anggota` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `tb_usersystem`
