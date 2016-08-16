@@ -462,7 +462,8 @@ class M_transaksi extends CI_Model {
                 'id_tabungan' => $id_tabungan,
                 'tanggal' => date("Y-m-d"),
                 'masuk' => currencyToNumber(post_safe('jumlah')),
-                'sandi' => '1'
+                'sandi' => '1',
+                'id_user' => $this->session->userdata('id_user')
             );
             $this->db->insert('tb_detail_tabungan', $data_detail_tabungan);
             if ($this->db->trans_status() === FALSE) {
@@ -586,7 +587,8 @@ class M_transaksi extends CI_Model {
             'id_tabungan' => post_safe('norek'),
             'tanggal' => date("Y-m-d"),
             'keluar' => currencyToNumber(post_safe('nominal_tabungan')),
-            'sandi' => '1'
+            'sandi' => '1',
+            'id_user' => $this->session->userdata('id_user')
         );
         $this->db->insert('tb_detail_tabungan', $param);
         $id_detail_tabungan = $this->db->insert_id();
