@@ -122,8 +122,8 @@
                             '<td align="right">'+money_format(v.awal-v.keluar)+'</td>'+
                             '<td align="right" class=aksi>'+
                                 //'<button type="button" class="btn btn-default btn-mini" onclick="print_pajak(\''+v.id+'\')"><i class="fa fa-print"></i></button> '+
-                                '<button type="button" class="btn btn-default btn-mini" onclick="edit_penarikan_tabungan(\''+v.id+'\')"><i class="fa fa-pencil"></i></button> '+
-                                '<button type="button" class="btn btn-default btn-mini" onclick="delete_penarikan_tabungan(\''+v.id+'\','+data.page+');"><i class="fa fa-trash-o"></i></button>'+
+                                '<button type="button" class="btn btn-default btn-mini" onclick="edit_penarikan_tabungan(\''+v.id_dt+'\')"><i class="fa fa-pencil"></i></button> '+
+                                '<button type="button" class="btn btn-default btn-mini" onclick="delete_penarikan_tabungan(\''+v.id_dt+'\','+data.page+');"><i class="fa fa-trash-o"></i></button>'+
                             '</td>'+
                         '</tr>';
                     $('#example-advanced tbody').append(str);
@@ -152,7 +152,8 @@
     function reset_form() {
         $('input, select, textarea').val('');
         $('input[type=checkbox], input[type=radio]').removeAttr('checked');
-        $('#tanggal').val('<?= date("d/m/Y") ?>');
+        $('#awal').val('<?= date("01/m/Y") ?>');
+        $('#akhir').val('<?= date("d/m/Y") ?>');
     }
 
     function edit_penarikan_tabungan(id) {
@@ -163,16 +164,15 @@
             type: 'GET',
             url: '<?= base_url('api/transaksi/penarikan_tabungans') ?>/page/1/id/'+id,
             dataType: 'json',
-            success: function(data) {
-                $('#id').val(data.data[0].id);
-                $('#tanggal').val(datefmysql(data.data[0].tanggal));
-                $('#nokode').val(data.data[0].kode_akun_pajak);
-                $('#nobukti').val(data.data[0].no_bukti);
-                $('#nominal').val(numberToCurrency(data.data[0].nominal));
-                $('#perhitungan').val(money_format(data.data[0].hasil_pajak));
-                $('#jenis_transaksi').val(data.data[0].jenis_transaksi);
-                $('#jenis_pajak').val(data.data[0].jenis_pajak);
-                $('#uraian').val(data.data[0].uraian);
+            success: function(msg) {
+                var data = msg.data[0];
+                var keluar= data.keluar.split('.');
+                $('#id').val(data.id_dt);
+                $('#norek').val(data.id_tabungan);
+                $('#s2id_norek a .select2-chosen').html(data.no_rekening+' - '+data.nama);
+                var last_sisa = parseFloat(data.saldo)+parseFloat(data.keluar);
+                $('#sisa_saldo').val(numberToCurrency(last_sisa));
+                $('#nominal_tabungan').val(numberToCurrency(keluar[0]));
             }
         });
     }

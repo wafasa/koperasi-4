@@ -299,6 +299,11 @@ class Transaksi extends REST_Controller {
         }
     }
     
+    function setoran_tabungan_delete() {
+        $this->db->delete('tb_detail_tabungan', array('id' => $this->get('id')));
+        $this->db->delete('tb_arus_kas', array('transaksi' => 'Tabungan', 'id_transaksi' => $this->get('id')));
+    }
+    
     /*Penarikan Tabungan*/
     
     function penarikan_tabungans_get() {

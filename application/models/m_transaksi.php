@@ -366,34 +366,54 @@ class M_transaksi extends CI_Model {
     
     function save_setoran_tabungan() {
         $this->db->trans_begin();
-        $param = array(
-            'id_tabungan' => post_safe('norek'),
-            'tanggal' => date("Y-m-d"),
-            'masuk' => currencyToNumber(post_safe('nominal_tabungan')),
-            'sandi' => '1',
-            'id_user' => $this->session->userdata('id_user')
-        );
-        $this->db->insert('tb_detail_tabungan', $param);
-        $id_detail_tabungan = $this->db->insert_id();
-        if ($this->db->trans_status() === FALSE) {
-            $this->db->trans_rollback();
-            $result['status'] = FALSE;
+        $id = post_safe('id');
+        if ($id === '') {
+            $param = array(
+                'id_tabungan' => post_safe('norek'),
+                'tanggal' => date("Y-m-d"),
+                'masuk' => currencyToNumber(post_safe('nominal_tabungan')),
+                'sandi' => '1',
+                'id_user' => $this->session->userdata('id_user')
+            );
+            $this->db->insert('tb_detail_tabungan', $param);
+            $id_detail_tabungan = $this->db->insert_id();
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $result['status'] = FALSE;
+            }
+
+            $sql = "select a.nama, a.no_rekening 
+                from tb_anggota a
+                join tb_tabungan t on (t.id_anggota = a.id)
+                where t.id = '".  post_safe('norek')."'
+                ";
+            $data_anggota = $this->db->query($sql)->row();
+            $arus_kas = array(
+                'transaksi' => 'Tabungan',
+                'id_transaksi' => $id_detail_tabungan,
+                'masuk' => currencyToNumber(post_safe('nominal_tabungan')),
+                'keterangan' => 'Tabungan '.$data_anggota->no_rekening.' '.$data_anggota->nama,
+                'id_user' => $this->session->userdata('id_user')
+            );
+            $this->m_transaksi->save_arus_kas($arus_kas);
+            $result['act'] = 'add';
+        } else {
+            $param = array(
+                'id_tabungan' => post_safe('norek'),
+                'tanggal' => date("Y-m-d"),
+                'masuk' => currencyToNumber(post_safe('nominal_tabungan')),
+                'sandi' => '1',
+                'id_user' => $this->session->userdata('id_user')
+            );
+            $this->db->where('id', $id);
+            $this->db->update('tb_detail_tabungan', $param);
+            $id_detail_tabungan = $this->db->insert_id();
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $result['status'] = FALSE;
+            }
+            $result['act'] = 'edit';
         }
-        
-        $sql = "select a.nama, a.no_rekening 
-            from tb_anggota a
-            join tb_tabungan t on (t.id_anggota = a.id)
-            where t.id = '".  post_safe('norek')."'
-            ";
-        $data_anggota = $this->db->query($sql)->row();
-        $arus_kas = array(
-            'transaksi' => 'Tabungan',
-            'id_transaksi' => $id_detail_tabungan,
-            'masuk' => currencyToNumber(post_safe('nominal_tabungan')),
-            'keterangan' => 'Tabungan '.$data_anggota->no_rekening.' '.$data_anggota->nama,
-            'id_user' => $this->session->userdata('id_user')
-        );
-        $this->m_transaksi->save_arus_kas($arus_kas);
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
             $result['status'] = FALSE;
@@ -498,7 +518,7 @@ class M_transaksi extends CI_Model {
     function get_list_setoran_tabungans($limit = null, $start = null, $search = null) {
         $q = null; $r = NULL;
         if ($search['id'] !== '') {
-            $q.=" and p.id = '".$search['id']."'";
+            $q.=" and dt.id = '".$search['id']."'";
         }
         if ($search['awal'] !== '' and $search['akhir'] !== '') {
             $q.=" and dt.tanggal between '".date2mysql($search['awal'])."' and '".date2mysql($search['akhir'])."'";
@@ -541,7 +561,7 @@ class M_transaksi extends CI_Model {
     function get_list_penarikan_tabungans($limit = null, $start = null, $search = null) {
         $q = null; $r = NULL;
         if ($search['id'] !== '') {
-            $q.=" and p.id = '".$search['id']."'";
+            $q.=" and dt.id = '".$search['id']."'";
         }
         if ($search['awal'] !== '' and $search['akhir'] !== '') {
             $q.=" and dt.tanggal between '".date2mysql($search['awal'])."' and '".date2mysql($search['akhir'])."'";
@@ -583,34 +603,54 @@ class M_transaksi extends CI_Model {
     
     function save_penarikan_tabungan() {
         $this->db->trans_begin();
-        $param = array(
-            'id_tabungan' => post_safe('norek'),
-            'tanggal' => date("Y-m-d"),
-            'keluar' => currencyToNumber(post_safe('nominal_tabungan')),
-            'sandi' => '1',
-            'id_user' => $this->session->userdata('id_user')
-        );
-        $this->db->insert('tb_detail_tabungan', $param);
-        $id_detail_tabungan = $this->db->insert_id();
-        if ($this->db->trans_status() === FALSE) {
-            $this->db->trans_rollback();
-            $result['status'] = FALSE;
+        $id = post_safe('id');
+        if ($id === '') {
+            $param = array(
+                'id_tabungan' => post_safe('norek'),
+                'tanggal' => date("Y-m-d"),
+                'keluar' => currencyToNumber(post_safe('nominal_tabungan')),
+                'sandi' => '1',
+                'id_user' => $this->session->userdata('id_user')
+            );
+            $this->db->insert('tb_detail_tabungan', $param);
+            $id_detail_tabungan = $this->db->insert_id();
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $result['status'] = FALSE;
+            }
+
+            $sql = "select a.nama, a.no_rekening 
+                from tb_anggota a
+                join tb_tabungan t on (t.id_anggota = a.id)
+                where t.id = '".  post_safe('norek')."'
+                ";
+            $data_anggota = $this->db->query($sql)->row();
+            $arus_kas = array(
+                'transaksi' => 'Tabungan',
+                'id_transaksi' => $id_detail_tabungan,
+                'keluar' => currencyToNumber(post_safe('nominal_tabungan')),
+                'keterangan' => 'Tabungan '.$data_anggota->no_rekening.' '.$data_anggota->nama,
+                'id_user' => $this->session->userdata('id_user')
+            );
+            $this->save_arus_kas($arus_kas);
+            $result['act'] = 'add';
+        } else {
+            $param = array(
+                'id_tabungan' => post_safe('norek'),
+                'tanggal' => date("Y-m-d"),
+                'keluar' => currencyToNumber(post_safe('nominal_tabungan')),
+                'sandi' => '1',
+                'id_user' => $this->session->userdata('id_user')
+            );
+            $this->db->where('id', $id);
+            $this->db->update('tb_detail_tabungan', $param);
+            $id_detail_tabungan = $this->db->insert_id();
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $result['status'] = FALSE;
+            }
+            $result['act'] = 'edit';
         }
-        
-        $sql = "select a.nama, a.no_rekening 
-            from tb_anggota a
-            join tb_tabungan t on (t.id_anggota = a.id)
-            where t.id = '".  post_safe('norek')."'
-            ";
-        $data_anggota = $this->db->query($sql)->row();
-        $arus_kas = array(
-            'transaksi' => 'Tabungan',
-            'id_transaksi' => $id_detail_tabungan,
-            'keluar' => currencyToNumber(post_safe('nominal_tabungan')),
-            'keterangan' => 'Tabungan '.$data_anggota->no_rekening.' '.$data_anggota->nama,
-            'id_user' => $this->session->userdata('id_user')
-        );
-        $this->save_arus_kas($arus_kas);
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
             $result['status'] = FALSE;
