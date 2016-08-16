@@ -118,7 +118,7 @@ class M_laporan extends CI_Model {
             from tb_tabungan t
             join tb_detail_tabungan dt on (dt.id_tabungan = t.id)
             join tb_anggota a on (t.id_anggota = a.id)
-            join tb_usersystem u on (dt.id_user = u.id_user)
+            left join tb_usersystem u on (dt.id_user = u.id_user)
             where t.id_anggota = '".$id_anggota."' $q
                 order by dt.id asc
                 ";
