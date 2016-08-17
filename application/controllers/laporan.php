@@ -46,7 +46,7 @@ class Laporan extends CI_Controller {
     }
     
     function simpanan_wajib() {
-        $data['title'] = 'Data Utama Anggota';
+        $data['title'] = 'Rekap Simpanan Wajib';
         $this->load->view('laporan/simpanan-wajib', $data);
     }
 }

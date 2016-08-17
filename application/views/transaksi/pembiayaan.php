@@ -164,8 +164,8 @@
     function reset_form() {
         $('input, select, textarea').val('');
         $('input[type=checkbox], input[type=radio]').removeAttr('checked');
-        $('#awal').val('<?= date("01/m/Y") ?>');
-        $('#akhir').val('<?= date("d/m/Y") ?>');
+        $('#awal').val('');
+        $('#akhir').val('');
     }
 
     function edit_pembiayaan(id) {
@@ -479,8 +479,8 @@
                     <input type="hidden" name="id" id="id" />
                     <div class="form-group">
                         <label class="control-label">Tanggal:</label>
-                        <span><input type="text" name="awal" id="awal" class="form-control" value="<?= date("01/m/Y") ?>" style="width: 145px; float: left; margin-right: 10px;" id="awal" value="<?= date("d/m/Y") ?>" /> </span>
-                        <span><input type="text" name="akhir" id="akhir" class="form-control" value="<?= date("d/m/Y") ?>" style="width: 145px;" id="awal" value="<?= date("d/m/Y") ?>" /> </span>
+                        <span><input type="text" name="awal" id="awal" class="form-control" value="" style="width: 145px; float: left; margin-right: 10px;" id="awal" value="<?= date("d/m/Y") ?>" /> </span>
+                        <span><input type="text" name="akhir" id="akhir" class="form-control" value="" style="width: 145px;" id="awal" value="<?= date("d/m/Y") ?>" /> </span>
                     </div>
                     <div class="form-group">
                         <label class="control-label">No. Rekening:</label>

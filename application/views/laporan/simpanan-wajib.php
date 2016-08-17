@@ -263,7 +263,7 @@
                             <th width="10%" class="left">No. Rek</th>
                             <th width="10%" class="left">No. KTP</th>
                             <th width="20%" class="left">Nama</th>
-                            <th width="10%" class="right">Saldo</th>
+                            <th width="10%" class="right">Simp. Wajib</th>
                             <th width="45%" class="left">Alamat</th>
                             
                             
