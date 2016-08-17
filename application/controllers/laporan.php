@@ -44,4 +44,9 @@ class Laporan extends CI_Controller {
         $data['title'] = 'Rekap Arus Kas';
         $this->load->view('laporan/rekap-arus-kas', $data);
     }
+    
+    function simpanan_wajib() {
+        $data['title'] = 'Data Utama Anggota';
+        $this->load->view('laporan/simpanan-wajib', $data);
+    }
 }

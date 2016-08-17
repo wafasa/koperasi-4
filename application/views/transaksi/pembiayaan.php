@@ -180,6 +180,7 @@
             success: function(data) {
                 //$('#tanggal_disetujui, #jumlah, #lama').removeAttr('disabled');
                 var data = data.data[0];
+                var jml_pinjaman = data.jml_pinjaman.split('.');
                 $('#id').val(data.id);
                 $('#nama').val(data.nama);
                 $('#noktp').val(data.no_ktp);
@@ -198,11 +199,12 @@
                 $('#infodari').val(data.info_dari);
                 
                 $('#tanggal_disetujui').val(datefmysql(data.tgl_pinjam));
-                $('#jumlah').val(money_format(data.jml_pinjaman));
+                $('#tanggal_disetujui').datepicker('setDate', datefmysql(data.tgl_pinjam));
+                $('#jumlah').val(numberToCurrency(jml_pinjaman[0]));
                 $('#lama').val(data.lama_pinjaman);
                 
                 //if (parseFloat(data.sisa_angsuran) !== parseFloat(data.ttl_pengembalian)) {
-                    $('#tanggal_disetujui, #jumlah, #lama').attr('disabled','disabled');
+                    //$('#tanggal_disetujui, #jumlah, #lama').attr('disabled','disabled');
                 //}
             }
         });

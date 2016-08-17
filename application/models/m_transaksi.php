@@ -443,7 +443,8 @@ class M_transaksi extends CI_Model {
             'no_ktp' => post_safe('noktp'),
             'nama' => post_safe('nama'),
             'alamat' => post_safe('alamat'),
-            'tgl_masuk' => date2mysql(post_safe('tanggal'))
+            'tgl_masuk' => date2mysql(post_safe('tanggal')),
+            'simpanan_wajib' => currencyToNumber(post_safe('jumlah_simpanan_wajib'))
         );
         if ($data_anggota['id'] === '') {
             $data_anggota['no_rekening'] = $this->create_nomor_rek_tabungan();
@@ -495,10 +496,78 @@ class M_transaksi extends CI_Model {
                 'transaksi' => 'Tabungan',
                 'id_transaksi' => $id_tabungan,
                 'masuk' => currencyToNumber(post_safe('jumlah')),
-                'keterangan' => 'Pembukaan tabungan '.$data_anggota['no_rekening'].' '.$data_anggota['nama'],
+                'keterangan' => 'Pembukaan simpanan '.$data_anggota['no_rekening'].' '.$data_anggota['nama'],
                 'id_user' => $this->session->userdata('id_user')
             );
             $this->save_arus_kas($arus_kas);
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $result['status'] = FALSE;
+            }
+            
+            $arus_kas2 = array(
+                'id_transaksi' => 'Tabungan',
+                'id_transaksi' => $id_tabungan,
+                'masuk' => currencyToNumber(post_safe('jumlah_simpanan_wajib')),
+                'keterangan' => 'Simpanan wajib '.$data_anggota['no_rekening'].' '.$data_anggota['nama'],
+                'id_user' => $this->session->userdata('id_user')
+            );
+            $this->save_arus_kas($arus_kas2);
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $result['status'] = FALSE;
+            }
+        } else {
+            
+            $data_tabungan = array(
+                'id_anggota' => $id_anggota,
+                'tanggal_update' => date("Y-m-d"),
+                'status_bunga' => '0',
+                'saldo' => currencyToNumber(post_safe('jumlah')),
+                'aktif' => 'Ya'
+            );
+            $this->db->where('id_anggota', $id_anggota);
+            $this->db->update('tb_tabungan', $data_tabungan);
+            $id_tabungan = $this->db->insert_id();
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $result['status'] = FALSE;
+            }
+            
+            $data_detail_tabungan = array(
+                'id_tabungan' => $id_tabungan,
+                'tanggal' => date("Y-m-d"),
+                'masuk' => currencyToNumber(post_safe('jumlah')),
+                'sandi' => '1',
+                'id_user' => $this->session->userdata('id_user')
+            );
+            $this->db->insert('tb_detail_tabungan', $data_detail_tabungan);
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $result['status'] = FALSE;
+            }
+            
+            $arus_kas = array(
+                'transaksi' => 'Tabungan',
+                'id_transaksi' => $id_tabungan,
+                'masuk' => currencyToNumber(post_safe('jumlah')),
+                'keterangan' => 'Pembukaan simpanan '.$data_anggota['no_rekening'].' '.$data_anggota['nama'],
+                'id_user' => $this->session->userdata('id_user')
+            );
+            $this->save_arus_kas($arus_kas);
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $result['status'] = FALSE;
+            }
+            
+            $arus_kas2 = array(
+                'id_transaksi' => 'Tabungan',
+                'id_transaksi' => $id_tabungan,
+                'masuk' => currencyToNumber(post_safe('jumlah_simpanan_wajib')),
+                'keterangan' => 'Simpanan wajib '.$data_anggota['no_rekening'].' '.$data_anggota['nama'],
+                'id_user' => $this->session->userdata('id_user')
+            );
+            $this->save_arus_kas($arus_kas2);
             if ($this->db->trans_status() === FALSE) {
                 $this->db->trans_rollback();
                 $result['status'] = FALSE;

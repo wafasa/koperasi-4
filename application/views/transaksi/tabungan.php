@@ -167,13 +167,15 @@
             dataType: 'json',
             success: function(data) {
                 var data = data.data[0];
+                var saldo_awal = data.pembukaan_saldo.split('.');
                 $('#id').val(data.id);
                 $('#tanggal').val(datefmysql(data.tgl_masuk));
                 $('#nama').val(data.nama);
                 $('#norek').val(data.no_rekening);
                 $('#noktp').val(data.no_ktp);
                 $('#alamat').val(data.alamat);
-                $('#jumlah').val(money_format(data.pembukaan_saldo)).attr('disabled','disabled');
+                $('#jumlah').val(numberToCurrency(saldo_awal[0]));
+                $('#jumlah_simpanan_wajib').val(numberToCurrency(data.simpanan_wajib));
             }
         });
     }
@@ -241,7 +243,7 @@
 
     function delete_tabungan(id, page) {
         bootbox.dialog({
-            message: "Anda yakin akan menghapus data ini?",
+            message: "<b>Semua transaksi yang terkait dengan nasabah ini akan ikut terhapus</b><br/>Anda yakin akan menghapus data ini?",
             title: "Konfirmasi Hapus",
             buttons: {
               batal: {
@@ -327,7 +329,7 @@
                     <div id="wizard">
                         <ol>
                           <li>Data Nasabah</li>
-                          <li>Data Tabungan</li>
+                          <li>Data Simpanan</li>
                         </ol>
                         <div>
                             <input type="hidden" name="id" id="id" />
@@ -362,8 +364,12 @@
                         </div>
                         <div>
                             <div class="form-group tight">
-                                <label class="control-label">Jumlah Pembukaan Tabungan:</label>
+                                <label class="control-label">Jumlah Simpanan Pokok:</label>
                                 <input type="text" name="jumlah" onblur="FormNum(this);" class="form-control" id="jumlah" />
+                            </div>
+                            <div class="form-group tight">
+                                <label class="control-label">Jumlah Simpanan Wajib:</label>
+                                <input type="text" name="jumlah_simpanan_wajib" onblur="FormNum(this);" class="form-control" id="jumlah_simpanan_wajib" />
                             </div>
                         </div>
                     </div>

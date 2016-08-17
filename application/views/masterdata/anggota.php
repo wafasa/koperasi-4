@@ -97,7 +97,7 @@
                             '<td>'+v.nama+'</td>'+
                             '<td>'+v.alamat+'</td>'+
                             //'<td align="right">'+money_format(v.saldo)+'</td>'+
-                            '<td align="center" class=aksi>'+
+                            '<td align="right" class=aksi>'+
                                 '<button type="button" class="btn btn-default btn-mini" onclick="edit_anggota(\''+v.id+'\')"><i class="fa fa-pencil"></i></button> '+
                                 //'<button type="button" class="btn btn-default btn-mini" onclick="delete_tabungan(\''+v.id+'\','+data.page+');"><i class="fa fa-trash-o"></i></button>'+
                             '</td>'+

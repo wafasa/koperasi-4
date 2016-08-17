@@ -58,29 +58,44 @@ class Transaksi extends REST_Controller {
             'tgl_masuk' => date2mysql(post_safe('tanggal')),
             'pekerjaan' => post_safe('pekerjaan')
         );
-        $this->m_transaksi->save_debitur($data_debitur);
+        //$this->m_transaksi->save_debitur($data_debitur);
         if ($data_debitur['id'] === '') {
+            $this->db->insert('tb_debitur', $data_debitur);
             $id_debitur = $this->db->insert_id();
+            
+            $data_pelengkap = array(
+                'id_debitur' => $id_debitur,
+                'agama' => post_safe('agama'),
+                'nama_psg' => post_safe('nama_psg'),
+                'pekerjaan_psg' => post_safe('pekerjaan_psg'),
+                'status_rumah' => post_safe('status_rumah'),
+                'penghasilan_bln' => post_safe('penghasilan'),
+                'pengeluaran_bln' => post_safe('pengeluaran'),
+                'jaminan' => post_safe('jaminan'),
+                'rencana_pembiayaan' => post_safe('rencana_pembiayaan'),
+                'info_dari' => post_safe('infodari')
+            );
+            $this->db->insert('tb_detail_debitur',$data_pelengkap);
         } else {
+            $this->db->where('id', $data_debitur['id']);
+            $this->db->update('tb_debitur', $data_debitur);
+            
+            $data_pelengkap = array(
+                'id_debitur' => $data_debitur['id'],
+                'agama' => post_safe('agama'),
+                'nama_psg' => post_safe('nama_psg'),
+                'pekerjaan_psg' => post_safe('pekerjaan_psg'),
+                'status_rumah' => post_safe('status_rumah'),
+                'penghasilan_bln' => post_safe('penghasilan'),
+                'pengeluaran_bln' => post_safe('pengeluaran'),
+                'jaminan' => post_safe('jaminan'),
+                'rencana_pembiayaan' => post_safe('rencana_pembiayaan'),
+                'info_dari' => post_safe('infodari')
+            );
+            $this->db->where('id_debitur', $data_debitur['id']);
+            $this->db->update('tb_detail_debitur',$data_pelengkap);
             $id_debitur = $data_debitur['id'];
         }
-        if ($this->db->trans_status() === FALSE) {
-            $this->db->trans_rollback();
-            $result['status'] = FALSE;
-        }
-        $data_pelengkap = array(
-            'id_debitur' => $id_debitur,
-            'agama' => post_safe('agama'),
-            'nama_psg' => post_safe('nama_psg'),
-            'pekerjaan_psg' => post_safe('pekerjaan_psg'),
-            'status_rumah' => post_safe('status_rumah'),
-            'penghasilan_bln' => post_safe('penghasilan'),
-            'pengeluaran_bln' => post_safe('pengeluaran'),
-            'jaminan' => post_safe('jaminan'),
-            'rencana_pembiayaan' => post_safe('rencana_pembiayaan'),
-            'info_dari' => post_safe('infodari')
-        );
-        $this->m_transaksi->save_detail_debitur($data_pelengkap);
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
             $result['status'] = FALSE;
@@ -117,7 +132,7 @@ class Transaksi extends REST_Controller {
                 $this->db->trans_rollback();
                 $result['status'] = FALSE;
             } 
-
+            
             for ($i = 1; $i <= post_safe('lama'); $i++) {
                 $x= mktime(0, 0, 0, date("m")+$i, date("d"), date("Y"));
                 $jatuh_tempo_perbulan = date("Y-m-d",$x);
@@ -139,6 +154,78 @@ class Transaksi extends REST_Controller {
                 }
             }
 
+            $arus_kas = array(
+                'transaksi' => 'Pembiayaan',
+                'id_transaksi' => $id_pinjaman,
+                'keluar' => currencyToNumber(post_safe('jumlah')),
+                'keterangan' => 'Pembiayaan '.  $data_debitur['nomor_rekening'].' '.post_safe('nama'),
+                'id_user' => $this->session->userdata('id_user')
+            );
+            $this->m_transaksi->save_arus_kas($arus_kas);
+        } else {
+            
+            $jum  = currencyToNumber(post_safe('jumlah'));
+            $data = $this->db->get_where('tb_jasa', array('jenis' => '1'))->row();
+            $jasa = $jum * ($data->jasa/100);
+            $pokok= ceil($jum / post_safe('lama'));
+            $janji= ($pokok * post_safe('lama')) + ($jasa * post_safe('lama'));
+            $angs = $jasa + $pokok;
+            $varia = mktime(0, 0, 0, date("m")+post_safe('lama'), date("d"), date("Y"));
+            $tempo= date("Y-m-d",$varia);
+            $data_pinjaman = array(
+                'id_debitur' => $id_debitur,
+                'tgl_pinjam' => date2mysql(post_safe('tanggal_disetujui')),
+                'tgl_tempo' => $tempo,
+                'jml_pinjaman' => currencyToNumber(post_safe('jumlah')),
+                'ttl_pengembalian' => $janji,
+                'bsr_angsuran' => $angs,
+                'angsuran_pokok' => $pokok,
+                'jasa_angsuran' => $jasa,
+                'sisa_angsuran' => $janji,
+                'jenis_pinjaman' => post_safe('jenis_pinjaman'),
+                'lama_pinjaman' => post_safe('lama')
+            );
+            $this->db->where('id_debitur', $id_debitur);
+            $this->db->update('tb_pinjaman',$data_pinjaman);
+            $get = $this->db->get_where('tb_pinjaman', array('id_debitur' => $id_debitur))->row();
+            $id_pinjaman = $get->id;
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $result['status'] = FALSE;
+            } 
+            
+            $this->db->delete('tb_detail_pinjaman', array('id_pinjaman' => $id_pinjaman));
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $result['status'] = FALSE;
+            } 
+            
+            for ($i = 1; $i <= post_safe('lama'); $i++) {
+                $x= mktime(0, 0, 0, date("m")+$i, date("d"), date("Y"));
+                $jatuh_tempo_perbulan = date("Y-m-d",$x);
+                $newsisa = $pokok * (post_safe('lama') - $i);
+                $detail_pinjaman = array(
+                    'id_pinjaman' => $id_pinjaman,
+                    'angsuran_ke' => $i,
+                    'jatuh_tempo' => $jatuh_tempo_perbulan,
+                    'pokok' => $pokok,
+                    'jasa' => $jasa,
+                    'jml_angsuran' => $angs,
+                    'sisa_pokok' => $newsisa,
+                    'status_bayar' => 'Belum'
+                );
+                $this->m_transaksi->save_detail_pinjaman($detail_pinjaman);
+                if ($this->db->trans_status() === FALSE) {
+                    $this->db->trans_rollback();
+                    $result['status'] = FALSE;
+                }
+            }
+
+            $this->db->delete('tb_arus_kas', array('transaksi' => 'Pembiayaan', 'id_transaksi' => $id_pinjaman));
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $result['status'] = FALSE;
+            }
 
             $arus_kas = array(
                 'transaksi' => 'Pembiayaan',
@@ -265,6 +352,10 @@ class Transaksi extends REST_Controller {
     function tabungan_post() {
         $data = $this->m_transaksi->save_pembukaan_tabungan();
         $this->response($data, 200);
+    }
+    
+    function tabungan_delete() {
+        $this->db->delete('tb_tabungan', array('id' => $this->get('id')));
     }
     
     /*Setoran Tabungan*/
