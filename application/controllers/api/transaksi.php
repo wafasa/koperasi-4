@@ -162,6 +162,26 @@ class Transaksi extends REST_Controller {
                 'id_user' => $this->session->userdata('id_user')
             );
             $this->m_transaksi->save_arus_kas($arus_kas);
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $result['status'] = FALSE;
+            }
+            
+            $get_adm = $this->db->get_where('tb_setting_administrasi')->row();
+            $bea_adm = currencyToNumber(post_safe('jumlah'))*($get_adm->administrasi/100);
+            $data_adpro = array(
+                'id_pinjaman' => $id_pinjaman,
+                'tgl_input' => date2mysql(post_safe('tanggal_disetujui')),
+                'biaya_adm' => $bea_adm,
+                'biaya_ca' => $get_adm->calon_agt,
+                'survey' => $get_adm->survey,
+                'stofmap' => $get_adm->stofmap
+            );
+            $this->db->insert('tb_adpro', $data_adpro);
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $result['status'] = FALSE;
+            }
         } else {
             
             $jum  = currencyToNumber(post_safe('jumlah'));
@@ -235,6 +255,26 @@ class Transaksi extends REST_Controller {
                 'id_user' => $this->session->userdata('id_user')
             );
             $this->m_transaksi->save_arus_kas($arus_kas);
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $result['status'] = FALSE;
+            }
+            
+            $get_adm = $this->db->get_where('tb_setting_administrasi')->row();
+            $bea_adm = currencyToNumber(post_safe('jumlah'))*($get_adm->administrasi/100);
+            $data_adpro = array(
+                'id_pinjaman' => $id_pinjaman,
+                'tgl_input' => date2mysql(post_safe('tanggal_disetujui')),
+                'biaya_adm' => $bea_adm,
+                'biaya_ca' => $get_adm->calon_agt,
+                'survey' => $get_adm->survey,
+                'stofmap' => $get_adm->stofmap
+            );
+            $this->db->insert('tb_adpro', $data_adpro);
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $result['status'] = FALSE;
+            }
         }
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();

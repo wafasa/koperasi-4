@@ -67,23 +67,23 @@
                         <div class="form-group">
                         <label class="form-label">Biaya Administrasi (%):</label>
                             <div class="controls">
-                                <input type="number" min="1" max="100" name="administrasi" id="administrasi" class="form-control" />
+                                <input type="number" min="1" max="100" maxlength="3" name="administrasi" id="administrasi" class="form-control" />
                             </div>
                         </div>
                         <div class="form-group">
-                        <label class="form-label">Biaya Calon Anggota:</label>
+                        <label class="form-label">Biaya Calon Anggota (Rp):</label>
                             <div class="controls">
                                 <input type="text" name="calon_anggota" id="calon_anggota" onblur="FormNum(this);" class="form-control" />
                             </div>
                         </div>
                         <div class="form-group">
-                        <label class="form-label">Biaya Survey:</label>
+                        <label class="form-label">Biaya Survey (Rp):</label>
                             <div class="controls">
                                 <input type="text" name="survey" id="survey" onblur="FormNum(this);" class="form-control" />
                             </div>
                         </div>
                         <div class="form-group">
-                        <label class="form-label">Biaya Stofmap:</label>
+                        <label class="form-label">Biaya Stofmap (Rp):</label>
                             <div class="controls">
                                 <input type="text" name="stofmap" id="stofmap" onblur="FormNum(this);" class="form-control" />
                             </div>
