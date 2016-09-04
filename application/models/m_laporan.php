@@ -59,7 +59,7 @@ class M_laporan extends CI_Model {
         $sql = " 
             from tb_detail_pinjaman dp
             join tb_pinjaman pj on (dp.id_pinjaman = pj.id)
-            join tb_debitur db on (pj.id_debitur = db.id)
+            join tb_anggota db on (pj.id_debitur = db.id)
             where dp.tgl_bayar is NULL and status_bayar = 'Belum' and dp.jatuh_tempo <= NOW()";
         $limitation = null;
         if ($limit !== NULL) {
@@ -93,7 +93,7 @@ class M_laporan extends CI_Model {
         $sql = "
             from tb_adpro ap 
             join tb_pinjaman p on (ap.id_pinjaman = p.id)
-            join tb_debitur d on (p.id_debitur = d.id)
+            join tb_anggota d on (p.id_debitur = d.id)
             join tb_detail_debitur dd on (dd.id_debitur = d.id)
             where p.id is not NULL ";
         $limitation = null;
@@ -133,5 +133,35 @@ class M_laporan extends CI_Model {
         }
         $data['data'] = $result;
         return $data;
+    }
+    
+    function get_pendapatan_bunga($year) {
+        $sql = "select sum(jasa) as bunga 
+            from tb_detail_pinjaman
+            where status_bayar = 'Sudah'
+                and YEAR(tgl_bayar) = '".$year."'";
+        return $this->db->query($sql)->row()->bunga;
+    }
+    
+    function get_pendapatan_simpanan($year) {
+        $sql_wajib = "select sum(simpanan_wajib) as simpanan_wajib
+            from tb_anggota where YEAR(tgl_masuk) = '".$year."'";
+        $wajib = $this->db->query($sql_wajib)->row()->simpanan_wajib;
+        $sql_pokok = "select sum(masuk)-sum(keluar) as pokok
+            from tb_detail_tabungan where YEAR(tanggal) = '".$year."'";
+        $pokok = $this->db->query($sql_pokok)->row()->pokok;
+        
+        $simpanan = $wajib;
+        return $simpanan;
+    }
+    
+    function get_pengeluaran($year) {
+        $sql = "select sum(o.nominal) as pengeluaran
+            from tb_operasional o
+            join tb_jenis_transaksi j on (o.id_jenis = j.id)
+            where YEAR(o.tanggal) = '".$year."'
+                and j.jenis = 'Pengeluaran'
+            ";
+        return $this->db->query($sql)->row()->pengeluaran;
     }
 }

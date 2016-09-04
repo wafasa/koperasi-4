@@ -33,7 +33,7 @@ Version: 3.4.5 Timestamp: Mon Nov  4 08:22:42 PST 2013
     overflow: hidden;
     position: relative;
     min-width: 300px;
-    border: 1px solid #abadb3;
+    border: 1px solid #eeeeee;
     white-space: nowrap;
     line-height: 18px;
     color: #444;

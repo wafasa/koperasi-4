@@ -10,7 +10,7 @@ class M_transaksi extends CI_Model {
     function get_list_pembiayaans($limit = null, $start = null, $search = null) {
         $q = null;
         if ($search['id'] !== '') {
-            $q.=" and d.id = '".$search['id']."'";
+            $q.=" and p.id = '".$search['id']."'";
         }
         if ($search['awal'] !== '' and $search['akhir'] !== '') {
             $q.=" and p.tgl_pinjam between '".date2mysql($search['awal'])."' and '".  date2mysql($search['akhir'])."'";
@@ -19,12 +19,12 @@ class M_transaksi extends CI_Model {
             $q.=" and p.id = '".$search['norek']."'";
         }
         
-        $select = "select d.*, p.*, dd.*, d.id ";
+        $select = "select d.*, p.*, dd.*, p.id ";
         $count  = "select count(p.id) as count ";
         $sql = "
             from tb_pinjaman p
-            join tb_debitur d on (p.id_debitur = d.id)
-            join tb_detail_debitur dd on (dd.id_debitur = d.id)
+            join tb_anggota d on (p.id_debitur = d.id)
+            left join tb_detail_debitur dd on (dd.id_pinjaman = p.id)
             where p.id is not NULL ";
         $limitation = null;
         if ($limit !== NULL) {
@@ -39,7 +39,7 @@ class M_transaksi extends CI_Model {
     }
     
     function create_nomor_rek_pinjaman() {
-        $sql = "select convert(SUBSTR(nomor_rekening, 3, 6),decimal) as nomor from tb_debitur order by nomor desc limit 1";
+        $sql = "select convert(SUBSTR(nomor_rekening, 3, 6),decimal) as nomor from tb_anggota order by nomor desc limit 1";
         $get = $this->db->query($sql)->row();
         if (!isset($get->nomor)) {
             $auto = '000001';
@@ -51,10 +51,10 @@ class M_transaksi extends CI_Model {
     
     function save_debitur($data) {
         if ($data['id'] === '') {
-            $this->db->insert('tb_debitur', $data);
+            $this->db->insert('tb_anggota', $data);
         } else {
             $this->db->where('id', $data['id']);
-            $this->db->update('tb_debitur', $data);
+            $this->db->update('tb_anggota', $data);
         }
     }
     
@@ -129,21 +129,28 @@ class M_transaksi extends CI_Model {
             $q.=" and d.nama like ('%".$search['nama']."%')";
         }
         
-        $select = "select p.*, d.nama, d.nomor_rekening, dp.tgl_bayar, dp.angsuran_ke, dp.id as id_detail ";
+        $select = "select p.*, d.nama, d.no_rekening, dp.tgl_bayar, dp.angsuran_ke, dp.id as id_detail ";
         $count  = "select count(*) as count ";
         $sql = " 
             from tb_detail_pinjaman dp
             join tb_pinjaman p on (dp.id_pinjaman = p.id)
-            join tb_debitur d on (p.id_debitur = d.id)
+            join tb_anggota d on (p.id_debitur = d.id)
             where dp.tgl_bayar is not NULL ";
         $limitation = null;
         if ($limit !== NULL) {
             $limitation.=" limit $start , $limit";
         }
         $order=" order by dp.tgl_bayar desc";
-        //echo $sql . $q . $order. $limitation;
-        
-        $data['data'] = $this->db->query($select.$sql.$q.$order.$limitation)->result();
+        $result = $this->db->query($select.$sql.$q.$order.$limitation)->result();
+        foreach ($result as $key => $value) {
+            $sql_child = "select ".$value->ttl_pengembalian."-sum(jml_angsuran) as total_angsuran
+                from tb_detail_pinjaman
+                where id_pinjaman = '".$value->id."'
+                    and angsuran_ke <= '".$value->angsuran_ke."'
+                ";
+            $result[$key]->sisa_angsuran = $this->db->query($sql_child)->row()->total_angsuran;
+        }
+        $data['data'] = $result;
         $data['jumlah'] = $this->db->query($count.$sql.$q)->row()->count;
         return $data;
     }
@@ -159,7 +166,7 @@ class M_transaksi extends CI_Model {
         $sql = "select dp.*, d.nama, d.nomor_rekening 
             from tb_detail_pinjaman dp
             join tb_pinjaman p on (dp.id_pinjaman = p.id)
-            join tb_debitur d on (p.id_debitur = d.id)
+            join tb_anggota d on (p.id_debitur = d.id)
             where id_pinjaman = '".$data['id_pinjaman']."' 
                 and tgl_bayar is NULL 
                 order by angsuran_ke asc 
@@ -201,10 +208,10 @@ class M_transaksi extends CI_Model {
         $q = NULL;
         
         $limitation = " limit $start, $limit";
-        $select = "select p.*, d.nama, d.alamat, d.nomor_rekening ";
+        $select = "select p.*, d.nama, d.alamat, d.no_rekening ";
         $count = "select count(*) as count ";
         $sql = "from tb_pinjaman p
-            join tb_debitur d on (p.id_debitur = d.id)
+            join tb_anggota d on (p.id_debitur = d.id)
             where (d.nama like ('%".$search['search']."%') or d.nomor_rekening like ('%".$search['search']."%')) 
                 $q 
             order by d.nomor_rekening";
@@ -212,6 +219,13 @@ class M_transaksi extends CI_Model {
         foreach ($result as $key => $value) {
             $sql_child = "select * from tb_detail_pinjaman where id_pinjaman = '".$value->id."' and tgl_bayar is NULL";
             $result[$key]->sisa_kali_angsuran = $this->db->query($sql_child)->result();
+            
+            $sql_child = "select ".$value->ttl_pengembalian."-sum(jml_angsuran) as total_angsuran
+                from tb_detail_pinjaman
+                where id_pinjaman = '".$value->id."'
+                    and tgl_bayar is not NULL
+                ";
+            $result[$key]->sisa_angsuran = $this->db->query($sql_child)->row()->total_angsuran;
         }
         $data['data'] = $result;
         $data['total'] = $this->db->query($count.$sql)->row()->count;
@@ -311,11 +325,17 @@ class M_transaksi extends CI_Model {
         if ($search['id_anggota'] !== '') {
             $q.=" and a.id = '".$search['id_anggota']."'";
         }
+        if ($search['nama'] !== '') {
+            $q.=" and a.nama like '%".$search['nama']."%'";
+        }
+        if ($search['no_rekening'] !== '') {
+            $q.=" and a.no_rekening like '%".$search['no_rekening']."%'";
+        }
         if ($search['awal'] !== '' and $search['akhir'] !== '') {
             $q.=" and a.tgl_masuk between '".date2mysql($search['awal'])."' and '".date2mysql($search['akhir'])."'";
         }
         
-        $select = "select a.*, t.saldo as pembukaan_saldo ";
+        $select = "select a.*, t.saldo as pembukaan_saldo, a.id as id_anggota ";
         $count  = "select count(*) as count ";
         $sql = " 
             from tb_tabungan t
@@ -334,6 +354,16 @@ class M_transaksi extends CI_Model {
                 where id_tabungan = '".$value->id."'
                 ";
             $result[$key]->saldo = $this->db->query($sql_child)->row()->total;
+            
+            $sql_shu_jasa_usaha = "select IFNULL(sum(jasa),0) as total 
+                from tb_detail_pinjaman dp
+                join tb_pinjaman p on (dp.id_pinjaman = p.id)
+                join tb_anggota a on (p.id_debitur = a.id)
+                where a.id = '".$value->id_anggota."'
+                    and YEAR(dp.tgl_bayar) = '".date("Y")."'
+                ";
+            $result[$key]->shu_jasa_usaha = $this->db->query($sql_shu_jasa_usaha)->row()->total;
+            
         }
         $data['data'] = $result;
         $data['jumlah'] = $this->db->query($count.$sql.$q)->row()->count;
@@ -358,6 +388,24 @@ class M_transaksi extends CI_Model {
                 where id_tabungan = '".$value->id."'";
             $result[$key]->saldo = $this->db->query($sql_child)->row()->saldo;
         }
+        $data['data'] = $result;
+        $data['total'] = $this->db->query($count.$sql)->row()->count;
+        
+        return $data;
+    }
+    
+    function get_auto_anggota($search, $start, $limit) {
+        $q = NULL;
+        
+        $limitation = " limit $start, $limit";
+        $select = "select * ";
+        $count  = "select count(*) as count ";
+        $sql = "
+            from tb_anggota 
+            where nama like '%".$search['search']."%'
+                or no_rekening like '%".$search['search']."%'
+                ";
+        $result = $this->db->query($select.$sql.$limitation)->result();
         $data['data'] = $result;
         $data['total'] = $this->db->query($count.$sql)->row()->count;
         
@@ -506,7 +554,7 @@ class M_transaksi extends CI_Model {
             }
             
             $arus_kas2 = array(
-                'id_transaksi' => 'Tabungan',
+                'transaksi' => 'Tabungan',
                 'id_transaksi' => $id_tabungan,
                 'masuk' => currencyToNumber(post_safe('jumlah_simpanan_wajib')),
                 'keterangan' => 'Simpanan wajib '.$data_anggota['no_rekening'].' '.$data_anggota['nama'],
@@ -528,7 +576,17 @@ class M_transaksi extends CI_Model {
             );
             $this->db->where('id_anggota', $id_anggota);
             $this->db->update('tb_tabungan', $data_tabungan);
-            $id_tabungan = $this->db->insert_id();
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $result['status'] = FALSE;
+            }
+            $id_tabungan = $this->db->get_where('tb_tabungan', array('id_anggota' => $id_anggota))->row()->id;
+            $this->db->delete('tb_detail_tabungan', array('id' => $id_tabungan));
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $result['status'] = FALSE;
+            }
+            $this->db->delete('tb_arus_kas', array('id_transaksi' => $id_tabungan, 'transaksi' => 'Tabungan'));
             if ($this->db->trans_status() === FALSE) {
                 $this->db->trans_rollback();
                 $result['status'] = FALSE;
@@ -546,6 +604,8 @@ class M_transaksi extends CI_Model {
                 $this->db->trans_rollback();
                 $result['status'] = FALSE;
             }
+            
+            $data_anggota['no_rekening'] = $this->db->get_where('tb_anggota', array('id' => $id_anggota))->row()->no_rekening;
             
             $arus_kas = array(
                 'transaksi' => 'Tabungan',

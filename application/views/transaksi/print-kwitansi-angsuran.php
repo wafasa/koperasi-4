@@ -33,7 +33,7 @@
                 <tr>
                     <td width="34%">No. Rekening</td>
                     <td width="2%"></td>
-                    <td width="64%" style="white-space: nowrap;"><?= $value->nomor_rekening ?></td>
+                    <td width="64%" style="white-space: nowrap;"><?= $value->no_rekening ?></td>
                 </tr>
             </table>
         </div>

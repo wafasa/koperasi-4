@@ -24,7 +24,7 @@ class Masterdata_auto extends REST_Controller{
         $start = $this->start(get_safe('page'));
         $data = $this->m_transaksi->get_auto_rekening_pinjaman($param, $start, $this->limit);
         if ((get_safe('page') == 1) & (get_safe('q') == '')) {
-            $pilih[] = array('id'=>'', 'nomor_rekening' => '', 'nama' =>'', 'alamat' => '');
+            $pilih[] = array('id'=>'', 'no_rekening' => '', 'nama' =>'', 'alamat' => '');
             $data['data'] = array_merge($pilih, $data['data']);
             $data['total'] += 1;
         }
@@ -43,12 +43,12 @@ class Masterdata_auto extends REST_Controller{
         $this->response($data, 200);
     }
     
-    function rka_auto_get() {
+    function anggota_auto_get() {
         $param['search']    = get_safe('q');
         $start = $this->start(get_safe('page'));
-        $data = $this->m_masterdata->get_auto_rka($param, $start, $this->limit);
+        $data = $this->m_transaksi->get_auto_anggota($param, $start, $this->limit);
         if ((get_safe('page') == 1) & (get_safe('q') == '')) {
-            $pilih[] = array('id'=>'', 'nomor_rekening' => '', 'nama' =>'', 'alamat' => '');
+            $pilih[] = array('id'=>'', 'no_rekening' => '', 'nama' =>'', 'alamat' => '');
             $data['data'] = array_merge($pilih, $data['data']);
             $data['total'] += 1;
         }

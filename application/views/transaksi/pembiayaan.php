@@ -31,17 +31,16 @@
             $(this).val(currencyToNumber(nilai));
         });
         
-        $('#parent_code').select2({
+        $('#nama').select2({
             width: '100%',
             ajax: {
-                url: "<?= base_url('api/masterdata_auto/pembiayaan_auto') ?>",
+                url: "<?= base_url('api/masterdata_auto/anggota_auto') ?>",
                 dataType: 'json',
                 quietMillis: 100,
                 data: function (term, page) { // page is the one-based page number tracked by Select2
                     return {
                         q: term, //search term
-                        page: page, // page number
-                        jenissppb: $('#jenisbarang2').val()
+                        page: page // page number
                     };
                 },
                 results: function (data, page) {
@@ -52,11 +51,14 @@
                 }
             },
             formatResult: function(data){
-                var markup = data.kode+' - '+data.nama_program;
+                var markup = data.no_rekening+' - '+data.nama+'<br/>'+data.alamat;
                 return markup;
             }, 
             formatSelection: function(data){
-                return data.kode+' - '+data.nama_program;
+                $('#alamat').val(data.alamat);
+                $('#norekening').val(data.no_rekening);
+                $('#nama_anggota').val(data.nama);
+                return data.no_rekening+' - '+data.nama;
             }
         });
         
@@ -81,11 +83,11 @@
                 }
             },
             formatResult: function(data){
-                var markup = data.nomor_rekening+' - '+data.nama;
+                var markup = data.no_rekening+' - '+data.nama;
                 return markup;
             }, 
             formatSelection: function(data){
-                return data.nomor_rekening+' - '+data.nama;
+                return data.no_rekening+' - '+data.nama;
             }
         });
     });
@@ -125,7 +127,7 @@
                     str+= '<tr data-tt-id='+i+' class="'+highlight+'">'+
                             '<td align="center">'+((i+1) + ((data.page - 1) * data.limit))+'</td>'+
                             '<td align="center">'+datefmysql(v.tgl_pinjam)+'</td>'+
-                            '<td align="center">'+v.nomor_rekening+'</td>'+
+                            '<td align="center">'+v.no_rekening+'</td>'+
                             '<td>'+v.nama+'</td>'+
                             '<td align="right">'+money_format(v.jml_pinjaman)+'</td>'+
                             '<td align="right">'+money_format(v.bsr_angsuran)+'</td>'+
@@ -166,6 +168,8 @@
         $('input[type=checkbox], input[type=radio]').removeAttr('checked');
         $('#awal').val('');
         $('#akhir').val('');
+        $('#tanggal').val('<?= date("d/m/Y") ?>');
+        $('.select2-chosen').html('');
     }
 
     function edit_pembiayaan(id) {
@@ -182,7 +186,11 @@
                 var data = data.data[0];
                 var jml_pinjaman = data.jml_pinjaman.split('.');
                 $('#id').val(data.id);
-                $('#nama').val(data.nama);
+                $('#s2id_nama a .select2-chosen').html(data.nama);
+                $('#nama').val(data.id_debitur);
+                $('#norekening').val(data.no_rekening);
+                $('#nama_anggota').val(data.nama);
+                $('#tanggal').val(datefmysql(data.tgl_pinjam));
                 $('#noktp').val(data.no_ktp);
                 $('#alamat').val(data.alamat);
                 $('#telp').val(data.no_telp);
@@ -228,7 +236,7 @@
                 }
               },
               ya: {
-                label: '<i class="fa fa-save"></i>  Ya',
+                label: '<i class="fa fa-check-circle"></i>  Ya',
                 className: "btn-primary",
                 callback: function() {
                     save_pembiayaan();
@@ -259,9 +267,6 @@
                 }
             },
             error: function() {
-                $('#datamodal').modal('hide');
-                var page = $('.pagination .active a').html();
-                get_list_pembiayaan(page);
                 hide_ajax_indicator();
             }
         });
@@ -354,106 +359,106 @@
               <h4 class="modal-title"></h4>
             </div>
             <div class="modal-body">
-                <form id="formadd" method="post" role="form">
+                <form id="formadd" method="post" role="form" class="form-horizontal">
                     <div id="wizard">
                         <ol>
-                          <li>Data Debitur</li>
-                          <li>Data Pelengkap</li>
+                          <li>Data Utama</li>
                           <li>Data Permohonan Pembiayaan</li>
                         </ol>
                         <div>
                             <input type="hidden" name="id" id="id" />
-                            <div class="form-group tight">
-                                <label class="control-label">Tanggal Daftar:</label>
-                                <input type="text" name="tanggal" class="form-control" style="width: 145px;" id="tanggal" value="<?= date("d/m/Y") ?>" />
-                            </div>
-                            <div class="form-group tight">
-                                <label class="control-label">Nama Debitur:</label>
-                                <input type="text" name="nama"  class="form-control" id="nama">
-                            </div>
-                            <div class="form-group tight">
-                                <label class="control-label">No. KTP:</label>
-                                <input type="text" name="noktp"  class="form-control" id="noktp">
+                            <input type="hidden" name="norekening" id="norekening" />
+                            <input type="hidden" name="nama_anggota" id="nama_anggota" />
+                            <div class="form-group">
+                                <label class="control-label col-lg-3">Tanggal Pengajuan:</label>
+                                <div class="col-lg-8">
+                                    <input type="text" name="tanggal" class="form-control" style="width: 145px;" id="tanggal" value="<?= date("d/m/Y") ?>" />
+                                </div>
                             </div>
                             <div class="form-group">
-                                <label class="control-label">Alamat:</label>
-                                <textarea name="alamat" id="alamat" class="form-control"></textarea>
+                                <label class="control-label col-lg-3">Nama Anggota:</label>
+                                <div class="col-lg-8">
+                                    <input type="text" name="nama"  class="select2-input" id="nama">
+                                </div>
                             </div>
-                            <div class="form-group tight">
-                                <label class="control-label">No. Telp:</label>
-                                <input type="text" name="telp"  class="form-control" id="telp">
+                            <div class="form-group">
+                                <label class="control-label col-lg-3">Alamat:</label>
+                                <div class="col-lg-8">
+                                    <textarea name="alamat" id="alamat" disabled="" class="form-control"></textarea>
+                                </div>
                             </div>
-                            <div class="form-group tight">
-                                <label class="control-label">Pekerjaan:</label>
-                                <input type="text" name="pekerjaan"  class="form-control" id="pekerjaan">
+                            <div class="form-group">
+                                <label class="control-label col-lg-3">Nama Pasangan:</label>
+                                <div class="col-lg-8">
+                                    <input type="text" name="nama_psg"  class="form-control" id="nama_psg">
+                                </div>
                             </div>
-                        </div>
-                        <div>
-                            <div class="form-group tight">
-                                <label class="control-label">Agama:</label>
-                                <select name="agama" id="agama" class="form-control">
-                                    <option value="">Pilih ...</option>
-                                    <?php foreach ($agama as $data) { ?>
-                                    <option value="<?= $data ?>"><?= $data ?></option>
-                                    <?php } ?>
-                                </select>
+                            <div class="form-group">
+                                <label class="control-label col-lg-3">Pekerjaan Pasangan:</label>
+                                <div class="col-lg-8">
+                                    <input type="text" name="pekerjaan_psg"  class="form-control" id="pekerjaan_psg" />
+                                </div>
                             </div>
-                            <div class="form-group tight">
-                                <label class="control-label">Nama Pasangan:</label>
-                                <input type="text" name="nama_psg"  class="form-control" id="nama_psg">
+                            <div class="form-group">
+                                <label class="control-label col-lg-3">Status Rumah:</label>
+                                <div class="col-lg-8">
+                                    <select name="status_rumah" id="status_rumah" class="form-control">
+                                        <option value="">Pilih ...</option>
+                                        <?php foreach ($status_rumah as $data) { ?>
+                                        <option value="<?= $data ?>"><?= $data ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="form-group tight">
-                                <label class="control-label">Pekerjaan Pasangan:</label>
-                                <input type="text" name="pekerjaan_psg"  class="form-control" id="pekerjaan_psg" />
+                            <div class="form-group">
+                                <label class="control-label col-lg-3">Penghasilan Per-Bulan:</label>
+                                <div class="col-lg-8">
+                                    <input type="text" name="penghasilan" onchange="FormNum(this);"  class="form-control" id="penghasilan" />
+                                </div>
                             </div>
-                            <div class="form-group tight">
-                                <label class="control-label">Status Rumah:</label>
-                                <select name="status_rumah" id="status_rumah" class="form-control">
-                                    <option value="">Pilih ...</option>
-                                    <?php foreach ($status_rumah as $data) { ?>
-                                    <option value="<?= $data ?>"><?= $data ?></option>
-                                    <?php } ?>
-                                </select>
+                            <div class="form-group">
+                                <label class="control-label col-lg-3">Pengeluaran Per-Bulan:</label>
+                                <div class="col-lg-8">
+                                    <input type="text" name="pengeluaran" onchange="FormNum(this);" class="form-control" id="pengeluaran" />
+                                </div>
                             </div>
-                            <div class="form-group tight">
-                                <label class="control-label">Penghasilan Per-Bulan:</label>
-                                <input type="text" name="penghasilan"  class="form-control" id="penghasilan" />
+                            <div class="form-group">
+                                <label class="control-label col-lg-3">Jaminan:</label>
+                                <div class="col-lg-8">
+                                    <input type="text" name="jaminan"  class="form-control" id="jaminan" />
+                                </div>
                             </div>
-                            <div class="form-group tight">
-                                <label class="control-label">Pengeluaran Per-Bulan:</label>
-                                <input type="text" name="pengeluaran"  class="form-control" id="pengeluaran" />
-                            </div>
-                            <div class="form-group tight">
-                                <label class="control-label">Jaminan:</label>
-                                <input type="text" name="jaminan"  class="form-control" id="jaminan" />
-                            </div>
-                            <div class="form-group tight">
-                                <label class="control-label">Rencana Pembiayaan:</label>
-                                <textarea name="rencana_pembiayaan" id="rencana_pembiayaan" class="form-control"></textarea>
-                            </div>
-                            <div class="form-group tight">
-                                <label class="control-label">Info Dari:</label>
-                                <input type="text" name="infodari"  class="form-control" id="infodari" />
+                            <div class="form-group">
+                                <label class="control-label col-lg-3">Keperluan Pembiayaan:</label>
+                                <div class="col-lg-8">
+                                    <textarea name="rencana_pembiayaan" id="rencana_pembiayaan" class="form-control"></textarea>
+                                </div>
                             </div>
                         </div>
                         <div>
                             <input type="hidden" name="jenis_pinjaman" value="1" />
-                            <div class="form-group tight">
-                                <label class="control-label">Tanggal Disetujui:</label>
-                                <input type="text" name="tanggal_disetujui" class="form-control" style="width: 145px;" id="tanggal_disetujui" value="<?= date("d/m/Y") ?>" />
+                            <div class="form-group">
+                                <label class="control-label col-lg-3">Tanggal Mulai Angsur:</label>
+                                <div class="col-lg-8">
+                                    <input type="text" name="tanggal_disetujui" class="form-control" style="width: 145px;" id="tanggal_disetujui" value="<?= date("d/m/Y") ?>" />
+                                </div>
                             </div>
-                            <div class="form-group tight">
-                                <label class="control-label">Jumlah Pembiayaan:</label>
-                                <input type="text" name="jumlah" onblur="FormNum(this);" class="form-control" id="jumlah" />
+                            <div class="form-group">
+                                <label class="control-label col-lg-3">Jumlah Pembiayaan:</label>
+                                <div class="col-lg-8">
+                                    <input type="text" name="jumlah" onblur="FormNum(this);" class="form-control" id="jumlah" />
+                                </div>
                             </div>
-                            <div class="form-group tight">
-                                <label class="control-label">Lama Pembiayaan:</label>
-                                <select name="lama" id="lama" class="form-control">
-                                    <option value="">Pilih ...</option>
-                                    <?php foreach ($lama_pembiayaan as $data) { ?>
-                                    <option value="<?= $data->durasi ?>"><?= $data->durasi ?> Bulan</option>
-                                    <?php } ?>
-                                </select>
+                            <div class="form-group">
+                                <label class="control-label col-lg-3">Lama Pembiayaan:</label>
+                                <div class="col-lg-8">
+                                    <select name="lama" id="lama" class="form-control">
+                                        <option value="">Pilih ...</option>
+                                        <?php foreach ($lama_pembiayaan as $data) { ?>
+                                        <option value="<?= $data->durasi ?>"><?= $data->durasi ?> Bulan</option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>

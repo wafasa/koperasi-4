@@ -24,21 +24,21 @@ www.amitjakhu.com
 <!--Slider-in icons-->
 <script type="text/javascript">
     $(document).ready(function() {
+        $('#username').focus();
         $(".username").focus(function() {
-                $(".user-icon").css("left","-48px");
+            $(".user-icon").css("left","-48px");
         });
         $(".username").blur(function() {
-                $(".user-icon").css("left","0px");
+            $(".user-icon").css("left","0px");
         });
 
         $(".password").focus(function() {
-                $(".pass-icon").css("left","-48px");
+            $(".pass-icon").css("left","-48px");
         });
         $(".password").blur(function() {
-                $(".pass-icon").css("left","0px");
+            $(".pass-icon").css("left","0px");
         });
         $.cookie('url', null);
-        $('#username').focus();
         $('.warning').hide();
         $('input').live('keyup', function(e) {
             if (e.keyCode===13) {
@@ -103,8 +103,8 @@ www.amitjakhu.com
 	
 	<!--CONTENT-->
     <div class="content">
-	<!--USERNAME--><input name="username" type="text" class="input username" placeholder="Username ... " /><!--END USERNAME-->
-    <!--PASSWORD--><input name="password" type="password" class="input password" placeholder="Password ..." /><!--END PASSWORD-->
+	<!--USERNAME--><input name="username" id="username" type="text" class="input username" placeholder="Username ... " /><!--END USERNAME-->
+        <!--PASSWORD--><input name="password" id="password" type="password" class="input password" placeholder="Password ..." /><!--END PASSWORD-->
     </div>
     <!--END CONTENT-->
     

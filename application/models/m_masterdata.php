@@ -31,7 +31,7 @@ class M_masterdata extends CI_Model {
         $select = "select * ";
         $count  = "select count(*) as count ";
         $sql = " 
-            from tb_debitur
+            from tb_anggota
             where id is not NULL";
         $limitation = null;
         if ($limit !== NULL) {

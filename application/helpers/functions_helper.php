@@ -861,7 +861,7 @@ function get_kode_agama($nama) { //untuk ditampilkan di lembar RM
     return $result;
 }
 
-function formatcurrency($floatcurr, $curr = "USD"){
+function formatcurrency($floatcurr, $curr = "IDR"){
         $currencies['ARS'] = array(2,',','.');          //  Argentine Peso
         $currencies['AMD'] = array(2,'.',',');          //  Armenian Dram
         $currencies['AWG'] = array(2,'.',',');          //  Aruban Guilder

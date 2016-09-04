@@ -44,7 +44,7 @@
                 }
             },
             formatResult: function(data){
-                var markup = data.nomor_rekening+' - '+data.nama+'<br/>'+data.alamat;
+                var markup = data.no_rekening+' - '+data.nama+'<br/>'+data.alamat;
                 return markup;
             }, 
             formatSelection: function(data){
@@ -58,7 +58,7 @@
                     $('#jml_kali_angsur').append('<option value="'+(j)+'">'+(++i)+'</option>');
                     j++;
                 });
-                return data.nomor_rekening+' - '+data.nama;
+                return data.no_rekening+' - '+data.nama;
             }
         });
         
@@ -83,11 +83,11 @@
                 }
             },
             formatResult: function(data){
-                var markup = data.nomor_rekening+' - '+data.nama;
+                var markup = data.no_rekening+' - '+data.nama;
                 return markup;
             }, 
             formatSelection: function(data){
-                return data.nomor_rekening+' - '+data.nama;
+                return data.no_rekening+' - '+data.nama;
             }
         });
         
@@ -130,7 +130,7 @@
                     str+= '<tr data-tt-id='+i+' class="'+highlight+'">'+
                             '<td align="center">'+((i+1) + ((data.page - 1) * data.limit))+'</td>'+
                             '<td>'+datefmysql(v.tgl_bayar)+'</td>'+
-                            '<td>'+v.nomor_rekening+'</td>'+
+                            '<td>'+v.no_rekening+'</td>'+
                             '<td>'+v.nama+'</td>'+
                             '<td align="right">'+money_format(v.bsr_angsuran)+'</td>'+
                             '<td align="right">'+money_format(v.angsuran_pokok)+'</td>'+
@@ -214,7 +214,7 @@
                 }
               },
               ya: {
-                label: '<i class="fa fa-save"></i>  Ya',
+                label: '<i class="fa fa-check-circle"></i>  Ya',
                 className: "btn-primary",
                 callback: function() {
                     save_angsuran();

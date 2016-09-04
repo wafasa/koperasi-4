@@ -13,6 +13,8 @@
                 $('#survey').val(numberToCurrency(data.survey));
                 $('#calon_anggota').val(numberToCurrency(data.calon_agt));
                 $('#stofmap').val(numberToCurrency(data.stofmap));
+                $('#persen1').val(data.persen_jasa_usaha);
+                $('#persen2').val(data.persen_simpanan);
             }
         });
     }
@@ -62,20 +64,20 @@
                     <div class="col-md-1 col-sm-1 col-xs-1">
                         
                     </div>
-                    <div class="col-md-8 col-sm-8 col-xs-8">
+                    <div class="col-md-6 col-sm-6 col-xs-6">
                         <form id="chpass">
                         <div class="form-group">
-                        <label class="form-label">Biaya Administrasi (%):</label>
+                        <label class="form-label">Biaya Administrasi Pinjaman (%):</label>
                             <div class="controls">
                                 <input type="number" min="1" max="100" maxlength="3" name="administrasi" id="administrasi" class="form-control" />
                             </div>
                         </div>
-                        <div class="form-group">
+<!--                        <div class="form-group">
                         <label class="form-label">Biaya Calon Anggota (Rp):</label>
                             <div class="controls">
                                 <input type="text" name="calon_anggota" id="calon_anggota" onblur="FormNum(this);" class="form-control" />
                             </div>
-                        </div>
+                        </div>-->
                         <div class="form-group">
                         <label class="form-label">Biaya Survey (Rp):</label>
                             <div class="controls">
@@ -86,6 +88,18 @@
                         <label class="form-label">Biaya Stofmap (Rp):</label>
                             <div class="controls">
                                 <input type="text" name="stofmap" id="stofmap" onblur="FormNum(this);" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                        <label class="form-label">Persentase Jasa Usaha (SHU) (%):</label>
+                            <div class="controls">
+                                <input type="text" name="persen1" id="persen1" onblur="FormNum(this);" maxlength="2" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                        <label class="form-label">Persentase Jasa Simpanan (SHU) (%):</label>
+                            <div class="controls">
+                                <input type="text" name="persen2" id="persen2" onblur="FormNum(this);" maxlength="2" class="form-control" />
                             </div>
                         </div>
                         <div class="form-group">

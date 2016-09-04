@@ -49,4 +49,13 @@ class Laporan extends CI_Controller {
         $data['title'] = 'Rekap Simpanan Wajib';
         $this->load->view('laporan/simpanan-wajib', $data);
     }
+    
+    function shu() {
+        $data['title'] = 'Sisa Hasil Usaha';
+        $data['pend_bunga'] = $this->m_laporan->get_pendapatan_bunga(date("Y"));
+        $data['pend_simpanan'] = $this->m_laporan->get_pendapatan_simpanan(date("Y"));
+        $data['pengeluaran'] = $this->m_laporan->get_pengeluaran(date("Y"));
+        $data['persen_jasa'] = $this->db->get('tb_setting_administrasi')->row();
+        $this->load->view('laporan/shu', $data);
+    }
 }

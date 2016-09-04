@@ -1,5 +1,5 @@
 * {
-    font-family:"lucida grande",tahoma,verdana,arial,sans-serif;
+    font-family: "Trebuchet MS",tahoma,verdana,arial,sans-serif;
     font-size: 13px;
 }
 /* Font Import */
@@ -534,7 +534,7 @@ h3 small, h4 small, h5 small {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Open Sans';
+  font-family: inherit;
   font-weight: 300;
   color:#505458
 }
@@ -8081,7 +8081,7 @@ h3 small, h4 small, h5 small {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Open Sans';
+  font-family: inherit;
   font-weight: 300;
   color:#505458
 }
@@ -9800,7 +9800,7 @@ a.icon:hover {
 
 /*** Bootstrap Wells ***/
 .well {
-  background-color: #f4f4f4;
+  background-color: #f9f9f9;
   -webkit-border-radius: 3px;
      -moz-border-radius: 3px;
           border-radius: 3px;   
@@ -14025,6 +14025,7 @@ border-bottom-left-radius: 2px;
     margin-right: 10px;
     position: relative;
     top: -4px;
+    width: 100%;
 }
 /** Validations **/
 form{
