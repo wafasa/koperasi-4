@@ -62,9 +62,9 @@
                         highlight = 'even';
                     };
                     str+= '<tr data-tt-id='+i+' class="'+highlight+'">'+
-                            '<td align="center">'+((i+1) + ((data.page - 1) * data.limit))+'</td>'+
-                            '<td align="center">'+datefmysql(v.tgl_bayar)+'</td>'+
-                            '<td align="center">'+v.nomor_rekening+'</td>'+
+                            '<td>'+((i+1) + ((data.page - 1) * data.limit))+'</td>'+
+                            '<td>'+datefmysql(v.tgl_bayar)+'</td>'+
+                            '<td>'+v.no_rekening+'</td>'+
                             '<td>'+v.nama+'</td>'+
                             '<td align="right">'+money_format(v.bsr_angsuran)+'</td>'+
                             '<td align="right">'+money_format(v.angsuran_pokok)+'</td>'+
@@ -244,13 +244,13 @@
                         <tr>
                           <th width="3%">No</th>
                           <th width="7%">Tanggal</th>
-                          <th width="7%">No. Rek.</th>
+                          <th width="7%" class="left">No. Rek.</th>
                           <th width="35%" class="left">Nama</th>
                           <th width="10%" class="right">Angsuran</th>
-                          <th width="10%" class="left">Angs.&nbsp;Pokok</th>
-                          <th width="8%" class="left">Bunga</th>
+                          <th width="10%" class="right">Angs.&nbsp;Pokok</th>
+                          <th width="8%" class="right">Bunga</th>
                           <!--<th width="10%" class="left">Jenis</th>-->
-                          <th width="10%" class="left">Sisa&nbsp;Pinj.</th>
+                          <th width="10%" class="right">Sisa&nbsp;Pinj.</th>
                           
                         </tr>
                         </thead>

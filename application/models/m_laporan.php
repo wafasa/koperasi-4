@@ -88,13 +88,13 @@ class M_laporan extends CI_Model {
             $q.=" and d.nomor_rekening = '".$search['norek']."'";
         }
         
-        $select = "select ap.*, d.nama, d.nomor_rekening";
+        $select = "select ap.*, d.nama, d.no_rekening";
         $count  = "select count(p.id) as count ";
         $sql = "
             from tb_adpro ap 
             join tb_pinjaman p on (ap.id_pinjaman = p.id)
             join tb_anggota d on (p.id_debitur = d.id)
-            join tb_detail_debitur dd on (dd.id_debitur = d.id)
+            join tb_detail_debitur dd on (dd.id_pinjaman = p.id)
             where p.id is not NULL ";
         $limitation = null;
         if ($limit !== NULL) {

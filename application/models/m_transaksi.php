@@ -31,7 +31,7 @@ class M_transaksi extends CI_Model {
             $limitation.=" limit $start , $limit";
         }
         $order=" order by p.id desc";
-        //echo $sql . $q . $order. $limitation;
+        //echo $select . $sql . $q . $order. $limitation;
         
         $data['data'] = $this->db->query($select . $sql . $q . $order. $limitation)->result();
         $data['jumlah'] = $this->db->query($count . $sql . $q)->row()->count;

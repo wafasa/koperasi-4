@@ -86,12 +86,12 @@
                         highlight = 'even';
                     };
                     str+= '<tr data-tt-id='+i+' class="'+highlight+'">'+
-                            '<td align="center">'+((i+1) + ((data.page - 1) * data.limit))+'</td>'+
-                            '<td align="center">'+datefmysql(v.tgl_input)+'</td>'+
-                            '<td align="center">'+v.nomor_rekening+'</td>'+
+                            '<td>'+((i+1) + ((data.page - 1) * data.limit))+'</td>'+
+                            '<td>'+datefmysql(v.tgl_input)+'</td>'+
+                            '<td>'+v.no_rekening+'</td>'+
                             '<td>'+v.nama+'</td>'+
                             '<td align="right">'+money_format(v.biaya_adm)+'</td>'+
-                            '<td align="right">'+money_format(v.biaya_ca)+'</td>'+
+//                            '<td align="right">'+money_format(v.biaya_ca)+'</td>'+
                             '<td align="right">'+money_format(v.survey)+'</td>'+
                             '<td align="right">'+money_format(v.stofmap)+'</td>'+
                             
@@ -122,7 +122,8 @@
     function reset_form() {
         $('input, select, textarea').val('');
         $('input[type=checkbox], input[type=radio]').removeAttr('checked');
-        $('#awal, #akhir').val('<?= date("d/m/Y") ?>');
+        $('#awal').val('<?= date("01/m/Y") ?>');
+        $('#akhir').val('<?= date("d/m/Y") ?>');
     }
 
     function detail_pendapatan_administrasi(id) {
@@ -283,11 +284,11 @@
                           <th width="7%">No. Rek.</th>
                           <th width="25%" class="left">Nama</th>
                           <th width="10%" class="right">Administrasi</th>
-                          <th width="10%" class="right">Keanggotaan</th>
+                          <!--<th width="10%" class="right">Keanggotaan</th>-->
                           <th width="10%" class="right">Survey</th>
                           <!--<th width="8%" class="left">Bunga</th>
                           th width="10%" class="left">Jenis</th>-->
-                          <th width="10%" class="left">Stofmap</th>
+                          <th width="10%" class="right">Stofmap</th>
                         </tr>
                         </thead>
                         <tbody>

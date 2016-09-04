@@ -86,15 +86,15 @@
                         highlight = 'even';
                     };
                     str+= '<tr data-tt-id='+i+' class="'+highlight+'">'+
-                            '<td align="center">'+((i+1) + ((data.page - 1) * data.limit))+'</td>'+
-                            '<td align="center">'+datefmysql(v.tgl_pinjam)+'</td>'+
-                            '<td align="center">'+v.nomor_rekening+'</td>'+
+                            '<td>'+((i+1) + ((data.page - 1) * data.limit))+'</td>'+
+                            '<td>'+datefmysql(v.tgl_pinjam)+'</td>'+
+                            '<td>'+v.no_rekening+'</td>'+
                             '<td>'+v.nama+'</td>'+
                             '<td align="right">'+money_format(v.jml_pinjaman)+'</td>'+
                             '<td align="right">'+money_format(v.bsr_angsuran)+'</td>'+
                             //'<td align="right">'+money_format(v.angsuran_pokok)+'</td>'+
                             //'<td align="right">'+money_format(v.jasa_angsuran)+'</td>'+
-                            '<td align="right">'+money_format(v.sisa_angsuran)+'</td>'+
+                            '<td align="right">'+money_format(v.ttl_pengembalian)+'</td>'+
                             
                         '</tr>';
                     $('#example-advanced tbody').append(str);
@@ -123,7 +123,8 @@
     function reset_form() {
         $('input, select, textarea').val('');
         $('input[type=checkbox], input[type=radio]').removeAttr('checked');
-        $('#awal, #akhir').val('<?= date("d/m/Y") ?>');
+        $('#awal').val('<?= date("01/m/Y") ?>');
+        $('#akhir').val('<?= date("d/m/Y") ?>');
     }
 
     function detail_pembiayaan(id) {
@@ -283,12 +284,12 @@
                           <th width="7%">Tanggal</th>
                           <th width="7%">No. Rek.</th>
                           <th width="25%" class="left">Nama</th>
-                          <th width="10%" class="left">Jumlah</th>
+                          <th width="10%" class="right">Jumlah</th>
                           <th width="10%" class="right">Angsuran</th>
                           <!--<<th width="10%" class="left">Angs.&nbsp;Pokok</th>
                           <th width="8%" class="left">Bunga</th>
                           th width="10%" class="left">Jenis</th>-->
-                          <th width="10%" class="left">Sisa&nbsp;Pinj.</th>
+                          <th width="10%" class="right">Sisa&nbsp;Pinj.</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -314,7 +315,7 @@
                     <input type="hidden" name="id" id="id" />
                     <div class="form-group tight">
                         <label class="control-label">Tanggal Daftar:</label>
-                        <span><input type="text" name="awal" class="form-control" style="width: 145px; float: left; margin-right: 10px;" id="awal" value="<?= date("d/m/Y") ?>" /></span>
+                        <span><input type="text" name="awal" class="form-control" style="width: 145px; float: left; margin-right: 10px;" id="awal" value="<?= date("01/m/Y") ?>" /></span>
                         <span><input type="text" name="akhir" class="form-control" style="width: 145px;" id="akhir" value="<?= date("d/m/Y") ?>" /></span>
                     </div>
                     <div class="form-group tight">

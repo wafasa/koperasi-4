@@ -65,7 +65,7 @@ class Transaksi extends REST_Controller {
             $tempo= date("Y-m-d",$varia);
             $data_pinjaman = array(
                 'id_debitur' => post_safe('nama'),
-                'tgl_pinjam' => date2mysql(post_safe('tanggal_disetujui')),
+                'tgl_pinjam' => date2mysql(post_safe('tanggal')),
                 'tgl_tempo' => $tempo,
                 'jml_pinjaman' => currencyToNumber(post_safe('jumlah')),
                 'ttl_pengembalian' => $janji,
@@ -137,7 +137,7 @@ class Transaksi extends REST_Controller {
             $bea_adm = currencyToNumber(post_safe('jumlah'))*($get_adm->administrasi/100);
             $data_adpro = array(
                 'id_pinjaman' => $id_pinjaman,
-                'tgl_input' => date2mysql(post_safe('tanggal_disetujui')),
+                'tgl_input' => date2mysql(post_safe('tanggal')),
                 'biaya_adm' => $bea_adm,
                 'biaya_ca' => $get_adm->calon_agt,
                 'survey' => $get_adm->survey,
@@ -162,7 +162,7 @@ class Transaksi extends REST_Controller {
             $tempo= date("Y-m-d",$varia);
             $data_pinjaman = array(
                 'id_debitur' => post_safe('nama'),
-                'tgl_pinjam' => date2mysql(post_safe('tanggal_disetujui')),
+                'tgl_pinjam' => date2mysql(post_safe('tanggal')),
                 'tgl_tempo' => $tempo,
                 'jml_pinjaman' => currencyToNumber(post_safe('jumlah')),
                 'ttl_pengembalian' => $janji,
@@ -252,7 +252,7 @@ class Transaksi extends REST_Controller {
                 $bea_adm = currencyToNumber(post_safe('jumlah'))*($get_adm->administrasi/100);
                 $data_adpro = array(
                     'id_pinjaman' => $id_pinjaman,
-                    'tgl_input' => date2mysql(post_safe('tanggal_disetujui')),
+                    'tgl_input' => date2mysql(post_safe('tanggal')),
                     'biaya_adm' => $bea_adm,
                     'biaya_ca' => $get_adm->calon_agt,
                     'survey' => $get_adm->survey,
