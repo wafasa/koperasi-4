@@ -6,7 +6,7 @@ class Masterdata_auto extends REST_Controller{
     function __construct(){
         parent::__construct();
         $this->limit = 20;
-
+        $this->load->model(array('m_config'));
         $id_user = $this->session->userdata('id_user');
         if (empty($id_user)) {
             $this->response(array('error' => 'Anda belum login'), 401);
@@ -15,6 +15,18 @@ class Masterdata_auto extends REST_Controller{
 
     private function start($page){
         return (($page - 1) * $this->limit);
+    }
+    
+    function group_auto_get() {
+        $param['search']    = get_safe('q');
+        $start = $this->start(get_safe('page'));
+        $data = $this->m_config->get_auto_user_group($param, $start, $this->limit);
+        if ((get_safe('page') == 1) & (get_safe('q') == '')) {
+            $pilih[] = array('id'=>'', 'nama' =>'Pilih ...');
+            $data['data'] = array_merge($pilih, $data['data']);
+            $data['total'] += 1;
+        }
+        $this->response($data, 200);
     }
     
     function norek_pinjaman_auto_get() {

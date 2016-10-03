@@ -31,4 +31,9 @@ class Config extends CI_Controller {
         $data['title'] = 'Generate Bunga Tabungan';
         $this->load->view('config/bunga-tabungan', $data);
     }
+    
+    function account() {
+        $data['title'] = 'User Account';
+        $this->load->view('config/group', $data);
+    }
 }

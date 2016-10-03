@@ -15,6 +15,90 @@ class Config extends REST_Controller {
         $this->response($data, 200);
     }
     
+    function groups_get() {
+        if (!$this->get('page')) {
+            $this->response(NULL, 400);
+        }
+        
+        $start = ($this->get('page') - 1) * $this->limit;
+        
+        $search= array(
+            'id' => $this->get('id')
+        );
+        
+        $data = $this->m_config->get_list_group($this->limit, $start, $search);
+        $data['page'] = (int)$this->get('page');
+        $data['limit'] = $this->limit;
+        
+        if($data){
+            $this->response($data, 200); // 200 being the HTTP response code
+        }else{
+            $this->response(array('error' => 'Data tidak ditemukan'), 404);
+        }
+    }
+    
+    function group_post() {
+        $param = array(
+            'id' => post_safe('id'),
+            'nama' => post_safe('nama')
+        );
+        $data = $this->m_config->save_group($param);
+        $this->response($data, 200);
+    }
+    
+    function group_delete() {
+        $this->db->delete('tb_user_group', array('id' => $this->get('id')));
+    }
+
+    function privileges_get() {
+        $data = $this->m_config->get_list_privileges($this->get('id'));
+        $this->response($data, 200);
+    }
+
+    function privileges_post() {
+        $param = array(
+            'id_group' => post_safe('id_group'),
+            'privileges' => post_safe('privileges') // array
+        );
+        $data = $this->m_config->save_privileges($param);
+        $this->response($data, 200);
+    }
+    
+    /*ACCOUNT*/
+    
+    function accounts_get() {
+        if (!$this->get('page')) {
+            $this->response(NULL, 400);
+        }
+        
+        $start = ($this->get('page') - 1) * $this->limit;
+        
+        $search= array(
+            'id' => $this->get('id')
+        );
+        
+        $data = $this->m_config->get_list_account($this->limit, $start, $search);
+        $data['page'] = (int)$this->get('page');
+        $data['limit'] = $this->limit;
+        
+        if ($data) {
+            $this->response($data, 200); // 200 being the HTTP response code
+        } else {
+            $this->response(array('error' => 'Data tidak ditemukan'), 404);
+        }
+    }
+    
+    function account_post() {
+        $param = array(
+            'id_user' => post_safe('id'),
+            'nama' => post_safe('nama'),
+            'username' => post_safe('username'),
+            'id_user_group' => post_safe('id_group')
+        );
+        $data = $this->m_config->save_account($param);
+        $this->response($data, 200);
+    }
+    
     function tahun_anggarans_get() {
         if (!$this->get('page')) {
             $this->response(NULL, 400);

@@ -1,6 +1,85 @@
 <?php
 
 class M_config extends CI_Model {
+    
+    function get_list_group($limit, $start, $search) {
+        $q = NULL;
+        if ($search['id'] !== '') {
+            
+        }
+        $select = "select * ";
+        $count  = "select count(*) as count ";
+        $sql = "from tb_user_group ";
+        
+        $limitation = " limit $start, $limit";
+        
+        $data['data'] = $this->db->query($select . $sql . $limitation)->result();
+        $data['jumlah'] = $this->db->query($count . $sql)->row()->count;
+        return $data;
+    }
+    
+    function save_group($data) {
+        if ($data['id'] === '') {
+            $this->db->insert('tb_user_group', $data);
+            $result['act'] = 'add';
+        } else {
+            $this->db->where('id', $data['id']);
+            $this->db->update('tb_user_group', $data);
+            $result['act'] = 'edit';
+        }
+        $result['status'] = TRUE;
+        return $result;
+    }
+    
+    function get_auto_user_group($search, $start, $limit) {
+        $q = NULL;
+        if ($search['search'] !== '') {
+            $q = " and nama like ('%".$search['search']."%')";
+        }
+        $select = "select * ";
+        $count  = "select count(*) as count ";
+        $sql = "from tb_user_group where id is not NULL $q";
+        
+        $limitation = " limit $start, $limit";
+        
+        $data['data'] = $this->db->query($select . $sql . $limitation)->result();
+        $data['total'] = $this->db->query($count . $sql)->row()->count;
+        return $data;
+    }
+    
+    /*ACCOUNT*/
+    
+    function get_list_account($limit, $start, $search) {
+        $q = NULL;
+        if ($search['id'] !== '') {
+            $q.=" and u.id_user = '".$search['id']."'";
+        }
+        $select = "select u.*, g.nama as nama_group ";
+        $count  = "select count(*) as count ";
+        $sql = "from tb_usersystem u 
+            join tb_user_group g on (u.id_user_group = g.id)
+            where u.id_user is not NULL $q";
+        
+        $limitation = " limit $start, $limit";
+        
+        $data['data'] = $this->db->query($select . $sql . $limitation)->result();
+        $data['jumlah'] = $this->db->query($count . $sql)->row()->count;
+        return $data;
+    }
+    
+    function save_account($data) {
+        if ($data['id_user'] === '') {
+            $data['password'] = md5(1234);
+            $this->db->insert('tb_usersystem', $data);
+            $result['act'] = 'add';
+        } else {
+            $this->db->where('id_user', $data['id']);
+            $this->db->update('tb_usersystem', $data);
+            $result['act'] = 'edit';
+        }
+        $result['status'] = TRUE;
+        return $result;
+    }
    
     function get_list_tahun_anggaran($limit, $start, $search) {
         //$limitation = null; 
@@ -73,13 +152,13 @@ class M_config extends CI_Model {
             'ulangipass' => post_safe('ulangipass')
         );
         
-        $check = $this->db->get_where('tb_usersystem', array('id_user' => $this->session->userdata('id_user'), 'password' => md5($data_post['passlama'])))->num_rows();
+        $check = $this->db->get_where('tb_usersystemystem', array('id_user' => $this->session->userdata('id_user'), 'password' => md5($data_post['passlama'])))->num_rows();
         if ($check === 0) {
             $result['status'] = FALSE;
             $result['message']= 'Password lama yang anda masukkan salah !';
         } else {
             $this->db->where('id_user', $this->session->userdata('id_user'));
-            $this->db->update('tb_usersystem', array('password' => md5($data_post['passbaru'])));
+            $this->db->update('tb_usersystemystem', array('password' => md5($data_post['passbaru'])));
             $result['status'] = TRUE;
             $result['message']= 'Password barhasil diubah !';
         }
