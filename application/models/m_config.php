@@ -204,6 +204,7 @@ class M_config extends CI_Model {
                     join tb_user_group ug on (ugp.id_user_group = ug.id)
                     where ugp.id_user_group = '".$id_group."' 
                         and p.id = '".$value->id."'";
+            $result[$key]->jumlah = $this->db->query($sql_child)->row()->jumlah;
             $result[$key]->check = $this->db->query($sql_child)->row()->id;
             $result[$key]->nama_group = $this->db->query($sql_child)->row()->nama;
         }
