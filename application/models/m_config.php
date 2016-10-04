@@ -198,7 +198,7 @@ class M_config extends CI_Model {
                 order by m.id";
         $result = $this->db->query($sql)->result();
         foreach ($result as $key => $value) {
-            $sql_child = "select count(*), IF(ugp.id is NULL,'FALSE','TRUE') as id, ug.nama 
+            $sql_child = "select count(*) as jumlah, IF(ugp.id is NULL,'FALSE','TRUE') as id, ug.nama 
                     from tb_grant_privileges ugp
                     join tb_privileges p on (ugp.id_privileges = p.id)
                     join tb_user_group ug on (ugp.id_user_group = ug.id)

@@ -203,7 +203,7 @@
                 $('#id_group_privileges').val(id_group);
                 $.each(data.data, function (i, v) {
                     var checked = '';
-                    if (v.check === 'TRUE') {
+                    if (v.jumlah === '1') {
                         checked = 'checked';
                     }
                     var str = '<tr>'+
