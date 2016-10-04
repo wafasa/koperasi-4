@@ -30,7 +30,11 @@ class M_user extends CI_Model {
         //echo $sql;
         $result =  $this->db->query($sql)->result();
         foreach ($result as $key => $value) {
-            $sql_child = "select * from tb_privileges where id_module = '".$value->id."'";
+            $sql_child = "select p.* 
+            from tb_grant_privileges pp
+            join tb_privileges p on (pp.id_privileges = p.id)
+            join tb_module m on (p.id_module = m.id) 
+            where p.id_module = '".$value->id."' and pp.id_user_group = '".$id."'";
             $result[$key]->detail_menu = $this->db->query($sql_child)->result();
         }
         return $result;

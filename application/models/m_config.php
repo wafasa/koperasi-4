@@ -190,4 +190,34 @@ class M_config extends CI_Model {
         $result['status'] = true;
         return $result;
     }
+    
+    function get_list_privileges($id_group) {
+        $sql = "select p.*, m.nama as modul, p.form_nama as menu 
+                from tb_privileges p
+                join tb_module m on (p.id_module = m.id)
+                order by m.id";
+        $result = $this->db->query($sql)->result();
+        foreach ($result as $key => $value) {
+            $sql_child = "select count(*), IF(ugp.id is NULL,'FALSE','TRUE') as id, ug.nama 
+                    from tb_grant_privileges ugp
+                    join tb_privileges p on (ugp.id_privileges = p.id)
+                    join tb_user_group ug on (ugp.id_user_group = ug.id)
+                    where ugp.id_user_group = '".$id_group."' 
+                        and p.id = '".$value->id."'";
+            $result[$key]->check = $this->db->query($sql_child)->row()->id;
+            $result[$key]->nama_group = $this->db->query($sql_child)->row()->nama;
+        }
+        $data['data'] = $result;
+        return $data;
+    }
+
+    function save_privileges($data) {
+        $this->db->delete('tb_grant_privileges', array('id_user_group' => $data['id_group']));
+        if (is_array($data['privileges'])) {
+            foreach ($data['privileges'] as $key => $value) {
+                $this->db->insert('tb_grant_privileges', array('id_user_group' => $data['id_group'], 'id_privileges' => $data['privileges'][$key]));
+            }
+        }
+        return TRUE;
+    }
 }
