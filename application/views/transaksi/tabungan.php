@@ -286,7 +286,7 @@
             <div class="grid-title">
               <h4>Daftar List <?= $title ?></h4>
                 <div class="tools"> 
-                    <button id="add_tabungan" class="btn btn-info btn-mini"><i class="fa fa-plus-circle"></i> Tambah</button>
+                    <button id="add_tabungan" class="btn btn-info btn-mini"><i class="fa fa-plus-circle"></i> Tambah Data</button>
                     <button id="cari_button" class="btn btn-mini"><i class="fa fa-search"></i> Cari</button>
                     <button id="reload_tabungan" class="btn btn-mini"><i class="fa fa-refresh"></i> Reload Data</button>
                 </div>

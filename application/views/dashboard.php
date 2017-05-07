@@ -199,7 +199,7 @@
 	 <!-- BEGIN CHAT TOGGLER -->
       <div class="pull-right"> 
 		<div class="chat-toggler">	
-				<a href="#" class="dropdown-toggle" id="my-task-list" data-placement="bottom"  data-content='' data-toggle="dropdown" data-original-title="Notifications">
+				<a href="#" class="dropdown-toggle" id="my-task-list" data-placement="bottom"  data-content='' data-toggle="dropdown" data-original-title="">
 					<div class="user-details"> 
 						<div class="username">
 							<span class="badge badge-important">3</span> 
@@ -208,61 +208,7 @@
 					</div> 
 					<div class="iconset top-down-arrow"></div>
 				</a>	
-				<div id="notification-list" style="display:none">
-					<div style="width:300px">
-						  <div class="notification-messages info">
-									<div class="user-profile">
-										<img src="assets/img/profiles/d.jpg"  alt="" data-src="assets/img/profiles/d.jpg" data-src-retina="assets/img/profiles/d2x.jpg" width="35" height="35">
-									</div>
-									<div class="message-wrapper">
-										<div class="heading">
-											David Nester - Commented on your wall
-										</div>
-										<div class="description">
-											Meeting postponed to tomorrow
-										</div>
-										<div class="date pull-left">
-										A min ago
-										</div>										
-									</div>
-									<div class="clearfix"></div>									
-								</div>	
-							<div class="notification-messages danger">
-								<div class="iconholder">
-									<i class="icon-warning-sign"></i>
-								</div>
-								<div class="message-wrapper">
-									<div class="heading">
-										Server load limited
-									</div>
-									<div class="description">
-										Database server has reached its daily capicity
-									</div>
-									<div class="date pull-left">
-									2 mins ago
-									</div>
-								</div>
-								<div class="clearfix"></div>
-							</div>	
-							<div class="notification-messages success">
-								<div class="user-profile">
-									<img src="assets/img/profiles/h.jpg"  alt="" data-src="assets/img/profiles/h.jpg" data-src-retina="assets/img/profiles/h2x.jpg" width="35" height="35">
-								</div>
-								<div class="message-wrapper">
-									<div class="heading">
-										You haveve got 150 messages
-									</div>
-									<div class="description">
-										150 newly unread messages in your inbox
-									</div>
-									<div class="date pull-left">
-									An hour ago
-									</div>									
-								</div>
-								<div class="clearfix"></div>
-							</div>							
-						</div>				
-				</div>
+				
 				<div class="profile-pic"> 
 					<img src="<?= base_url('assets/img/profiles/logo.png') ?>"  alt="" data-src="<?= base_url('assets/img/profiles/logo.png') ?>" data-src-retina="assets/img/profiles/avatar_small2x.jpg" width="35" height="35" /> 
 				</div>       			
@@ -279,8 +225,9 @@
                   </li>
                   <li><a href="email.html"> My Inbox&nbsp;&nbsp;<span class="badge badge-important animated bounceIn">2</span></a>
                   </li>-->
-                  <li class="divider"></li>                
-                  <li><a href="<?= base_url('user/logout') ?>"><i class="fa fa-power-off"></i>&nbsp;&nbsp;Log Out</a></li>
+                    <li><a onclick="load_menu('<?= base_url('config/changepassword') ?>'); return false;" href="<?= base_url('config/changepassword') ?>"><i class="fa fa-key"></i>&nbsp;&nbsp;Change Password</a></li>
+                    <li class="divider"></li>                
+                    <li><a href="<?= base_url('user/logout') ?>"><i class="fa fa-power-off"></i>&nbsp;&nbsp;Log Out</a></li>
                </ul>
 			</li> 
 <!--			<li class="quicklinks"> <span class="h-seperate"></span></li> 

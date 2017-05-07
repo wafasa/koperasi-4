@@ -99,9 +99,11 @@
                     str+= '<tr data-tt-id='+i+' class="'+highlight+'">'+
                             '<td align="center">'+((i+1) + ((data.page - 1) * data.limit))+'</td>'+
                             '<td align="center">'+datefmysql(v.jatuh_tempo)+'</td>'+
-                            '<td align="center">'+v.nomor_rekening+'</td>'+
+                            '<td align="center">'+v.id_pinjaman+'</td>'+
                             '<td>'+v.nama+'</td>'+
                             '<td>'+v.alamat+'</td>'+
+                            '<td align="right">'+money_format(v.angsuran_pokok)+'</td>'+
+                            '<td align="right">'+money_format(v.jasa_angsuran)+'</td>'+
                             '<td align="right">'+money_format(v.jml_angsuran)+'</td>'+
                             '<td align="center">'+v.angsuran_ke+'</td>'+
                         '</tr>';
@@ -190,11 +192,13 @@
                         <tr>
                           <th width="3%">No</th>
                           <th width="7%">Tempo</th>
-                          <th width="7%">No. Rek.</th>
-                          <th width="25%" class="left">Nama</th>
-                          <th width="35%" class="left">Alamat</th>
+                          <th width="10%">No. Pinjam</th>
+                          <th width="15%" class="left">Nama</th>
+                          <th width="30%" class="left">Alamat</th>
+                          <th width="10%" class="right">Pokok</th>
+                          <th width="10%" class="right">Bunga</th>
                           <th width="10%" class="right">Angsuran</th>
-                          <th width="10%" class="right">Angs. Ke</th>
+                          <th width="5%" class="right">Angs.Ke</th>
                         </tr>
                         </thead>
                         <tbody>

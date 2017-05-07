@@ -1,8 +1,8 @@
 <title><?= $title ?></title>
 <script type="text/javascript">
     $(function() {
-        get_list_tabungan(1);
-        $('#add_tabungan').click(function() {
+        get_list_anggota(1);
+        $('#add_anggota').click(function() {
             reset_form();
             $('#datamodal_add').modal('show');
             $('#datamodal_add h4.modal-title').html('Tambah <?= $title ?>');
@@ -31,15 +31,15 @@
             }
         }); 
 
-        $('#reload_tabungan').click(function() {
+        $('#reload_anggota').click(function() {
             reset_form();
-            get_list_tabungan(1);
+            get_list_anggota(1);
         });
         
         $('#parent_code').select2({
             width: '100%',
             ajax: {
-                url: "<?= base_url('api/masterdata_auto/tabungan_auto') ?>",
+                url: "<?= base_url('api/masterdata_auto/anggota_auto') ?>",
                 dataType: 'json',
                 quietMillis: 100,
                 data: function (term, page) { // page is the one-based page number tracked by Select2
@@ -66,12 +66,12 @@
         });
     });
     
-    function get_list_tabungan(p, id) {
+    function get_list_anggota(p, id) {
         $('#datamodal_search').modal('hide');
         var id = '';
         $.ajax({
             type : 'GET',
-            url: '<?= base_url("api/transaksi/tabungans") ?>/page/'+p+'/id/'+id,
+            url: '<?= base_url("api/masterdata/anggotas") ?>/page/'+p+'/id/'+id,
             data: $('#form_search').serialize(),
             beforeSend: function() {
                 show_ajax_indicator();
@@ -79,7 +79,7 @@
             },
             success: function(data) {
                 if ((p > 1) & (data.data.length === 0)) {
-                    get_list_tabungan(p-1);
+                    get_list_anggota(p-1);
                     return false;
                 };
 
@@ -102,7 +102,7 @@
                             '<td>'+v.no_ktp+'</td>'+
                             '<td>'+v.nama+'</td>'+
                             '<td>'+v.alamat+'</td>'+
-                            '<td align="right">'+money_format(v.simpanan_wajib)+'</td>'+
+                            //'<td align="right">'+money_format(v.simpanan_wajib)+'</td>'+
                             '<td align="right" class=aksi>'+
                                 '<button type="button" class="btn btn-default btn-mini" onclick="edit_anggota(\''+v.id+'\')"><i class="fa fa-pencil"></i></button> '+
                                 '<button type="button" class="btn btn-default btn-mini" onclick="delete_anggota(\''+v.id+'\','+data.page+');"><i class="fa fa-trash-o"></i></button>'+
@@ -141,8 +141,7 @@
         
         $.ajax({
             type: 'GET',
-            url: '<?= base_url('api/transaksi/tabungans') ?>/page/1/id/',
-            data: 'id_anggota='+id,
+            url: '<?= base_url('api/masterdata/anggotas') ?>/page/1/id/'+id,
             dataType: 'json',
             success: function(data) {
                 $('#datamodal_add').modal('show');
@@ -154,7 +153,7 @@
                 $('#noktp').val(data.no_ktp);
                 $('#nama').val(data.nama);
                 $('#alamat').val(data.alamat);
-                $('#jumlah').val(money_format(data.pembukaan_saldo));
+                $('#jumlah').val(money_format(data.simpanan_pokok));
                 $('#jumlah_simpanan_wajib').val(money_format(data.simpanan_wajib));
             }
         });
@@ -187,7 +186,7 @@
     function save_anggota() {
         $.ajax({
             type: 'POST',
-            url: '<?= base_url('api/transaksi/tabungan') ?>',
+            url: '<?= base_url('api/masterdata/anggota') ?>',
             data: $('#formadd').serialize(),
             beforeSend: function() {
                 show_ajax_indicator();
@@ -200,11 +199,11 @@
                 if (msg.act === 'add') {
                     $('#datamodal_add').modal('hide');
                     message_add_success();
-                    get_list_tabungan(1);
+                    get_list_anggota(1);
                 } else {
                     $('#datamodal_add').modal('hide');
                     message_edit_success();
-                    get_list_tabungan(page);
+                    get_list_anggota(page);
                 }
             },
             error: function() {
@@ -236,7 +235,7 @@
                         dataType: 'json',
                         success: function(data) {
                             message_delete_success();
-                            get_list_tabungan(page);
+                            get_list_anggota(page);
                         }
                     });
                 }
@@ -246,7 +245,7 @@
     }
         
     function paging(p) {
-        get_list_tabungan(p);
+        get_list_anggota(p);
     }
 
 </script>
@@ -263,9 +262,9 @@
             <div class="grid-title">
               <h4>Daftar List <?= $title ?></h4>
                 <div class="tools"> 
-                    <button id="add_tabungan" class="btn btn-info btn-mini"><i class="fa fa-plus-circle"></i> Tambah Data</button>
+                    <button id="add_anggota" class="btn btn-info btn-mini"><i class="fa fa-plus-circle"></i> Tambah Data</button>
                     <button id="cari_button" class="btn btn-mini"><i class="fa fa-search"></i> Cari</button>
-                    <button id="reload_tabungan" class="btn btn-mini"><i class="fa fa-refresh"></i> Reload Data</button>
+                    <button id="reload_anggota" class="btn btn-mini"><i class="fa fa-refresh"></i> Reload Data</button>
                 </div>
             </div>
             <div class="grid-body">
@@ -280,7 +279,7 @@
                             <th width="10%" class="left">No. KTP</th>
                             <th width="20%" class="left">Nama</th>
                             <th width="30%" class="left">Alamat</th>
-                            <th width="10%" class="right">Simpanan Wajib</th>
+                            <!--<th width="10%" class="right">Simpanan Wajib</th>-->
                             <th width="10%"></th>
                         </tr>
                         </thead>
@@ -400,7 +399,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-refresh"></i> Batal</button>
-              <button type="button" class="btn btn-primary" onclick="get_list_tabungan(1);"><i class="fa fa-eye"></i> Tampilkan</button>
+              <button type="button" class="btn btn-primary" onclick="get_list_anggota(1);"><i class="fa fa-eye"></i> Tampilkan</button>
             </div>
           </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->

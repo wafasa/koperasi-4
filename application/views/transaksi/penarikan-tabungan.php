@@ -305,7 +305,7 @@
             <div class="grid-title">
               <h4>Daftar List <?= $title ?></h4>
                 <div class="tools"> 
-                    <button id="add_penarikan_tabungan" class="btn btn-info btn-mini"><i class="fa fa-plus-circle"></i> Tambah</button>
+                    <button id="add_penarikan_tabungan" class="btn btn-info btn-mini"><i class="fa fa-plus-circle"></i> Tambah Data</button>
                     <button id="cari_button" class="btn btn-mini"><i class="fa fa-search"></i> Cari</button>
                     <button id="reload_penarikan_tabungan" class="btn btn-mini"><i class="fa fa-refresh"></i> Reload Data</button>
                 </div>
@@ -344,19 +344,25 @@
               <h4 class="modal-title"></h4>
             </div>
             <div class="modal-body">
-                <form id="formadd" method="post" role="form">
+                <form id="formadd" method="post" role="form" class="form-horizontal">
                 <input type="hidden" name="id" id="id" />
                 <div class="form-group">
-                    <label class="control-label">Tanggal:</label>
-                    <input type="text" name="tanggal" class="form-control" disabled="" style="width: 145px;" id="tanggal" value="<?= date("d/m/Y") ?>" />
+                    <label class="control-label col-md-3">Tanggal:</label>
+                    <div class="col-lg-8">
+                        <input type="text" name="tanggal" class="form-control" disabled="" style="width: 145px;" id="tanggal" value="<?= date("d/m/Y") ?>" />
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label class="control-label">Nomor Rekening / Nama Anggota:</label>
-                    <input type="text" name="norek"  class="select2-input" id="norek">
+                    <label class="control-label col-lg-3">No. Rekening/Nama:</label>
+                    <div class="col-lg-8">
+                        <input type="text" name="norek"  class="select2-input" id="norek">
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label class="control-label">Sisa Saldo:</label>
-                    <input type="text" class="form-control" id="sisa_saldo" readonly="">
+                    <label class="control-label col-lg-3">Sisa Saldo:</label>
+                    <div class="col-lg-8">
+                        <input type="text" class="form-control" id="sisa_saldo" readonly="">
+                    </div>
                 </div>
 <!--                <div class="form-group">
                     <label class="control-label">Jenis Transaksi:</label>
@@ -367,8 +373,10 @@
                     </select>
                 </div>-->
                 <div class="form-group">
-                    <label class="control-label">Nominal:</label>
-                    <input name="nominal_tabungan" id="nominal_tabungan" onblur="FormNum(this)" class="form-control" />
+                    <label class="control-label col-lg-3">Nominal:</label>
+                    <div class="col-lg-8">
+                        <input name="nominal_tabungan" id="nominal_tabungan" onblur="FormNum(this)" class="form-control" />
+                    </div>
                 </div>
             </form>
             </div>

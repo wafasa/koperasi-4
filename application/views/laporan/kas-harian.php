@@ -73,15 +73,15 @@
 
                 $('#example-advanced tbody').empty();          
                 
-                var str_awal = '<tr>'+
+                var str_awal = '<tr style="background: #f4f4f4;">'+
                         '<td align="center"></td>'+
-                        '<td align="center">'+data.today+'</td>'+
-                        '<td></td>'+
-                        '<td>Sisa Saldo Tanggal '+data.kemaren+'</td>'+
+                        '<td><b>'+data.today+'</b></td>'+
+                        '<td colspan="2"></td>'+
+                        '<td><b>Sisa Saldo Tanggal '+data.kemaren+'</b></td>'+
                         '<td align="right"></td>'+
                         '<td align="right"></td>'+
                         '<td align="right"></td>'+
-                        '<td align="right">'+money_format(data.awal)+'</td>'+
+                        '<td align="right"><b>'+money_format(data.awal)+'</b></td>'+
                     '</tr>';
                 $('#example-advanced tbody').append(str_awal);
                 $.each(data.data,function(i, v){
@@ -92,8 +92,9 @@
                     };
                     str+= '<tr data-tt-id='+i+' class="'+highlight+'">'+
                             '<td align="center">'+((i+1) + ((data.page - 1) * data.limit))+'</td>'+
-                            '<td align="center"><small>'+datetimefmysql(v.waktu)+'</small></td>'+
+                            '<td><small>'+datetimefmysql(v.waktu)+'</small></td>'+
                             '<td>'+v.transaksi+'</td>'+
+                            '<td>'+v.id_transaksi+'</td>'+
                             '<td>'+v.keterangan+'</td>'+
                             '<td align="right">'+money_format(v.awal)+'</td>'+
                             '<td align="right">'+money_format(v.masuk)+'</td>'+
@@ -139,7 +140,7 @@
                 <div class="tools"> 
                     <button id="search" class="btn btn-info btn-mini"><i class="fa fa-search"></i> Cari</button>
                     <!--<button id="cari_button" class="btn btn-mini"><i class="fa fa-search"></i> Cari</button>-->
-                    <button id="reload_kas_harian" class="btn btn-mini"><i class="fa fa-refresh"></i> Reload</button>
+                    <button id="reload_kas_harian" class="btn btn-mini"><i class="fa fa-refresh"></i> Reload Data</button>
                 </div>
             </div>
             <div class="grid-body">
@@ -149,8 +150,9 @@
                         <thead>
                         <tr>
                             <th width="3%">No</th>
-                            <th width="15%">Tanggal</th>
+                            <th width="10%">Tanggal</th>
                             <th width="15%" class="left">Transaksi</th>
+                            <th width="5%">Kode</th>
                             <th width="40%" class="left">Keterangan</th>
                             <th width="10%" class="right">Awal</th>
                             <th width="10%" class="right">Masuk</th>
@@ -176,11 +178,16 @@
               <h4 class="modal-title"></h4>
             </div>
             <div class="modal-body">
-                <form id="form_search" method="post" role="form">
+                <form id="form_search" method="post" role="form" class="form-horizontal">
                     <input type="hidden" name="id" id="id" />
                     <div class="form-group">
-                        <label class="control-label">Tanggal:</label>
-                        <input type="text" name="awal" class="form-control" style="width: 145px; margin-right: 10px;" id="awal" value="<?= date("d/m/Y") ?>" /> 
+                        <label class="control-label col-lg-3">Tanggal:</label>
+                        <div class="col-lg-3">
+                            <input type="text" name="awal" class="form-control" id="awal" value="<?= date("d/m/Y") ?>" /> 
+                        </div>
+                        <div class="col-lg-3">
+                            <input type="text" name="akhir" class="form-control" id="akhir" value="<?= date("d/m/Y") ?>" /> 
+                        </div>
                     </div>
                 </form>
             </div>

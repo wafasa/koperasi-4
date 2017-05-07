@@ -57,7 +57,7 @@ class User extends CI_Controller {
         }
         fclose($handle);
         if (empty($user)) {
-            $this->load->view('logmein', $data);
+            $this->load->view('login', $data);
         }
         
         //$this->is_login();

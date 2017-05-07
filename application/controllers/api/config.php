@@ -173,10 +173,11 @@ class Config extends REST_Controller {
         $array = array(
             'administrasi' => post_safe('administrasi'),
             'calon_agt' => currencyToNumber(post_safe('calon_anggota')),
-            'survey' => currencyToNumber(post_safe('survey')),
-            'stofmap' => currencyToNumber(post_safe('stofmap')),
+            //'survey' => currencyToNumber(post_safe('survey')),
+            //'stofmap' => currencyToNumber(post_safe('stofmap')),
             'persen_jasa_usaha' => post_safe('persen1'),
-            'persen_simpanan' => post_safe('persen2')
+            'persen_simpanan' => post_safe('persen2'),
+            'bunga_pinjaman' => post_safe('bunga_pinjaman')
         );
         $data = $this->m_config->save_config_administrasi($array);
         $this->response($data, 200);

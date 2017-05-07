@@ -26,7 +26,7 @@ class M_user extends CI_Model {
             from tb_grant_privileges pp
             join tb_privileges p on (pp.id_privileges = p.id)
             join tb_module m on (p.id_module = m.id)
-            $q group by p.id_module";
+            $q group by p.id_module order by m.urut";
         //echo $sql;
         $result =  $this->db->query($sql)->result();
         foreach ($result as $key => $value) {
@@ -34,7 +34,7 @@ class M_user extends CI_Model {
             from tb_grant_privileges pp
             join tb_privileges p on (pp.id_privileges = p.id)
             join tb_module m on (p.id_module = m.id) 
-            where p.id_module = '".$value->id."' and pp.id_user_group = '".$id."'";
+            where p.id_module = '".$value->id."' and pp.id_user_group = '".$id."' order by p.urut asc";
             $result[$key]->detail_menu = $this->db->query($sql_child)->result();
         }
         return $result;
@@ -55,7 +55,7 @@ class M_user extends CI_Model {
             join tb_users u on (ug.id = u.id_user_group)
             join tb_module m on (p.module_id = m.id)
             where p.id is not null $q and ug.id = '".$this->session->userdata('id_group')."' and p.show_desktop = '1'
-            order by p.form_nama";
+            order by p.urut";
         //echo $sql;
         return $this->db->query($sql);
     }

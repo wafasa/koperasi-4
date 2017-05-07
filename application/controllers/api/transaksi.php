@@ -56,8 +56,8 @@ class Transaksi extends REST_Controller {
             // insert pembiayaan
             
             $jum  = currencyToNumber(post_safe('jumlah'));
-            $data = $this->db->get_where('tb_jasa', array('jenis' => '1'))->row();
-            $jasa = $jum * ($data->jasa/100);
+            $data = $this->db->get_where('tb_setting_administrasi')->row();
+            $jasa = $jum * ($data->bunga_pinjaman/100);
             $pokok= ceil($jum / post_safe('lama'));
             $janji= ($pokok * post_safe('lama')) + ($jasa * post_safe('lama'));
             $angs = $jasa + $pokok;
@@ -153,8 +153,8 @@ class Transaksi extends REST_Controller {
             $check_angsuran = $this->db->query("select count(*) as count from tb_detail_pinjaman where id_pinjaman = '".post_safe('id')."' and tgl_bayar is not NULL")->row()->count;
             
             $jum  = currencyToNumber(post_safe('jumlah'));
-            $data = $this->db->get_where('tb_jasa', array('jenis' => '1'))->row();
-            $jasa = $jum * ($data->jasa/100);
+            $data = $this->db->get_where('tb_setting_administrasi')->row();
+            $jasa = $jum * ($data->bunga_pinjaman/100);
             $pokok= ceil($jum / post_safe('lama'));
             $janji= ($pokok * post_safe('lama')) + ($jasa * post_safe('lama'));
             $angs = $jasa + $pokok;
@@ -338,7 +338,8 @@ class Transaksi extends REST_Controller {
     function penerimaan_pengeluaran_post() {
         $param = array(
             'id' => post_safe('id'),
-            'id_jenis' => post_safe('jenis'),
+            'jenis' => post_safe('jenis'),
+            'id_jenis' => post_safe('nama_transaksi'),
             'nominal' => currencyToNumber(post_safe('nominal')),
             'tanggal' => date2mysql(post_safe('tanggal')),
             'keterangan' => post_safe('keterangan')

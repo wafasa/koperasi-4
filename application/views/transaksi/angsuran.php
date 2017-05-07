@@ -52,6 +52,8 @@
                 $('#total_pengembalian').val(money_format(data.ttl_pengembalian));
                 $('#sisa_angsuran').val(money_format(data.sisa_angsuran));
                 $('#tagihan_perbulan').val(data.bsr_angsuran);
+                $('#pokok_perbulan').val(data.angsuran_pokok);
+                $('#bunga_perbulan').val(data.jasa_angsuran);
                 $('#jml_kali_angsur').html('<option value="">Pilih ...</option>');
                 var j = 1;
                 $.each(data.sisa_kali_angsuran, function(i, v) {
@@ -93,8 +95,12 @@
         
         $('#jml_kali_angsur').change(function() {
             var kali = parseInt($(this).val());
-            var tagihan = parseFloat($('#tagihan_perbulan').val());
-            $('#nominal_angsuran').val(money_format(kali*tagihan));
+            var tagihan = parseInt($('#tagihan_perbulan').val());
+            var pokok   = parseInt($('#pokok_perbulan').val());
+            var bunga   = parseInt($('#bunga_perbulan').val());
+            $('#pokok').val(numberToCurrency(pokok*kali));
+            $('#bunga').val(numberToCurrency(bunga*kali));
+            $('#nominal_angsuran').val(numberToCurrency(kali*tagihan));
         });
     });
     
@@ -336,38 +342,63 @@
               <h4 class="modal-title"></h4>
             </div>
             <div class="modal-body">
-                <form id="formadd" method="post" role="form">
+                <form id="formadd" method="post" role="form" class="form-horizontal">
                 <!--<input type="hidden" name="id" id="id" />-->
                 <input type="hidden" id="tagihan_perbulan" />
+                <input type="hidden" id="pokok_perbulan" />
+                <input type="hidden" id="bunga_perbulan" />
                 <div class="form-group">
-                    <label class="control-label">Tanggal:</label>
-                    <input type="text" name="tanggal" class="form-control" style="width: 145px;" id="tanggal" value="<?= date("d/m/Y") ?>" readonly="" />
+                    <label class="control-label col-lg-3">Tanggal:</label>
+                    <div class="col-lg-8">
+                        <input type="text" name="tanggal" class="form-control" style="width: 145px;" id="tanggal" value="<?= date("d/m/Y") ?>" readonly="" />
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label class="control-label">Nomor Rekening / Nama Debitur:</label>
-                    <input type="text" name="norek"  class="select2-input" id="norek">
+                    <label class="control-label col-lg-3">No. Peminjaman / Nama:</label>
+                    <div class="col-lg-8">
+                        <input type="text" name="norek"  class="select2-input" id="norek">
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label class="control-label">Total Pinjaman:</label>
-                    <input type="text" class="form-control" id="total_pinjam" readonly="">
+                    <label class="control-label col-lg-3">Total Pinjaman:</label>
+                    <div class="col-lg-8">
+                        <input type="text" class="form-control" id="total_pinjam" readonly="">
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label class="control-label">Total Pengembalian:</label>
-                    <input type="text" class="form-control" id="total_pengembalian" readonly="">
+                    <label class="control-label col-lg-3">Total Pengembalian:</label>
+                    <div class="col-lg-8">
+                        <input type="text" class="form-control" id="total_pengembalian" readonly="">
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label class="control-label">Sisa Angsuran:</label>
-                    <input type="text" class="form-control" id="sisa_angsuran" readonly="">
+                    <label class="control-label col-lg-3">Sisa Angsuran:</label>
+                    <div class="col-lg-8">
+                        <input type="text" class="form-control" id="sisa_angsuran" readonly="">
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label class="control-label">Jumlah Kali Angsuran:</label>
-                    <select name="jml_kali_angsur" id="jml_kali_angsur" class="form-control">
-                        
-                    </select>
+                    <label class="control-label col-lg-3">Jumlah Kali Angsuran:</label>
+                    <div class="col-lg-8">
+                        <select name="jml_kali_angsur" id="jml_kali_angsur" class="form-control"></select>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label class="control-label">Nominal Angsuran:</label>
-                    <input name="nominal_angsuran" id="nominal_angsuran" class="form-control" />
+                    <label class="control-label col-lg-3">Detail:</label>
+                    <label class="control-label col-lg-1"> Pokok</label>
+                    <div class="col-lg-3">
+                        <input id="pokok" class="form-control" readonly="" />
+                    </div>
+                    <label class="control-label col-lg-1">Bunga</label>
+                    <div class="col-lg-3">
+                        <input id="bunga" class="form-control" readonly="" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-lg-3">Total Angsuran:</label>
+                    <div class="col-lg-8">
+                        <input name="nominal_angsuran" id="nominal_angsuran" readonly="" class="form-control" />
+                    </div>
                 </div>
             </form>
             </div>

@@ -36,7 +36,7 @@ class Laporan extends CI_Controller {
     }
     
     function administrasi() {
-        $data['title'] = 'Rekap Pendapatan Administrasi & Profisi';
+        $data['title'] = 'Rekap Pendapatan Administrasi & Denda';
         $this->load->view('laporan/rekap-administrasi', $data);
     }
     

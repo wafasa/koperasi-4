@@ -17,4 +17,9 @@ class Masterdata extends CI_Controller {
         $data['title'] = 'Data Utama Debitur';
         $this->load->view('masterdata/debitur', $data);
     }
+    
+    function transaksi_lain() {
+        $data['title'] = 'Data Jenis Transaksi Lain';
+        $this->load->view('masterdata/transaksi-lain', $data);
+    }
 }

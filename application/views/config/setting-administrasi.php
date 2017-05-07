@@ -10,11 +10,9 @@
             dataType: 'json',
             success: function(data) {
                 $('#administrasi').val(data.administrasi);
-                $('#survey').val(numberToCurrency(data.survey));
-                $('#calon_anggota').val(numberToCurrency(data.calon_agt));
-                $('#stofmap').val(numberToCurrency(data.stofmap));
                 $('#persen1').val(data.persen_jasa_usaha);
                 $('#persen2').val(data.persen_simpanan);
+                $('#bunga_pinjaman').val(data.bunga_pinjaman);
             }
         });
     }
@@ -64,7 +62,7 @@
                     <div class="col-md-1 col-sm-1 col-xs-1">
                         
                     </div>
-                    <div class="col-md-6 col-sm-6 col-xs-6">
+                    <div class="col-lg-5">
                         <form id="chpass">
                         <div class="form-group">
                         <label class="form-label">Biaya Administrasi Pinjaman (%):</label>
@@ -72,22 +70,10 @@
                                 <input type="number" min="1" max="100" maxlength="3" name="administrasi" id="administrasi" class="form-control" />
                             </div>
                         </div>
-<!--                        <div class="form-group">
-                        <label class="form-label">Biaya Calon Anggota (Rp):</label>
-                            <div class="controls">
-                                <input type="text" name="calon_anggota" id="calon_anggota" onblur="FormNum(this);" class="form-control" />
-                            </div>
-                        </div>-->
                         <div class="form-group">
-                        <label class="form-label">Biaya Survey (Rp):</label>
+                        <label class="form-label">Bunga Pinjaman (%):</label>
                             <div class="controls">
-                                <input type="text" name="survey" id="survey" onblur="FormNum(this);" class="form-control" />
-                            </div>
-                        </div>
-                        <div class="form-group">
-                        <label class="form-label">Biaya Stofmap (Rp):</label>
-                            <div class="controls">
-                                <input type="text" name="stofmap" id="stofmap" onblur="FormNum(this);" class="form-control" />
+                                <input type="text" name="bunga_pinjaman" id="bunga_pinjaman" onblur="FormNum(this);" class="form-control" />
                             </div>
                         </div>
                         <div class="form-group">
@@ -110,6 +96,26 @@
                         </div>
                         </form>
                     </div>
+<!--                    <div class="col-lg-5">
+                        <div class="form-group">
+                        <label class="form-label">Kode Tabungan:</label>
+                            <div class="controls">
+                                <input type="text" maxlength="3" name="kode_tabungan" id="kode_tabungan" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                        <label class="form-label">Kode Peminjaman:</label>
+                            <div class="controls">
+                                <input type="text" maxlength="3" name="kode_pinjaman" id="kode_pinjaman" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                        <label class="form-label">Kode Koreksi:</label>
+                            <div class="controls">
+                                <input type="text" maxlength="3" name="kode_pinjaman" id="kode_pinjaman" class="form-control" />
+                            </div>
+                        </div>
+                    </div>-->
                   </div>
             </div>
           </div>

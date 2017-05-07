@@ -14,17 +14,17 @@
             get_list_penerimaan_pengeluaran(1);
         });
         
-        $('#parent_code').select2({
+        $('#nama_transaksi').select2({
             width: '100%',
             ajax: {
-                url: "<?= base_url('api/masterdata_auto/penerimaan_pengeluaran_auto') ?>",
+                url: "<?= base_url('api/masterdata_auto/transaksi_lain_auto') ?>",
                 dataType: 'json',
                 quietMillis: 100,
                 data: function (term, page) { // page is the one-based page number tracked by Select2
                     return {
                         q: term, //search term
                         page: page, // page number
-                        jenissppb: $('#jenisbarang2').val()
+                        jenis: $('#jenis').val()
                     };
                 },
                 results: function (data, page) {
@@ -35,12 +35,16 @@
                 }
             },
             formatResult: function(data){
-                var markup = data.kode+' - '+data.nama_program;
+                var markup = data.nama;
                 return markup;
             }, 
             formatSelection: function(data){
-                return data.kode+' - '+data.nama_program;
+                return data.nama;
             }
+        });
+        
+        $('#cari_button').click(function() {
+            
         });
     });
     
@@ -127,7 +131,9 @@
                 var data = data.data[0];
                 $('#id').val(data.id);
                 $('#tanggal').val(datefmysql(data.tanggal));
-                $('#jenis').val(data.id_jenis);
+                $('#jenis').val(data.jenis);
+                $('#nama_transaksi').val(data.id_jenis);
+                $('#s2id_nama_transaksi a .select2-chosen').html(data.nama_transaksi);
                 $('#nominal').val(numberToCurrency(data.nominal));
                 $('#keterangan').val(data.keterangan);
             }
@@ -240,8 +246,8 @@
             <div class="grid-title">
               <h4>Daftar List <?= $title ?></h4>
                 <div class="tools"> 
-                    <button id="add_penerimaan_pengeluaran" class="btn btn-info btn-mini"><i class="fa fa-plus-circle"></i> Tambah</button>
-                    <!--<button id="cari_button" class="btn btn-mini"><i class="fa fa-search"></i> Cari</button>-->
+                    <button id="add_penerimaan_pengeluaran" class="btn btn-info btn-mini"><i class="fa fa-plus-circle"></i> Tambah Data</button>
+                    <button id="cari_button" class="btn btn-mini"><i class="fa fa-search"></i> Cari</button>
                     <button id="reload_penerimaan_pengeluaran" class="btn btn-mini"><i class="fa fa-refresh"></i> Reload</button>
                 </div>
             </div>
@@ -277,29 +283,42 @@
               <h4 class="modal-title"></h4>
             </div>
             <div class="modal-body">
-                <form id="formadd" method="post" role="form">
+                <form id="formadd" method="post" role="form" class="form-horizontal">
                 <input type="hidden" name="id" id="id" />
                 <div class="form-group">
-                    <label class="control-label">Tanggal:</label>
-                    <input type="text" name="tanggal" class="form-control" style="width: 145px;" id="tanggal" value="<?= date("d/m/Y") ?>" readonly="" />
+                    <label class="control-label col-lg-3">Tanggal:</label>
+                    <div class="col-lg-8">
+                        <input type="text" name="tanggal" class="form-control" style="width: 145px;" id="tanggal" value="<?= date("d/m/Y") ?>" readonly="" />
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label for="recipient-name" class="control-label">Jenis Transaksi:</label>
-                    <select name="jenis" id="jenis" class="form-control">
-                        <option value="">Pilih ...</option>
-                        <?php foreach ($jenis as $data) { ?>
-                        <option value="<?= $data->id ?>"><?= $data->nama ?> ( <?= $data->jenis ?> )</option>
-                        <?php } ?>
-                    </select>
+                    <label class="control-label col-lg-3">Jenis:</label>
+                    <div class="col-lg-8">
+                        <select name="jenis" id="jenis" class="form-control">
+                            <option value="">Pilih ...</option>
+                            <option value="Pemasukkan">Pemasukkan</option>
+                            <option value="Pengeluaran">Pengeluaran</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-lg-3">Nama Transaksi:</label>
+                    <div class="col-lg-8">
+                        <input type="text" name="nama_transaksi" id="nama_transaksi" class="select2-input" />
+                    </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="recipient-name" class="control-label">Nominal Rp.:</label>
-                    <input type="text" name="nominal"  class="form-control" id="nominal" onblur="FormNum(this)" />
+                    <label class="control-label col-lg-3">Nominal Rp.:</label>
+                    <div class="col-lg-8">
+                        <input type="text" name="nominal"  class="form-control" id="nominal" onblur="FormNum(this)" />
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label for="recipient-name" class="control-label">Keterangan:</label>
-                    <textarea name="keterangan" id="keterangan" class="form-control"></textarea>
+                    <label class="control-label col-lg-3">Keterangan:</label>
+                    <div class="col-lg-8">
+                        <textarea name="keterangan" id="keterangan" class="form-control" rows="5"></textarea>
+                    </div>
                 </div>
             </form>
             </div>

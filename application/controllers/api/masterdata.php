@@ -15,6 +15,38 @@ class Masterdata extends REST_Controller {
         }
     }
     
+    function anggotas_get() {
+        if (!$this->get('page')) {
+            $this->response(NULL, 400);
+        }
+        
+        $start = ($this->get('page') - 1) * $this->limit;
+        
+        $search= array(
+            'id' => $this->get('id'),
+            'awal' => get_safe('awal'),
+            'akhir' => get_safe('akhir'),
+            'id_anggota' => get_safe('id_anggota'),
+            'nama' => get_safe('nama'),
+            'no_rekening' => get_safe('norek')
+        );
+        
+        $data = $this->m_masterdata->get_list_anggota($this->limit, $start, $search);
+        $data['page'] = (int)$this->get('page');
+        $data['limit'] = $this->limit;
+        
+        if($data){
+            $this->response($data, 200); // 200 being the HTTP response code
+        }else{
+            $this->response(array('error' => 'Data tidak ditemukan'), 404);
+        }
+    }
+    
+    function anggota_post() {
+        $data = $this->m_masterdata->save_data_anggota();
+        $this->response($data, 200);
+    }
+    
     function debiturs_get() {
         if (!$this->get('page')) {
             $this->response(NULL, 400);
@@ -37,16 +69,39 @@ class Masterdata extends REST_Controller {
         }
     }
     
-    function anggota_post() {
+    function transaksi_lains_get() {
+        if (!$this->get('page')) {
+            $this->response(NULL, 400);
+        }
+        
+        $start = ($this->get('page') - 1) * $this->limit;
+        
+        $search= array(
+            'id' => $this->get('id')
+        );
+        
+        $data = $this->m_masterdata->get_list_transaksi_lain($this->limit, $start, $search);
+        $data['page'] = (int)$this->get('page');
+        $data['limit'] = $this->limit;
+        
+        if($data){
+            $this->response($data, 200); // 200 being the HTTP response code
+        }else{
+            $this->response(array('error' => 'Data tidak ditemukan'), 404);
+        }
+    }
+    
+    function transaksi_lain_post() {
         $param = array(
             'id' => post_safe('id'),
-            'no_rekening' => post_safe('norek'),
-            'no_ktp' => post_safe('noktp'),
             'nama' => post_safe('nama'),
-            'alamat' => post_safe('alamat'),
-            'tgl_masuk' => date2mysql(post_safe('tanggal'))
+            'jenis' => post_safe('jenis')
         );
-        $data = $this->m_masterdata->save_data_anggota($param);
+        $data = $this->m_masterdata->save_transaksi_lain($param);
         $this->response($data, 200);
+    }
+    
+    function transaksi_lain_delete() {
+        $this->db->delete('tb_jenis_transaksi', array('id' => $this->get('id')));
     }
 }

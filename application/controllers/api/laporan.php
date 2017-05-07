@@ -24,7 +24,8 @@ class Laporan extends REST_Controller {
         
         $search= array(
             'id' => $this->get('id'),
-            'awal' => date2mysql(get_safe('awal'))
+            'awal' => get_safe('awal'),
+            'akhir' => get_safe('akhir')
         );
         
         $data = $this->m_laporan->get_list_kas_harian($this->limit, $start, $search);

@@ -15,8 +15,8 @@ class M_laporan extends CI_Model {
         if ($search['id'] !== '') {
             $q.=" and id = '".$search['id']."'";
         }
-        if ($search['awal'] !== '') {
-            $q.=" and date(waktu) = '".$search['awal']."'";
+        if ($search['awal'] !== '' and $search['akhir'] !== '') {
+            $q.=" and date(waktu) between '".date2mysql($search['awal'])."' and '".date2mysql($search['akhir'])."'";
         }
         
         $select = "select * ";
@@ -39,9 +39,9 @@ class M_laporan extends CI_Model {
         }
         $data['data'] = $result;
         $data['jumlah'] = $this->db->query($count.$sql.$q)->row()->count;
-        $sql_awal = "select IFNULL(SUM(masuk)-SUM(keluar),0) as sisa from tb_arus_kas where date(waktu) < '".$search['awal']."'";
+        $sql_awal = "select IFNULL(SUM(masuk)-SUM(keluar),0) as sisa from tb_arus_kas where date(waktu) < '".date2mysql($search['awal'])."'";
         $data['awal'] = $this->db->query($sql_awal)->row()->sisa;
-        $date = explode('-', $search['awal']);
+        $date = explode('-', date2mysql($search['awal']));
         $varia = mktime(0, 0, 0, $date[1], $date[2]-1, $date[0]);
         $data['kemaren'] = date("d/m/Y",$varia);
         $data['today'] = date("d/m/Y");
@@ -54,7 +54,7 @@ class M_laporan extends CI_Model {
             $q.=" and id = '".$search['id']."'";
         }
         
-        $select = "select dp.*, db.nama, db.alamat, db.nomor_rekening ";
+        $select = "select dp.*, pj.id as id_pinjaman, pj.angsuran_pokok, pj.jasa_angsuran, db.nama, db.alamat, db.nomor_rekening ";
         $count  = "select count(*) as count ";
         $sql = " 
             from tb_detail_pinjaman dp

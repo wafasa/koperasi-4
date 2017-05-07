@@ -67,4 +67,19 @@ class Masterdata_auto extends REST_Controller{
         $this->response($data, 200);
     }
     
+    function transaksi_lain_auto_get() {
+        $param = array(
+            'search' => get_safe('q'),
+            'jenis' => get_safe('jenis')
+        );
+        $start = $this->start(get_safe('page'));
+        $data = $this->m_masterdata->get_auto_transaksi_lain($param, $start, $this->limit);
+        if ((get_safe('page') == 1) & (get_safe('q') == '')) {
+            $pilih[] = array('id'=>'', 'no_rekening' => '', 'nama' =>'', 'alamat' => '');
+            $data['data'] = array_merge($pilih, $data['data']);
+            $data['total'] += 1;
+        }
+        $this->response($data, 200);
+    }
+    
 }
