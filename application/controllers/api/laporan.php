@@ -6,7 +6,7 @@ class Laporan extends REST_Controller {
     
     function __construct() {
         parent::__construct();
-        $this->limit = 10;
+        $this->limit = 15;
         $this->load->model(array('m_laporan'));
 
         $id_user = $this->session->userdata('id_user');

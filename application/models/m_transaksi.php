@@ -6,6 +6,10 @@ class M_transaksi extends CI_Model {
         $sql = "select SUM(masuk)-SUM(keluar) as sisa from tb_arus_kas";
         return $this->db->query($sql)->row()->sisa;
     }
+    
+    function nama_anggota($id_anggota) {
+        return $this->db->get_where('tb_anggota', array('id' => $id_anggota))->row()->nama;
+    }
     /*Pembiayaan*/
     function get_list_pembiayaans($limit = null, $start = null, $search = null) {
         $q = null;
@@ -689,6 +693,275 @@ class M_transaksi extends CI_Model {
         $this->db->update('tb_detail_tabungan', array('tercetak' => 'Sudah'));
     }
     
+    function get_list_simpanan_wajib($limit, $start, $param) {
+        $q = NULL;
+        if ($param['id'] !== '') {
+            $q.=" and dw.id = '".$param['id']."'";
+        }
+        if ($param['awal'] !== '' and $param['akhir'] !== '') {
+            $q.=" and date(dw.waktu) between '".date2mysql($param['awal'])."' and '".date2mysql($param['akhir'])."'";
+        }
+        if ($param['id_anggota'] !== '') {
+            $q.=" and a.id = '".$param['id_anggota']."'";
+        }
+        $select = "select dw.*, a.no_rekening, a.nama ";
+        $count  = "select count(*) as count ";
+        $sql = "from tb_detail_simpanan_wajib dw
+            join tb_anggota a on (dw.id_anggota = a.id)
+            where dw.keluar = 0 $q ";
+        
+        $limitation = NULL;
+        if ($limit !== NULL) {
+            $limitation = "limit $start, $limit";
+        }
+        $result = $this->db->query($select.$sql.$limitation)->result();
+        foreach ($result as $key => $value) {
+            $sql_child = "select IFNULL(sum(masuk)-sum(keluar),0) as awal 
+                from tb_detail_simpanan_wajib
+                where id < '".$value->id."'
+                and id_anggota = '".$value->id_anggota."'";
+            $result[$key]->awal = $this->db->query($sql_child)->row()->awal;
+            
+            $sql_child2 = "select IFNULL(sum(masuk)-sum(keluar),0) as saldo 
+                from tb_detail_simpanan_wajib 
+                where id_anggota = '".$value->id_anggota."'";
+            $result[$key]->saldo = $this->db->query($sql_child2)->row()->saldo;
+        }
+        $data['data'] = $result;
+        $data['jumlah'] = $this->db->query($count.$sql)->row()->count;
+        return $data;
+    }
     
+    function sisa_saldo_simpanan_wajib($param) {
+        $sql = "select count(*), IFNULL(SUM(masuk)-SUM(keluar),0) as sisa 
+            from tb_detail_simpanan_wajib
+            where id_anggota = '".$param['id_anggota']."'
+            ";
+        return $this->db->query($sql)->row();
+    }
+    
+    function save_simpanan_wajib($data) {
+        $this->db->trans_begin();
+        if ($data['id'] === '') {
+            $this->db->insert('tb_detail_simpanan_wajib', $data);
+            $result['act'] = 'add';
+            $result['id']  = $this->db->insert_id();
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $result['status'] = FALSE;
+            }
+        } else {
+            $this->db->where('id', $data['id']);
+            $this->db->update('tb_detail_simpanan_wajib', $data);
+            $result['act'] = 'edit';
+            $result['id']  = $data['id'];
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $result['status'] = FALSE;
+            }
+            
+            $this->db->delete('tb_arus_kas', array('id_detail_simpanan_wajib' => $data['id']));
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $result['status'] = FALSE;
+            }
+        }
+        
+        $arus_kas = array(
+            'transaksi' => 'Simpanan Wajib',
+            'id_transaksi' => $result['id'],
+            'id_detail_simpanan_wajib' => $result['id'],
+            'masuk' => $data['masuk'],
+            'keterangan' => 'Simpanan Wajib '.$this->nama_anggota($data['id_anggota']),
+            'id_user' => $this->session->userdata('id_user')
+        );
+        $this->save_arus_kas($arus_kas);
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            $result['status'] = FALSE;
+        } else {
+            $this->db->trans_commit();
+            $result['status'] = TRUE;
+        }
+        return $result;
+    }
+    
+    function get_list_penarikan_simpanan_wajib($limit, $start, $param) {
+        $q = NULL;
+        if ($param['id'] !== '') {
+            $q.=" and dw.id = '".$param['id']."'";
+        }
+        if ($param['awal'] !== '' and $param['akhir'] !== '') {
+            $q.=" and date(dw.waktu) between '".date2mysql($param['awal'])."' and '".date2mysql($param['akhir'])."'";
+        }
+        if ($param['id_anggota'] !== '') {
+            $q.=" and a.id = '".$param['id_anggota']."'";
+        }
+        $select = "select dw.*, a.no_rekening, a.nama ";
+        $count  = "select count(*) as count ";
+        $sql = "from tb_detail_simpanan_wajib dw
+            join tb_anggota a on (dw.id_anggota = a.id)
+            where dw.keluar != 0 $q ";
+        
+        $limitation = NULL;
+        if ($limit !== NULL) {
+            $limitation = "limit $start, $limit";
+        }
+        $result = $this->db->query($select.$sql.$limitation)->result();
+        foreach ($result as $key => $value) {
+            $sql_child = "select IFNULL(sum(masuk)-sum(keluar),0) as awal 
+                from tb_detail_simpanan_wajib
+                where id < '".$value->id."'
+                and id_anggota = '".$value->id_anggota."'";
+            $result[$key]->awal = $this->db->query($sql_child)->row()->awal;
+            
+            $sql_child2 = "select IFNULL(sum(masuk)-sum(keluar),0) as saldo 
+                from tb_detail_simpanan_wajib 
+                where id_anggota = '".$value->id_anggota."'";
+            $result[$key]->saldo = $this->db->query($sql_child2)->row()->saldo;
+        }
+        $data['data'] = $result;
+        $data['jumlah'] = $this->db->query($count.$sql)->row()->count;
+        return $data;
+    }
+    
+    function save_penarikan_simpanan_wajib($data) {
+        $this->db->trans_begin();
+        if ($data['id'] === '') {
+            $this->db->insert('tb_detail_simpanan_wajib', $data);
+            $result['act'] = 'add';
+            $result['id']  = $this->db->insert_id();
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $result['status'] = FALSE;
+            }
+        } else {
+            $this->db->where('id', $data['id']);
+            $this->db->update('tb_detail_simpanan_wajib', $data);
+            $result['act'] = 'edit';
+            $result['id']  = $data['id'];
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $result['status'] = FALSE;
+            }
+            
+            $this->db->delete('tb_arus_kas', array('id_detail_simpanan_wajib' => $data['id']));
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $result['status'] = FALSE;
+            }
+        }
+        
+        $arus_kas = array(
+            'transaksi' => 'Penarikan Simpanan Wajib',
+            'id_transaksi' => $result['id'],
+            'id_detail_simpanan_wajib' => $result['id'],
+            'keluar' => $data['keluar'],
+            'keterangan' => 'Penarikan Simpanan Wajib '.$this->nama_anggota($data['id_anggota']),
+            'id_user' => $this->session->userdata('id_user')
+        );
+        $this->save_arus_kas($arus_kas);
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            $result['status'] = FALSE;
+        } else {
+            $this->db->trans_commit();
+            $result['status'] = TRUE;
+        }
+        return $result;
+    }
+    
+    function get_list_penarikan_simpanan_pokok($limit, $start, $param) {
+        $q = NULL;
+        if ($param['id'] !== '') {
+            $q.=" and dw.id = '".$param['id']."'";
+        }
+        if ($param['awal'] !== '' and $param['akhir'] !== '') {
+            $q.=" and date(dw.waktu) between '".date2mysql($param['awal'])."' and '".date2mysql($param['akhir'])."'";
+        }
+        if ($param['id_anggota'] !== '') {
+            $q.=" and a.id = '".$param['id_anggota']."'";
+        }
+        $select = "select dw.*, a.no_rekening, a.nama ";
+        $count  = "select count(*) as count ";
+        $sql = "from tb_detail_simpanan_pokok dw
+            join tb_anggota a on (dw.id_anggota = a.id)
+            where dw.keluar != 0 $q ";
+        
+        $limitation = NULL;
+        if ($limit !== NULL) {
+            $limitation = "limit $start, $limit";
+        }
+        $result = $this->db->query($select.$sql.$limitation)->result();
+        foreach ($result as $key => $value) {
+            $sql_child = "select IFNULL(sum(masuk)-sum(keluar),0) as awal 
+                from tb_detail_simpanan_pokok
+                where id < '".$value->id."'
+                and id_anggota = '".$value->id_anggota."'";
+            $result[$key]->awal = $this->db->query($sql_child)->row()->awal;
+            
+            $sql_child2 = "select IFNULL(sum(masuk)-sum(keluar),0) as saldo 
+                from tb_detail_simpanan_pokok 
+                where id_anggota = '".$value->id_anggota."'";
+            $result[$key]->saldo = $this->db->query($sql_child2)->row()->saldo;
+        }
+        $data['data'] = $result;
+        $data['jumlah'] = $this->db->query($count.$sql)->row()->count;
+        return $data;
+    }
+    
+    function save_penarikan_simpanan_pokok($data) {
+        $this->db->trans_begin();
+        if ($data['id'] === '') {
+            $this->db->insert('tb_detail_simpanan_pokok', $data);
+            $result['act'] = 'add';
+            $result['id']  = $this->db->insert_id();
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $result['status'] = FALSE;
+            }
+        } else {
+            $this->db->where('id', $data['id']);
+            $this->db->update('tb_detail_simpanan_pokok', $data);
+            $result['act'] = 'edit';
+            $result['id']  = $data['id'];
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $result['status'] = FALSE;
+            }
+            
+            $this->db->delete('tb_arus_kas', array('id_detail_simpanan_pokok' => $data['id']));
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $result['status'] = FALSE;
+            }
+        }
+        
+        $arus_kas = array(
+            'transaksi' => 'Penarikan Simpanan Pokok',
+            'id_transaksi' => $result['id'],
+            'id_detail_simpanan_pokok' => $result['id'],
+            'keluar' => $data['keluar'],
+            'keterangan' => 'Penarikan Simpanan Pokok '.$this->nama_anggota($data['id_anggota']),
+            'id_user' => $this->session->userdata('id_user')
+        );
+        $this->save_arus_kas($arus_kas);
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            $result['status'] = FALSE;
+        } else {
+            $this->db->trans_commit();
+            $result['status'] = TRUE;
+        }
+        return $result;
+    }
+    
+    function sisa_saldo_simpanan_pokok($param) {
+        $sql = "select count(*), IFNULL(SUM(masuk)-SUM(keluar),0) as sisa 
+            from tb_detail_simpanan_pokok
+            where id_anggota = '".$param['id_anggota']."'
+            ";
+        return $this->db->query($sql)->row();
+    }
 }
 ?>

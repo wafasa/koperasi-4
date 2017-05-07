@@ -180,13 +180,16 @@ class M_config extends CI_Model {
         return $result;
     }
     
-    function save_config_administrasi($data) {
+    function save_config_administrasi($data, $data_denda) {
         $check= $this->db->get('tb_setting_administrasi')->num_rows();
         if ($check === 0) {
             $this->db->insert('tb_setting_administrasi', $data);
         } else {
             $this->db->update('tb_setting_administrasi', $data);
         }
+        
+        $this->db->query("delete from tb_setting_denda");
+        $this->db->insert('tb_setting_denda', $data_denda);
         $result['status'] = true;
         return $result;
     }

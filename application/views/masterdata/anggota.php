@@ -319,7 +319,7 @@
                     <div class="form-group tight">
                         <label class="control-label col-lg-3">Nama nasabah:</label>
                         <div class="col-lg-8">
-                            <input type="text" name="nama"  class="form-control" id="nama">
+                            <input type="text" name="nama"  class="form-control" style="text-transform: uppercase;" onkeyup="this.value=this.value.toUpperCase();" id="nama">
                         </div>
                     </div>
                     <div class="form-group tight">

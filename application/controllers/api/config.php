@@ -165,21 +165,25 @@ class Config extends REST_Controller {
     }
     
     function administrasi_get() {
-        $data = $this->db->get('tb_setting_administrasi')->row();
+        $data['adm'] = $this->db->get('tb_setting_administrasi')->row();
+        $data['denda'] = $this->db->get('tb_setting_denda')->row()->persentase;
         $this->response($data, 200);
     }
     
     function save_administrasi_post() {
         $array = array(
             'administrasi' => post_safe('administrasi'),
-            'calon_agt' => currencyToNumber(post_safe('calon_anggota')),
-            //'survey' => currencyToNumber(post_safe('survey')),
-            //'stofmap' => currencyToNumber(post_safe('stofmap')),
             'persen_jasa_usaha' => post_safe('persen1'),
             'persen_simpanan' => post_safe('persen2'),
-            'bunga_pinjaman' => post_safe('bunga_pinjaman')
+            'bunga_pinjaman' => post_safe('bunga_pinjaman'),
+            'simpanan_wajib' => currencyToNumber(post_safe('simpanan_wajib')),
+            'simpanan_pokok' => currencyToNumber(post_safe('simpanan_pokok')),
         );
-        $data = $this->m_config->save_config_administrasi($array);
+        
+        $data_denda = array(
+            'persentase' => post_safe('persentase')
+        );
+        $data = $this->m_config->save_config_administrasi($array, $data_denda);
         $this->response($data, 200);
     }
 }

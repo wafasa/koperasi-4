@@ -498,4 +498,148 @@ class Transaksi extends REST_Controller {
         $this->db->delete('tb_arus_kas', array('id' => $this->get('id')));
     }
     
+    function simpanan_wajibs_get() {
+        if (!$this->get('page')) {
+            $this->response(NULL, 400);
+        }
+        
+        $start = ($this->get('page') - 1) * $this->limit;
+        
+        $search= array(
+            'id' => $this->get('id'),
+            'awal' => get_safe('awal'),
+            'akhir' => get_safe('akhir'),
+            'id_anggota' => get_safe('id_anggota')
+        );
+        
+        $data = $this->m_transaksi->get_list_simpanan_wajib($this->limit, $start, $search);
+        $data['page'] = (int)$this->get('page');
+        $data['limit'] = $this->limit;
+        
+        if($data){
+            $this->response($data, 200); // 200 being the HTTP response code
+        }else{
+            $this->response(array('error' => 'Data tidak ditemukan'), 404);
+        }
+    }
+    
+    function saldo_simpanan_wajib_get() {
+        $param = array(
+            'id_anggota' => $this->get('id')
+        );
+        $data = $this->m_transaksi->sisa_saldo_simpanan_wajib($param);
+        $this->response($data, 200);
+    }
+    
+    function simpanan_wajib_post() {
+        $param = array(
+            'id' => post_safe('id'),
+            'id_anggota' => post_safe('norek'),
+            'masuk' => currencyToNumber(post_safe('nominal_tabungan')),
+            'id_user' => $this->session->userdata('id_user')
+        );
+        $data = $this->m_transaksi->save_simpanan_wajib($param);
+        $this->response($data, 200);
+    }
+    
+    function simpanan_wajib_delete() {
+        $this->db->delete('tb_detail_simpanan_wajib', array('id' => $this->get('id')));
+    }
+    
+    function penarikan_simpanan_wajibs_get() {
+        if (!$this->get('page')) {
+            $this->response(NULL, 400);
+        }
+        
+        $start = ($this->get('page') - 1) * $this->limit;
+        
+        $search= array(
+            'id' => $this->get('id'),
+            'awal' => get_safe('awal'),
+            'akhir' => get_safe('akhir'),
+            'id_anggota' => get_safe('id_anggota')
+        );
+        
+        $data = $this->m_transaksi->get_list_penarikan_simpanan_wajib($this->limit, $start, $search);
+        $data['page'] = (int)$this->get('page');
+        $data['limit'] = $this->limit;
+        
+        if($data){
+            $this->response($data, 200); // 200 being the HTTP response code
+        }else{
+            $this->response(array('error' => 'Data tidak ditemukan'), 404);
+        }
+    }
+    
+    function saldo_penarikan_simpanan_wajib_get() {
+        $param = array(
+            'id_anggota' => $this->get('id')
+        );
+        $data = $this->m_transaksi->sisa_saldo_penarikan_simpanan_wajib($param);
+        $this->response($data, 200);
+    }
+    
+    function penarikan_simpanan_wajib_post() {
+        $param = array(
+            'id' => post_safe('id'),
+            'id_anggota' => post_safe('norek'),
+            'keluar' => currencyToNumber(post_safe('nominal_tabungan')),
+            'id_user' => $this->session->userdata('id_user')
+        );
+        $data = $this->m_transaksi->save_penarikan_simpanan_wajib($param);
+        $this->response($data, 200);
+    }
+    
+    function penarikan_simpanan_wajib_delete() {
+        $this->db->delete('tb_detail_penarikan_simpanan_wajib', array('id' => $this->get('id')));
+    }
+    
+    function penarikan_simpanan_pokoks_get() {
+        if (!$this->get('page')) {
+            $this->response(NULL, 400);
+        }
+        
+        $start = ($this->get('page') - 1) * $this->limit;
+        
+        $search= array(
+            'id' => $this->get('id'),
+            'awal' => get_safe('awal'),
+            'akhir' => get_safe('akhir'),
+            'id_anggota' => get_safe('id_anggota')
+        );
+        
+        $data = $this->m_transaksi->get_list_penarikan_simpanan_pokok($this->limit, $start, $search);
+        $data['page'] = (int)$this->get('page');
+        $data['limit'] = $this->limit;
+        
+        if($data){
+            $this->response($data, 200); // 200 being the HTTP response code
+        }else{
+            $this->response(array('error' => 'Data tidak ditemukan'), 404);
+        }
+    }
+    
+    function saldo_simpanan_pokok_get() {
+        $param = array(
+            'id_anggota' => $this->get('id')
+        );
+        $data = $this->m_transaksi->sisa_saldo_simpanan_pokok($param);
+        $this->response($data, 200);
+    }
+    
+    function penarikan_simpanan_pokok_post() {
+        $param = array(
+            'id' => post_safe('id'),
+            'id_anggota' => post_safe('norek'),
+            'keluar' => currencyToNumber(post_safe('nominal_tabungan')),
+            'id_user' => $this->session->userdata('id_user')
+        );
+        $data = $this->m_transaksi->save_penarikan_simpanan_pokok($param);
+        $this->response($data, 200);
+    }
+    
+    function penarikan_simpanan_pokok_delete() {
+        $this->db->delete('tb_detail_penarikan_simpanan_pokok', array('id' => $this->get('id')));
+    }
+    
 }

@@ -144,11 +144,11 @@ class M_laporan extends CI_Model {
     }
     
     function get_pendapatan_simpanan($year) {
-        $sql_wajib = "select sum(simpanan_wajib) as simpanan_wajib
-            from tb_anggota where YEAR(tgl_masuk) = '".$year."'";
+        $sql_wajib = "select sum(masuk)-sum(keluar) as simpanan_wajib
+            from tb_detail_simpanan_wajib where YEAR(waktu) = '".$year."'";
         $wajib = $this->db->query($sql_wajib)->row()->simpanan_wajib;
         $sql_pokok = "select sum(masuk)-sum(keluar) as pokok
-            from tb_detail_tabungan where YEAR(tanggal) = '".$year."'";
+            from tb_detail_simpanan_pokok where YEAR(waktu) = '".$year."'";
         $pokok = $this->db->query($sql_pokok)->row()->pokok;
         
         $simpanan = $wajib;

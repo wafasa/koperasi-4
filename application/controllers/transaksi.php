@@ -40,6 +40,21 @@ class Transaksi extends CI_Controller {
         $data['title'] = 'Penarikan Tabungan';
         $this->load->view('transaksi/penarikan-tabungan', $data);
     }
+    
+    function simpanan_wajib() {
+        $data['title'] = 'Simpanan Wajib';
+        $this->load->view('transaksi/simpanan-wajib', $data);
+    }
+    
+    function penarikan_simpanan_wajib() {
+        $data['title'] = 'Penarikan Simpanan Wajib';
+        $this->load->view('transaksi/penarikan-simpanan-wajib', $data);
+    }
+    
+    function penarikan_simpanan_pokok() {
+        $data['title'] = 'Penarikan Simpanan Pokok';
+        $this->load->view('transaksi/penarikan-simpanan-pokok', $data);
+    }
 
     function koreksi_saldo() {
         $data['title'] = 'Koreksi Saldo';

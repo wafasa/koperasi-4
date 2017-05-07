@@ -8,11 +8,38 @@
             type: 'GET',
             url: '<?= base_url('api/config/administrasi') ?>',
             dataType: 'json',
-            success: function(data) {
+            success: function(msg) {
+                var data = msg.adm;
                 $('#administrasi').val(data.administrasi);
                 $('#persen1').val(data.persen_jasa_usaha);
                 $('#persen2').val(data.persen_simpanan);
                 $('#bunga_pinjaman').val(data.bunga_pinjaman);
+                $('#simpanan_pokok').val(numberToCurrency(data.simpanan_pokok));
+                $('#simpanan_wajib').val(numberToCurrency(data.simpanan_wajib));
+                $('#persentase').val(msg.denda);
+            }
+        });
+    }
+    
+    function konfirmasi_save() {
+        bootbox.dialog({
+            message: "Anda yakin akan menyimpan data ini?",
+            title: "Konfirmasi Simpan",
+            buttons: {
+              batal: {
+                label: '<i class="fa fa-times-circle"></i> Tidak',
+                className: "btn-default",
+                callback: function() {
+
+                }
+              },
+              ya: {
+                label: '<i class="fa fa-check-circle"></i>  Ya',
+                className: "btn-primary",
+                callback: function() {
+                    save_administrasi();
+                }
+              }
             }
         });
     }
@@ -59,63 +86,63 @@
             </div>
             <div class="grid-body">
                 <div class="row">
-                    <div class="col-md-1 col-sm-1 col-xs-1">
-                        
-                    </div>
+                    <div class="col-md-12">
+                    <form id="chpass" class="form-horizontal">
                     <div class="col-lg-5">
-                        <form id="chpass">
                         <div class="form-group">
-                        <label class="form-label">Biaya Administrasi Pinjaman (%):</label>
-                            <div class="controls">
+                        <label class="form-label col-lg-12">Biaya Administrasi Pinjaman (%):</label>
+                            <div class="controls col-lg-12">
                                 <input type="number" min="1" max="100" maxlength="3" name="administrasi" id="administrasi" class="form-control" />
                             </div>
                         </div>
                         <div class="form-group">
-                        <label class="form-label">Bunga Pinjaman (%):</label>
-                            <div class="controls">
+                        <label class="form-label col-lg-12">Bunga Pinjaman (%):</label>
+                            <div class="controls col-lg-12">
                                 <input type="text" name="bunga_pinjaman" id="bunga_pinjaman" onblur="FormNum(this);" class="form-control" />
                             </div>
                         </div>
                         <div class="form-group">
-                        <label class="form-label">Persentase Jasa Usaha (SHU) (%):</label>
-                            <div class="controls">
+                        <label class="form-label col-lg-12">Persentase Jasa Usaha (SHU) (%):</label>
+                            <div class="controls col-lg-12">
                                 <input type="text" name="persen1" id="persen1" onblur="FormNum(this);" maxlength="2" class="form-control" />
                             </div>
                         </div>
                         <div class="form-group">
-                        <label class="form-label">Persentase Jasa Simpanan (SHU) (%):</label>
-                            <div class="controls">
+                        <label class="form-label col-lg-12">Persentase Jasa Simpanan (SHU) (%):</label>
+                            <div class="controls col-lg-12">
                                 <input type="text" name="persen2" id="persen2" onblur="FormNum(this);" maxlength="2" class="form-control" />
                             </div>
                         </div>
                         <div class="form-group">
-                        <label class="form-label"></label>
-                            <div class="controls">
-                                <button class="btn btn-info btn-cons" onclick="save_administrasi(); return false;"><i class="fa fa-paste"></i> Simpan Data</button>
+                        <label class="form-label col-lg-12"></label>
+                            <div class="controls col-lg-12">
+                                <button class="btn btn-info btn-cons" onclick="konfirmasi_save(); return false;"><i class="fa fa-paste"></i> Simpan Data</button>
                             </div>
                         </div>
-                        </form>
+                        
                     </div>
-<!--                    <div class="col-lg-5">
+                    <div class="col-lg-5">
                         <div class="form-group">
-                        <label class="form-label">Kode Tabungan:</label>
-                            <div class="controls">
-                                <input type="text" maxlength="3" name="kode_tabungan" id="kode_tabungan" class="form-control" />
+                        <label class="form-label col-lg-12">Simpanan Pokok:</label>
+                            <div class="controls col-lg-12">
+                                <input type="text" name="simpanan_pokok" id="simpanan_pokok" onblur="FormNum(this);" class="form-control" />
                             </div>
                         </div>
                         <div class="form-group">
-                        <label class="form-label">Kode Peminjaman:</label>
-                            <div class="controls">
-                                <input type="text" maxlength="3" name="kode_pinjaman" id="kode_pinjaman" class="form-control" />
+                        <label class="form-label col-lg-12">Simpanan Wajib:</label>
+                            <div class="controls col-lg-12">
+                                <input type="text" name="simpanan_wajib" id="simpanan_wajib" onblur="FormNum(this);" class="form-control" />
                             </div>
                         </div>
                         <div class="form-group">
-                        <label class="form-label">Kode Koreksi:</label>
-                            <div class="controls">
-                                <input type="text" maxlength="3" name="kode_pinjaman" id="kode_pinjaman" class="form-control" />
-                            </div>
+                        <label class="form-label col-lg-12">Persentase Denda per hari:</label>
+                        <div class="controls col-lg-12">
+                            <input type="text" name="persentase" id="persentase" class="form-control" placeholder="Persesntase denda ..." />
                         </div>
-                    </div>-->
+                        </div>
+                    </div>
+                    </form>
+                    </div>
                   </div>
             </div>
           </div>
