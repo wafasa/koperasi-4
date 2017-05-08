@@ -451,7 +451,6 @@ class M_transaksi extends CI_Model {
         if ($id === '') {
             $param = array(
                 'id_tabungan' => $id_tabungan,
-                'tanggal' => date("Y-m-d"),
                 'masuk' => currencyToNumber(post_safe('nominal_tabungan')),
                 'sandi' => '1',
                 'id_user' => $this->session->userdata('id_user')
@@ -476,7 +475,6 @@ class M_transaksi extends CI_Model {
         } else {
             $param = array(
                 'id_tabungan' => $id_tabungan,
-                'tanggal' => date("Y-m-d"),
                 'masuk' => currencyToNumber(post_safe('nominal_tabungan')),
                 'sandi' => '1',
                 'id_user' => $this->session->userdata('id_user')
@@ -544,7 +542,7 @@ class M_transaksi extends CI_Model {
             $q.=" and dt.id_tabungan = '".$search['norek']."'";
         }
         
-        $select = "select a.*, t.id as id_tabungan, dt.id as id_dt, dt.tanggal, dt.masuk, dt.keluar ";
+        $select = "select a.*, t.id as id_tabungan, dt.id as id_dt, date(dt.waktu) as tanggal, dt.masuk, dt.keluar ";
         $count  = "select count(*) as count ";
         $sql = " 
             from tb_detail_tabungan dt
@@ -587,7 +585,7 @@ class M_transaksi extends CI_Model {
             $q.=" and dt.id_tabungan = '".$search['norek']."'";
         }
         
-        $select = "select a.*, t.id as id_tabungan, dt.id as id_dt, dt.tanggal, dt.masuk, dt.keluar ";
+        $select = "select a.*, t.id as id_tabungan, dt.id as id_dt, date(dt.waktu) as tanggal, dt.masuk, dt.keluar ";
         $count  = "select count(*) as count ";
         $sql = " 
             from tb_detail_tabungan dt
@@ -624,7 +622,6 @@ class M_transaksi extends CI_Model {
         if ($id === '') {
             $param = array(
                 'id_tabungan' => post_safe('norek'),
-                'tanggal' => date("Y-m-d"),
                 'keluar' => currencyToNumber(post_safe('nominal_tabungan')),
                 'sandi' => '1',
                 'id_user' => $this->session->userdata('id_user')
@@ -654,7 +651,6 @@ class M_transaksi extends CI_Model {
         } else {
             $param = array(
                 'id_tabungan' => post_safe('norek'),
-                'tanggal' => date("Y-m-d"),
                 'keluar' => currencyToNumber(post_safe('nominal_tabungan')),
                 'sandi' => '1',
                 'id_user' => $this->session->userdata('id_user')
@@ -748,11 +744,11 @@ class M_transaksi extends CI_Model {
         $count  = "select count(*) as count ";
         $sql = "from tb_detail_simpanan_wajib dw
             join tb_anggota a on (dw.id_anggota = a.id)
-            where dw.keluar = 0 $q ";
+            where dw.keluar = 0 $q order by dw.waktu ";
         
         $limitation = NULL;
         if ($limit !== NULL) {
-            $limitation = "limit $start, $limit";
+            $limitation = " limit $start, $limit";
         }
         
         $result = $this->db->query($select.$sql.$limitation)->result();
@@ -765,7 +761,9 @@ class M_transaksi extends CI_Model {
             
             $sql_child2 = "select IFNULL(sum(masuk)-sum(keluar),0) as saldo 
                 from tb_detail_simpanan_wajib 
-                where id_anggota = '".$value->id_anggota."'";
+                where id_anggota = '".$value->id_anggota."'
+                    and id <= '".$value->id."'
+                    ";
             $result[$key]->saldo = $this->db->query($sql_child2)->row()->saldo;
         }
         $data['data'] = $result;

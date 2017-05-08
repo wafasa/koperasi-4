@@ -22,10 +22,18 @@
             get_list_tabungan(1);
         });
         
-        $('#parent_code').select2({
+        $('#cari_button').click(function() {
+            $('#datamodal_search').modal('show');
+        });
+        
+        $('#export-excel').click(function() {
+            location.href='<?= base_url('printing/export_rekap_tabungan') ?>?'+$('#form_search').serialize();
+        });
+        
+        $('#norek_cari').select2({
             width: '100%',
             ajax: {
-                url: "<?= base_url('api/masterdata_auto/tabungan_auto') ?>",
+                url: "<?= base_url('api/masterdata_auto/anggota_auto') ?>",
                 dataType: 'json',
                 quietMillis: 100,
                 data: function (term, page) { // page is the one-based page number tracked by Select2
@@ -43,22 +51,22 @@
                 }
             },
             formatResult: function(data){
-                var markup = data.kode+' - '+data.nama_program;
+                var markup = data.no_rekening+' - '+data.nama;
                 return markup;
             }, 
             formatSelection: function(data){
-                return data.kode+' - '+data.nama_program;
+                return data.no_rekening+' - '+data.nama;
             }
         });
     });
     
     function get_list_tabungan(p, id) {
-        $('#form-pencarian').modal('hide');
+        $('#datamodal_search').modal('hide');
         var id = '';
         $.ajax({
             type : 'GET',
-            url: '<?= base_url("api/transaksi/tabungans") ?>/page/'+p+'/id/'+id,
-            data: '',
+            url: '<?= base_url("api/laporan/tabungans") ?>/page/'+p+'/id/'+id,
+            data: $('#form_search').serialize(),
             cache: false,
             dataType: 'json',
             beforeSend: function() {
@@ -85,15 +93,15 @@
                     };
                     str+= '<tr data-tt-id='+i+' class="'+highlight+'">'+
                             '<td align="center">'+((i+1) + ((data.page - 1) * data.limit))+'</td>'+
-                            '<td align="center">'+datefmysql(v.tgl_masuk)+'</td>'+
+                            '<td align="center">'+datefmysql(v.tanggal)+'</td>'+
                             '<td>'+v.no_rekening+'</td>'+
-                            '<td>'+v.no_ktp+'</td>'+
+                            //'<td>'+v.no_ktp+'</td>'+
                             '<td>'+v.nama+'</td>'+
-                            '<td>'+v.alamat+'</td>'+
+                            '<td align="right">'+money_format(v.awal)+'</td>'+
+                            '<td align="right">'+money_format(v.masuk)+'</td>'+
+                            '<td align="right">'+money_format(v.keluar)+'</td>'+
                             '<td align="right">'+money_format(v.saldo)+'</td>'+
-                            '<td align="right" class=aksi>'+
-                                '<button type="button" class="btn btn-default btn-mini" onclick="detail_tabungan(\''+v.id+'\')"><i class="fa fa-eye"></i></button> '+
-                            '</td>'+
+                            '<td>'+v.username+'</td>'+
                         '</tr>';
                     $('#example-advanced tbody').append(str);
                 });
@@ -319,7 +327,7 @@
             <div class="grid-title">
               <h4>Daftar List <?= $title ?></h4>
                 <div class="tools"> 
-                    <button id="cari_button" class="btn btn-info btn-mini"><i class="fa fa-search"></i> Cari</button>
+                    <button id="cari_button" class="btn btn-info btn-mini"><i class="fa fa-search"></i> Pencarian</button>
                     <button id="export-excel" class="btn btn-mini"><i class="fa fa-file-excel-o"></i> Export Excel</button>
                     <button id="reload_tabungan" class="btn btn-mini"><i class="fa fa-refresh"></i> Reload</button>
                 </div>
@@ -331,13 +339,16 @@
                         <thead>
                         <tr>
                             <th width="3%">No</th>
-                            <th width="7%">Tgl Masuk</th>
-                            <th width="10%" class="left">No. Rek</th>
-                            <th width="10%" class="left">No. KTP</th>
-                            <th width="15%" class="left">Nama</th>
-                            <th width="35%" class="left">Alamat</th>
-                            <th width="10%" class="right">Saldo</th>
-                            <th width="5%"></th>
+                            <th width="7%">Tanggal</th>
+                            <th width="10%" class="left">No. Anggota</th>
+                            <th width="25%" class="left">Nama</th>
+                            <th width="10%" class="right">Awal</th>
+                            <th width="10%" class="right">Masuk</th>
+                            <th width="10%" class="right">Keluar</th>
+                            <th width="10%" class="right">Sisa</th>
+                            <th width="15%" class="left">Petugas</th>
+                            
+                            
                         </tr>
                         </thead>
                         <tbody>
@@ -388,19 +399,29 @@
         </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
         
-        <div id="datamodal_detail" class="modal fade" style="overflow-y: auto">
-            <div class="modal-dialog" style="width: 800px">
+        <div id="datamodal_search" class="modal fade">
+            <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title"></h4>
+              <h4 class="modal-title">Pencarian Data</h4>
             </div>
-              <div class="modal-body" id="detail_tabungan" style="max-height: 500px; overflow-y: auto;">
-                
+            <div class="modal-body">
+                <form id="form_search" method="post" role="form">
+                    <div class="form-group">
+                        <label class="control-label">Tanggal:</label>
+                        <span><input type="text" name="awal" id="awal" class="form-control" value="<?= date("01/m/Y") ?>" style="width: 145px; float: left; margin-right: 10px;" id="awal" value="<?= date("d/m/Y") ?>" /> </span>
+                        <span><input type="text" name="akhir" id="akhir" class="form-control" value="<?= date("d/m/Y") ?>" style="width: 145px;" id="awal" value="<?= date("d/m/Y") ?>" /> </span>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">No. Rekening:</label>
+                        <input type="text" name="id_anggota"  class="select2-input" id="norek_cari">
+                    </div>
+                </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" onclick="cetak_transaksi_terakhir();"><i class="fa fa-print"></i> Print Tabungan</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-refresh"></i> Close</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-refresh"></i> Batal</button>
+              <button type="button" class="btn btn-primary" onclick="get_list_tabungan(1);"><i class="fa fa-eye"></i> Tampilkan</button>
             </div>
           </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->

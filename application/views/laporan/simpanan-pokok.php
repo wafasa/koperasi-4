@@ -96,7 +96,7 @@
         var id = '';
         $.ajax({
             type : 'GET',
-            url: '<?= base_url("api/laporan/simpanan_wajibs") ?>/page/'+p+'/id/'+id,
+            url: '<?= base_url("api/laporan/simpanan_pokoks") ?>/page/'+p+'/id/'+id,
             data: $('#form_search').serialize(),
             beforeSend: function() {
                 //show_ajax_indicator();

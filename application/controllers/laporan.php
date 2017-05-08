@@ -50,6 +50,11 @@ class Laporan extends CI_Controller {
         $this->load->view('laporan/simpanan-wajib', $data);
     }
     
+    function simpanan_pokok() {
+        $data['title'] = 'Rekap Simpanan Pokok';
+        $this->load->view('laporan/simpanan-pokok', $data);
+    }
+    
     function shu() {
         $data['title'] = 'Sisa Hasil Usaha';
         $data['pend_bunga'] = $this->m_laporan->get_pendapatan_bunga(date("Y"));

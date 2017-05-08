@@ -114,7 +114,7 @@ class M_laporan extends CI_Model {
             $q =" and dt.tercetak = 'Belum'";
         }
         $sql = "select t.*, a.nama, a.no_rekening, a.tgl_masuk, a.alamat,
-            dt.id as id_detail, dt.tanggal, dt.masuk, dt.keluar, dt.sandi, dt.tercetak, u.kode
+            dt.id as id_detail, date(dt.waktu) as tanggal, dt.masuk, dt.keluar, dt.sandi, dt.tercetak, u.kode
             from tb_tabungan t
             join tb_detail_tabungan dt on (dt.id_tabungan = t.id)
             join tb_anggota a on (t.id_anggota = a.id)
@@ -163,5 +163,161 @@ class M_laporan extends CI_Model {
                 and j.jenis = 'Pengeluaran'
             ";
         return $this->db->query($sql)->row()->pengeluaran;
+    }
+    
+    function get_list_simpanan_pokok($limit, $start, $param) {
+        $q = NULL;
+        if ($param['id'] !== '') {
+            $q.=" and dw.id = '".$param['id']."'";
+        }
+        if ($param['awal'] !== '' and $param['akhir'] !== '') {
+            $q.=" and date(dw.waktu) between '".date2mysql($param['awal'])."' and '".date2mysql($param['akhir'])."'";
+        }
+        if ($param['id_anggota'] !== '') {
+            $q.=" and a.id = '".$param['id_anggota']."'";
+        }
+        $select = "select dw.*, date(dw.waktu) as tanggal, dw.id as id_dt, a.no_rekening, a.nama, u.username ";
+        $count  = "select count(*) as count ";
+        $sql = "from tb_detail_simpanan_pokok dw
+            join tb_anggota a on (dw.id_anggota = a.id)
+            join tb_usersystem u on (dw.id_user = u.id_user)
+            where dw.id is not NULL $q order by dw.waktu ";
+        
+        $limitation = NULL;
+        if ($limit !== NULL) {
+            $limitation = "limit $start, $limit";
+        }
+        
+        $result = $this->db->query($select.$sql.$limitation)->result();
+        foreach ($result as $key => $value) {
+            $sql_child = "select IFNULL(sum(masuk)-sum(keluar),0) as awal 
+                from tb_detail_simpanan_pokok
+                where id < '".$value->id."'
+                and id_anggota = '".$value->id_anggota."'";
+            $result[$key]->awal = $this->db->query($sql_child)->row()->awal;
+            
+            $sql_child2 = "select IFNULL(sum(masuk)-sum(keluar),0) as saldo 
+                from tb_detail_simpanan_pokok 
+                where id_anggota = '".$value->id_anggota."'
+                    and id <= '".$value->id."'
+                    ";
+            $result[$key]->saldo = $this->db->query($sql_child2)->row()->saldo;
+        }
+        $data['data'] = $result;
+        $data['jumlah'] = $this->db->query($count.$sql)->row()->count;
+        return $data;
+    }
+    
+    function get_list_simpanan_bebas($limit, $start, $param) {
+        $q = NULL;
+        if ($param['id'] !== '') {
+            $q.=" and dw.id = '".$param['id']."'";
+        }
+        if ($param['awal'] !== '' and $param['akhir'] !== '') {
+            $q.=" and date(dw.waktu) between '".date2mysql($param['awal'])."' and '".date2mysql($param['akhir'])."'";
+        }
+        if ($param['id_anggota'] !== '') {
+            $q.=" and a.id = '".$param['id_anggota']."'";
+        }
+        $select = "select dw.*, t.id_anggota, date(dw.waktu) as tanggal, dw.id as id_dt, a.no_rekening, a.nama, u.username ";
+        $count  = "select count(*) as count ";
+        $sql = "from tb_detail_tabungan dw
+            join tb_tabungan t on (dw.id_tabungan = t.id)
+            join tb_anggota a on (t.id_anggota = a.id)
+            join tb_usersystem u on (dw.id_user = u.id_user)
+            where dw.id is not NULL $q order by dw.waktu ";
+        
+        $limitation = NULL;
+        if ($limit !== NULL) {
+            $limitation = "limit $start, $limit";
+        }
+        
+        $result = $this->db->query($select.$sql.$limitation)->result();
+        foreach ($result as $key => $value) {
+            $sql_child = "select IFNULL(sum(dt.masuk)-sum(dt.keluar),0) as awal 
+                from tb_detail_tabungan dt
+                join tb_tabungan t on (dt.id_tabungan = t.id)
+                where dt.id < '".$value->id."'
+                and t.id_anggota = '".$value->id_anggota."'";
+            $result[$key]->awal = $this->db->query($sql_child)->row()->awal;
+            
+            $sql_child2 = "select IFNULL(sum(dt.masuk)-sum(dt.keluar),0) as saldo 
+                from tb_detail_tabungan dt
+                join tb_tabungan t on (dt.id_tabungan = t.id)
+                where t.id_anggota = '".$value->id_anggota."'
+                    and dt.id <= '".$value->id."'
+                    ";
+            $result[$key]->saldo = $this->db->query($sql_child2)->row()->saldo;
+        }
+        $data['data'] = $result;
+        $data['jumlah'] = $this->db->query($count.$sql)->row()->count;
+        return $data;
+    }
+    
+    function get_list_simpanan_wajib($limit, $start, $param) {
+        $q = NULL;
+        if ($param['id'] !== '') {
+            $q.=" and dw.id = '".$param['id']."'";
+        }
+        if ($param['awal'] !== '' and $param['akhir'] !== '') {
+            $q.=" and date(dw.waktu) between '".date2mysql($param['awal'])."' and '".date2mysql($param['akhir'])."'";
+        }
+        if ($param['id_anggota'] !== '') {
+            $q.=" and a.id = '".$param['id_anggota']."'";
+        }
+        $select = "select dw.*, date(dw.waktu) as tanggal, dw.id as id_dt, a.no_rekening, a.nama, u.username ";
+        $count  = "select count(*) as count ";
+        $sql = "from tb_detail_simpanan_wajib dw
+            join tb_anggota a on (dw.id_anggota = a.id)
+            join tb_usersystem u on (dw.id_user = u.id_user)
+            where dw.id is not NULL $q order by dw.waktu ";
+        
+        $limitation = NULL;
+        if ($limit !== NULL) {
+            $limitation = "limit $start, $limit";
+        }
+        
+        $result = $this->db->query($select.$sql.$limitation)->result();
+        foreach ($result as $key => $value) {
+            $sql_child = "select IFNULL(sum(masuk)-sum(keluar),0) as awal 
+                from tb_detail_simpanan_wajib
+                where id < '".$value->id."'
+                and id_anggota = '".$value->id_anggota."'";
+            $result[$key]->awal = $this->db->query($sql_child)->row()->awal;
+            
+            $sql_child2 = "select IFNULL(sum(masuk)-sum(keluar),0) as saldo 
+                from tb_detail_simpanan_wajib 
+                where id_anggota = '".$value->id_anggota."'
+                    and id <= '".$value->id."'
+                    ";
+            $result[$key]->saldo = $this->db->query($sql_child2)->row()->saldo;
+        }
+        $data['data'] = $result;
+        $data['jumlah'] = $this->db->query($count.$sql)->row()->count;
+        return $data;
+    }
+    
+    function get_list_all_simpanan_nasabah($limit, $start, $search) {
+        $q = NULL;
+        $select = "select * ";
+        $count  = "select count(*) as count ";
+        $sql = " from tb_anggota 
+            where id is not NULL $q
+            order by no_rekening asc";
+        $limitation = NULL;
+        if ($limit !== NULL) {
+            $limitation = " limit $start, $limit";
+        }
+        $result = $this->db->query($select . $sql . $limitation)->result();
+        foreach ($result as $key => $value) {
+            $sql_child = "select count(*), IFNULL(SUM(masuk)-SUM(keluar),0) as sisa 
+            from tb_detail_simpanan_wajib
+            where id_anggota = '".$value->id."'
+            ";
+            $result[$key]->total_saldo = $this->db->query($sql_child)->row()->sisa;
+        }
+        $data['data'] = $result;
+        $data['jumlah'] = $this->db->query($count . $sql)->row()->count;
+        return $data;
     }
 }

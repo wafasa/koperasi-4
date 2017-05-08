@@ -153,4 +153,16 @@ class Printing extends CI_Controller {
             echo "Tidak ada data !";
         }
     }
+    
+    function export_rekap_tabungan() {
+        $search= array(
+            'id' => '',
+            'awal' => get_safe('awal'),
+            'akhir' => get_safe('akhir'),
+            'id_anggota' => get_safe('id_anggota')
+        );
+        
+        $data = $this->m_laporan->get_list_simpanan_bebas(NULL, NULL, $search);
+        $this->load->view('laporan/excel/excel-rekap-tabungan', $data);
+    }
 }
