@@ -16,6 +16,7 @@ Version: 3.4.5 Timestamp: Mon Nov  4 08:22:42 PST 2013
 .select2-drop,
 .select2-search,
 .select2-search input {
+    width: 100%;
   /*
     Force border-box so that % widths fit the parent
     container without overlap because of margin/padding.
@@ -32,7 +33,6 @@ Version: 3.4.5 Timestamp: Mon Nov  4 08:22:42 PST 2013
     padding: 0 0 0 8px;
     overflow: hidden;
     position: relative;
-    min-width: 300px;
     border: 1px solid #eeeeee;
     white-space: nowrap;
     line-height: 18px;

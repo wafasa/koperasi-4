@@ -38,12 +38,10 @@ class User extends CI_Controller {
     }
 
     function index() {
-        $create_file = fopen('assets/fonts/app.txt', 'w');
+        /*$create_file = fopen('assets/fonts/app.txt', 'w');
         fwrite($create_file, get_mac_address());
         fclose($create_file);
         
-        $data['title'] = $this->rows_institusi;
-        $user = $this->session->userdata('user');
         $handle = fopen("assets/fonts/app.txt", "rb");
         $check  = $this->db->get('tb_smart_card')->row();
         $contents = stream_get_contents($handle);
@@ -55,7 +53,9 @@ class User extends CI_Controller {
         if ($contents === '') {
             $this->taking_action();
         }
-        fclose($handle);
+        fclose($handle);*/
+        $user = $this->session->userdata('user');
+        $data['title'] = $this->rows_institusi;
         if (empty($user)) {
             $this->load->view('login', $data);
         }

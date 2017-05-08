@@ -15,6 +15,10 @@ class Masterdata extends REST_Controller {
         }
     }
     
+    private function start($page){
+        return (($page - 1) * $this->limit);
+    }
+    
     function anggotas_get() {
         if (!$this->get('page')) {
             $this->response(NULL, 400);
