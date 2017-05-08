@@ -55,12 +55,12 @@
     <br/><br/>
     <table width="100%" style="color: #000;">
         <tr>
-            <td>Jumlah Setor</td>
-            <td><h1>Rp. <?= currency($value->masuk) ?>, -</h1> </td>
+            <td>Jumlah Penarikan</td>
+            <td><h1>Rp. <?= currency($value->keluar) ?>, -</h1> </td>
         </tr>
         <tr valign="top">
             <td width="20%">Terbilang</td>
-            <td><i><u># <?= strtoupper(terbilang($value->masuk))?> RUPIAH #</u></i></td>
+            <td><i><u># <?= strtoupper(terbilang($value->keluar))?> RUPIAH #</u></i></td>
         </tr>
     </table>
     <br/>

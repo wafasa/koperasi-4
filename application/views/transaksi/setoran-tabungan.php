@@ -27,7 +27,7 @@
         $('#norek').select2({
             width: '100%',
             ajax: {
-                url: "<?= base_url('api/masterdata_auto/norek_tabungan_auto') ?>",
+                url: "<?= base_url('api/masterdata_auto/anggota_auto') ?>",
                 dataType: 'json',
                 quietMillis: 100,
                 data: function (term, page) { // page is the one-based page number tracked by Select2
@@ -49,6 +49,7 @@
             }, 
             formatSelection: function(data){
                 $('#sisa_saldo').val(money_format(data.saldo));
+                get_saldo_simpanan_bebas(data.id);
                 return data.no_rekening+' - '+data.nama;
             }
         });
@@ -56,7 +57,7 @@
         $('#norek_cari').select2({
             width: '100%',
             ajax: {
-                url: "<?= base_url('api/masterdata_auto/norek_tabungan_auto') ?>",
+                url: "<?= base_url('api/masterdata_auto/anggota_auto') ?>",
                 dataType: 'json',
                 quietMillis: 100,
                 data: function (term, page) { // page is the one-based page number tracked by Select2
@@ -82,6 +83,16 @@
             }
         });
     });
+    
+    function get_saldo_simpanan_bebas(id_anggota) {
+        $.ajax({
+            type: 'GET',
+            url: '<?= base_url('api/transaksi/saldo_simpanan_bebas') ?>/page/1/id/'+id_anggota,
+            success: function(data) {
+                $('#sisa_saldo').val(money_format(data.sisa));
+            }
+        });
+    }
     
     function get_list_setoran_tabungan(p, id) {
         $('#form-pencarian').modal('hide');
@@ -114,7 +125,7 @@
                     };
                     str+= '<tr data-tt-id='+i+' class="'+highlight+'">'+
                             '<td align="center">'+((i+1) + ((data.page - 1) * data.limit))+'</td>'+
-                            '<td align="center">'+datefmysql(v.tanggal)+'</td>'+
+                            '<td>'+datefmysql(v.tanggal)+'</td>'+
                             '<td>'+v.no_rekening+'</td>'+
                             '<td>'+v.nama+'</td>'+
                             '<td align="right">'+money_format(v.awal)+'</td>'+
@@ -140,16 +151,6 @@
         });
     }
     
-    function print_pajak(id) {
-        var wWidth = $(window).width();
-        var dWidth = wWidth * 1;
-        var wHeight= $(window).height();
-        var dHeight= wHeight * 1;
-        var x = screen.width/2 - dWidth/2;
-        var y = screen.height/2 - dHeight/2;
-        window.open('<?= base_url('transaksi/print_pajak/') ?>?id='+id,'Cetak Transaksi Pajak','width='+dWidth+', height='+dHeight+', left='+x+',top='+y);
-    }
-    
     function cetak_setoran_tabungan(id) {
         var wWidth = $(window).width();
         var dWidth = wWidth * 1;
@@ -157,7 +158,7 @@
         var dHeight= wHeight * 1;
         var x = screen.width/2 - dWidth/2;
         var y = screen.height/2 - dHeight/2;
-        window.open('<?= base_url('transaksi/print_setoran_tabungan') ?>?id='+id,'Cetak Transaksi Pajak','width='+dWidth+', height='+dHeight+', left='+x+',top='+y);
+        window.open('<?= base_url('printing/print_setoran_tabungan') ?>?id='+id,'Cetak Transaksi Pajak','width='+dWidth+', height='+dHeight+', left='+x+',top='+y);
     }
 
     function reset_form() {
@@ -278,28 +279,6 @@
               }
             }
         });
-    }
-
-    function paging(page, tab, search) {
-        get_list_setoran_tabungan(page, search);
-    }
-    
-    function hitungPajak() {
-        var jumlah = currencyToNumber($('#nominal').val());
-        var pajak  = $('#jenis_pajak').val();
-        if (pajak === 'PPN') {
-            hasil = 0.1*parseFloat(jumlah);
-        }
-        if (pajak === 'PPh21') {
-            hasil = '0';
-        }
-        if (pajak === 'PPh22') {
-            hasil = (jumlah- (jumlah*0.1))*(1.5/100);
-        }
-        if (pajak === 'PPh23') {
-            hasil = 0.02*jumlah;
-        }
-        $('#perhitungan').val(money_format(hasil));
     }
 
 </script>

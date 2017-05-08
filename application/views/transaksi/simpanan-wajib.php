@@ -157,16 +157,6 @@
         });
     }
     
-    function print_pajak(id) {
-        var wWidth = $(window).width();
-        var dWidth = wWidth * 1;
-        var wHeight= $(window).height();
-        var dHeight= wHeight * 1;
-        var x = screen.width/2 - dWidth/2;
-        var y = screen.height/2 - dHeight/2;
-        window.open('<?= base_url('transaksi/print_pajak/') ?>?id='+id,'Cetak Transaksi Pajak','width='+dWidth+', height='+dHeight+', left='+x+',top='+y);
-    }
-    
     function cetak_simpanan_wajib(id) {
         var wWidth = $(window).width();
         var dWidth = wWidth * 1;
@@ -174,7 +164,7 @@
         var dHeight= wHeight * 1;
         var x = screen.width/2 - dWidth/2;
         var y = screen.height/2 - dHeight/2;
-        window.open('<?= base_url('transaksi/print_simpanan_wajib') ?>?id='+id,'Cetak Transaksi Pajak','width='+dWidth+', height='+dHeight+', left='+x+',top='+y);
+        window.open('<?= base_url('printing/print_simpanan_wajib') ?>?id='+id,'Cetak Transaksi Pajak','width='+dWidth+', height='+dHeight+', left='+x+',top='+y);
     }
 
     function reset_form() {

@@ -381,6 +381,14 @@ class Transaksi extends REST_Controller {
         }
     }
     
+    function saldo_simpanan_bebas_get() {
+        $param = array(
+            'id_anggota' => $this->get('id')
+        );
+        $data = $this->m_transaksi->sisa_saldo_simpanan_bebas($param);
+        $this->response($data, 200);
+    }
+    
     function tabungan_post() {
         $data = $this->m_transaksi->save_pembukaan_tabungan();
         $this->response($data, 200);

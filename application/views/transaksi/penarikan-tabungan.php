@@ -121,7 +121,7 @@
                             '<td align="right">'+money_format(v.keluar)+'</td>'+
                             '<td align="right">'+money_format(v.awal-v.keluar)+'</td>'+
                             '<td align="right" class=aksi>'+
-                                //'<button type="button" class="btn btn-default btn-mini" onclick="print_pajak(\''+v.id+'\')"><i class="fa fa-print"></i></button> '+
+                                '<button type="button" class="btn btn-default btn-mini" onclick="cetak_penarikan_tabungan(\''+v.id_dt+'\');"><i class="fa fa-print"></i></button> '+
                                 '<button type="button" class="btn btn-default btn-mini" onclick="edit_penarikan_tabungan(\''+v.id_dt+'\')"><i class="fa fa-pencil"></i></button> '+
                                 '<button type="button" class="btn btn-default btn-mini" onclick="delete_penarikan_tabungan(\''+v.id_dt+'\','+data.page+');"><i class="fa fa-trash-o"></i></button>'+
                             '</td>'+
@@ -139,21 +139,22 @@
         });
     }
     
-    function print_pajak(id) {
+    function cetak_penarikan_tabungan(id) {
         var wWidth = $(window).width();
         var dWidth = wWidth * 1;
         var wHeight= $(window).height();
         var dHeight= wHeight * 1;
         var x = screen.width/2 - dWidth/2;
         var y = screen.height/2 - dHeight/2;
-        window.open('<?= base_url('transaksi/print_pajak/') ?>?id='+id,'Cetak Transaksi Pajak','width='+dWidth+', height='+dHeight+', left='+x+',top='+y);
+        window.open('<?= base_url('printing/print_penarikan_tabungan') ?>?id='+id,'Cetak Transaksi Pajak','width='+dWidth+', height='+dHeight+', left='+x+',top='+y);
     }
 
     function reset_form() {
         $('input, select, textarea').val('');
         $('input[type=checkbox], input[type=radio]').removeAttr('checked');
         $('#awal').val('<?= date("01/m/Y") ?>');
-        $('#akhir').val('<?= date("d/m/Y") ?>');
+        $('#akhir, #tanggal').val('<?= date("d/m/Y") ?>');
+        $('.select2-chosen').html('');
     }
 
     function edit_penarikan_tabungan(id) {

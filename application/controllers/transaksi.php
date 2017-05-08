@@ -60,16 +60,5 @@ class Transaksi extends CI_Controller {
         $data['title'] = 'Koreksi Saldo';
         $this->load->view('transaksi/koreksi-saldo', $data);
     }
-    
-    function print_setoran_tabungan() {
-        $search= array(
-            'id' => get_safe('id'),
-            'awal' => '',
-            'akhir' => '',
-            'norek' => ''
-        );
-        $data['data'] = $this->m_transaksi->get_list_setoran_tabungans(NULL, NULL, $search);
-        $this->load->view('transaksi/print-setoran-tabungan', $data);
-    }
 
 }

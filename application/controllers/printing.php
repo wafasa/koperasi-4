@@ -6,6 +6,77 @@ class Printing extends CI_Controller {
         parent::__construct();
         $this->load->model(array('m_config','m_transaksi'));
     }
+    
+    function print_setoran_tabungan() {
+        $search= array(
+            'id' => get_safe('id'),
+            'awal' => '',
+            'akhir' => '',
+            'norek' => ''
+        );
+        $data = $this->m_transaksi->get_list_setoran_tabungans(NULL, NULL, $search);
+        $data['inst'] = $this->m_config->get_institusi_name();
+        $data['title'] = 'Simpanan Bebas';
+        $data['subtitle'] = 'Bukti Transaksi Simpanan Bebas';
+        $this->load->view('transaksi/print-setoran-tabungan', $data);
+    }
+    
+    function print_penarikan_tabungan() {
+        $search= array(
+            'id' => get_safe('id'),
+            'awal' => '',
+            'akhir' => '',
+            'norek' => ''
+        );
+        $data = $this->m_transaksi->get_list_penarikan_tabungans(NULL, NULL, $search);
+        $data['inst'] = $this->m_config->get_institusi_name();
+        $data['title'] = 'Simpanan Bebas';
+        $data['subtitle'] = 'Bukti Transaksi Penarikan Simpanan Bebas';
+        $this->load->view('transaksi/print-penarikan-tabungan', $data);
+    }
+    
+    function print_simpanan_wajib() {
+        $search= array(
+            'id' => get_safe('id'),
+            'awal' => get_safe('awal'),
+            'akhir' => get_safe('akhir'),
+            'id_anggota' => get_safe('id_anggota')
+        );
+        $data = $this->m_transaksi->get_list_simpanan_wajib(NULL, NULL, $search);
+        $data['inst'] = $this->m_config->get_institusi_name();
+        $data['title'] = 'Simpanan Wajib';
+        $data['subtitle'] = 'Bukti Transaksi Simpanan Wajib';
+        $this->load->view('transaksi/print-simpanan-wajib', $data);
+    }
+    
+    function print_penarikan_simpanan_wajib() {
+        $search= array(
+            'id' => get_safe('id'),
+            'awal' => get_safe('awal'),
+            'akhir' => get_safe('akhir'),
+            'id_anggota' => get_safe('id_anggota')
+        );
+        $data = $this->m_transaksi->get_list_penarikan_simpanan_wajib(NULL, NULL, $search);
+        $data['inst'] = $this->m_config->get_institusi_name();
+        $data['title'] = 'Penarikan Simpanan Wajib';
+        $data['subtitle'] = 'Bukti Transaksi Penarikan Simpanan Wajib';
+        $this->load->view('transaksi/print-penarikan-simpanan-wajib', $data);
+    }
+    
+    function print_penarikan_simpanan_pokok() {
+        $search= array(
+            'id' => get_safe('id'),
+            'awal' => get_safe('awal'),
+            'akhir' => get_safe('akhir'),
+            'id_anggota' => get_safe('id_anggota')
+        );
+        $data = $this->m_transaksi->get_list_penarikan_simpanan_pokok(NULL, NULL, $search);
+        $data['inst'] = $this->m_config->get_institusi_name();
+        $data['title'] = 'Penarikan Simpanan Pokok';
+        $data['subtitle'] = 'Bukti Transaksi Penarikan Simpanan Pokok';
+        $this->load->view('transaksi/print-penarikan-simpanan-pokok', $data);
+    }
+    
     function print_angsuran() {
         
         $param  = array(
