@@ -9,6 +9,10 @@
             $('#datamodal h4.modal-title').html('Tambah <?= $title ?>');
         });
         
+        $('#export-excel').click(function() {
+            location.href='<?= base_url('printing/export_rekap_simpanan_pokok') ?>?'+$('#form_search').serialize();
+        });
+        
         $('#tanggal, #awal, #akhir').datepicker({
                 format: 'dd/mm/yyyy'
         }).on('changeDate', function(){
@@ -35,7 +39,7 @@
         $('#parent_code').select2({
             width: '100%',
             ajax: {
-                url: "<?= base_url('api/masterdata_auto/tabungan_auto') ?>",
+                url: "<?= base_url('api/masterdata_auto/anggota_auto') ?>",
                 dataType: 'json',
                 quietMillis: 100,
                 data: function (term, page) { // page is the one-based page number tracked by Select2
@@ -251,7 +255,8 @@
               <h4>Daftar List <?= $title ?></h4>
                 <div class="tools"> 
                     <!--<button id="add_tabungan" class="btn btn-info btn-mini"><i class="fa fa-plus-circle"></i> Tambah</button>-->
-                    <button id="cari_button" class="btn btn-mini"><i class="fa fa-search"></i> Cari</button>
+                    <button id="cari_button" class="btn btn-info btn-mini"><i class="fa fa-search"></i> Pencarian</button>
+                    <button id="export-excel" class="btn btn-mini"><i class="fa fa-file-excel-o"></i> Export Excel</button>
                     <button id="reload_tabungan" class="btn btn-mini"><i class="fa fa-refresh"></i> Reload Data</button>
                 </div>
             </div>
@@ -337,8 +342,8 @@
                     <input type="hidden" name="id" id="id" />
                     <div class="form-group">
                         <label class="control-label">Tanggal:</label>
-                        <span><input type="text" name="awal" id="awal" class="form-control" value="" style="width: 145px; float: left; margin-right: 10px;" id="awal" value="<?= date("d/m/Y") ?>" /> </span>
-                        <span><input type="text" name="akhir" id="akhir" class="form-control" value="" style="width: 145px;" id="awal" value="<?= date("d/m/Y") ?>" /> </span>
+                        <span><input type="text" name="awal" id="awal" class="form-control" style="width: 145px; float: left; margin-right: 10px;" id="awal" value="<?= date("01/m/Y") ?>" /> </span>
+                        <span><input type="text" name="akhir" id="akhir" class="form-control" style="width: 145px;" id="awal" value="<?= date("d/m/Y") ?>" /> </span>
                     </div>
                     <div class="form-group">
                         <label class="control-label">No. Rekening:</label>

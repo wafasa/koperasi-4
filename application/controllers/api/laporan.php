@@ -131,9 +131,7 @@ class Laporan extends REST_Controller {
             'id' => $this->get('id'),
             'awal' => get_safe('awal'),
             'akhir' => get_safe('akhir'),
-            'id_anggota' => get_safe('id_anggota'),
-            'nama' => get_safe('nama'),
-            'no_rekening' => get_safe('norek')
+            'id_anggota' => get_safe('id_anggota')
         );
         
         $data = $this->m_laporan->get_list_simpanan_pokok($this->limit, $start, $search);
@@ -162,6 +160,35 @@ class Laporan extends REST_Controller {
         );
         
         $data = $this->m_laporan->get_list_simpanan_bebas($this->limit, $start, $search);
+        $data['page'] = (int)$this->get('page');
+        $data['limit'] = $this->limit;
+        
+        if($data){
+            $this->response($data, 200); // 200 being the HTTP response code
+        }else{
+            $this->response(array('error' => 'Data tidak ditemukan'), 404);
+        }
+    }
+    
+    function shus_get() {
+        if (!$this->get('page')) {
+            $this->response(NULL, 400);
+        }
+        
+        $start = ($this->get('page') - 1) * $this->limit;
+        
+        $search= array(
+            'tahun' => get_safe('tahun'),
+        );
+        
+        $data = $this->m_laporan->get_list_all_simpanan_nasabah($this->limit, $start, $search);
+        
+        $data['pend_bunga'] = $this->m_laporan->get_pendapatan_bunga(get_safe('tahun'));
+        $data['pend_simpanan'] = $this->m_laporan->get_pendapatan_simpanan(get_safe('tahun'));
+        $data['pengeluaran'] = $this->m_laporan->get_pengeluaran(get_safe('tahun'));
+        $data['persen_jasa_usaha'] = $this->db->get('tb_setting_administrasi')->row()->persen_jasa_usaha;
+        $data['persen_simpanan'] = $this->db->get('tb_setting_administrasi')->row()->persen_simpanan;
+        
         $data['page'] = (int)$this->get('page');
         $data['limit'] = $this->limit;
         

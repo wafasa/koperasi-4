@@ -136,7 +136,7 @@ class M_laporan extends CI_Model {
     }
     
     function get_pendapatan_bunga($year) {
-        $sql = "select sum(jasa) as bunga 
+        $sql = "select count(*), IFNULL(sum(jasa),0) as bunga 
             from tb_detail_pinjaman
             where status_bayar = 'Sudah'
                 and YEAR(tgl_bayar) = '".$year."'";
@@ -144,7 +144,7 @@ class M_laporan extends CI_Model {
     }
     
     function get_pendapatan_simpanan($year) {
-        $sql_wajib = "select sum(masuk)-sum(keluar) as simpanan_wajib
+        $sql_wajib = "select count(*), IFNULL(sum(masuk)-sum(keluar),0) as simpanan_wajib
             from tb_detail_simpanan_wajib where YEAR(waktu) = '".$year."'";
         $wajib = $this->db->query($sql_wajib)->row()->simpanan_wajib;
         $sql_pokok = "select sum(masuk)-sum(keluar) as pokok
@@ -156,7 +156,7 @@ class M_laporan extends CI_Model {
     }
     
     function get_pengeluaran($year) {
-        $sql = "select sum(o.nominal) as pengeluaran
+        $sql = "select count(*), IFNULL(sum(o.nominal),0) as pengeluaran
             from tb_operasional o
             join tb_jenis_transaksi j on (o.id_jenis = j.id)
             where YEAR(o.tanggal) = '".$year."'
@@ -298,7 +298,10 @@ class M_laporan extends CI_Model {
     }
     
     function get_list_all_simpanan_nasabah($limit, $start, $search) {
-        $q = NULL;
+        $q = NULL; $year = date("Y");
+        if ($search['tahun'] !== '') {
+            $year = $search['tahun'];
+        }
         $select = "select * ";
         $count  = "select count(*) as count ";
         $sql = " from tb_anggota 
@@ -310,6 +313,20 @@ class M_laporan extends CI_Model {
         }
         $result = $this->db->query($select . $sql . $limitation)->result();
         foreach ($result as $key => $value) {
+            $sql_shu_jasa_usaha = "select count(*), IFNULL(SUM(dp.jasa),0) as jasa_usaha 
+                from tb_detail_pinjaman dp
+                join tb_pinjaman p on (dp.id_pinjaman = p.id)
+                where p.id_debitur = '".$value->id."'
+                    and YEAR(dp.tgl_bayar) = '".$year."'
+                ";
+            $result[$key]->shu_jasa_usaha = $this->db->query($sql_shu_jasa_usaha)->row()->jasa_usaha;
+            $sql_shu_simpanan_wajib = "select count(*), IFNULL(sum(masuk)-sum(keluar),0) as saldo
+                from tb_detail_simpanan_wajib
+                where id_anggota = '".$value->id."'
+                    and YEAR(waktu) = '".$year."'
+                ";
+            $result[$key]->simpanan_wajib = $this->db->query($sql_shu_simpanan_wajib)->row()->saldo;
+            
             $sql_child = "select count(*), IFNULL(SUM(masuk)-SUM(keluar),0) as sisa 
             from tb_detail_simpanan_wajib
             where id_anggota = '".$value->id."'
@@ -319,5 +336,9 @@ class M_laporan extends CI_Model {
         $data['data'] = $result;
         $data['jumlah'] = $this->db->query($count . $sql)->row()->count;
         return $data;
+    }
+    
+    function get_setting_administrasi() {
+        $sql = "select ";
     }
 }

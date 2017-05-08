@@ -165,4 +165,16 @@ class Printing extends CI_Controller {
         $data = $this->m_laporan->get_list_simpanan_bebas(NULL, NULL, $search);
         $this->load->view('laporan/excel/excel-rekap-tabungan', $data);
     }
+    
+    function export_rekap_simpanan_pokok() {
+        $search= array(
+            'id' => '',
+            'awal' => get_safe('awal'),
+            'akhir' => get_safe('akhir'),
+            'id_anggota' => get_safe('id_anggota')
+        );
+        
+        $data = $this->m_laporan->get_list_simpanan_pokok(NULL, NULL, $search);
+        $this->load->view('laporan/excel/excel-rekap-simpanan-pokok', $data);
+    }
 }
