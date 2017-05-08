@@ -414,7 +414,7 @@ class M_akuntansi extends CI_Model {
     function arus_kas_load_data($param) {
         $sql = "select *, ROUND((LENGTH(kode) - LENGTH( REPLACE (kode, '.', ''))) / LENGTH('.')) AS count 
             from tb_rekening
-             having COUNT = 2
+             having COUNT = 3
              and SUBSTR(kode,1,4) = '".$param['kode']."'";
         $result = $this->db->query($sql)->result();
         foreach ($result as $key => $value) {

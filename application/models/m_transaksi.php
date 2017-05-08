@@ -536,7 +536,7 @@ class M_transaksi extends CI_Model {
             $q.=" and dt.id = '".$search['id']."'";
         }
         if ($search['awal'] !== '' and $search['akhir'] !== '') {
-            $q.=" and dt.tanggal between '".date2mysql($search['awal'])."' and '".date2mysql($search['akhir'])."'";
+            $q.=" and date(dt.waktu) between '".date2mysql($search['awal'])."' and '".date2mysql($search['akhir'])."'";
         }
         if ($search['norek'] !== '') {
             $q.=" and dt.id_tabungan = '".$search['norek']."'";
@@ -579,7 +579,7 @@ class M_transaksi extends CI_Model {
             $q.=" and dt.id = '".$search['id']."'";
         }
         if ($search['awal'] !== '' and $search['akhir'] !== '') {
-            $q.=" and dt.tanggal between '".date2mysql($search['awal'])."' and '".date2mysql($search['akhir'])."'";
+            $q.=" and date(dt.waktu) between '".date2mysql($search['awal'])."' and '".date2mysql($search['akhir'])."'";
         }
         if ($search['norek'] !== '') {
             $q.=" and dt.id_tabungan = '".$search['norek']."'";
