@@ -27,7 +27,37 @@
         $('#norek').select2({
             width: '100%',
             ajax: {
-                url: "<?= base_url('api/masterdata_auto/norek_tabungan_auto') ?>",
+                url: "<?= base_url('api/masterdata_auto/anggota_auto') ?>",
+                dataType: 'json',
+                quietMillis: 100,
+                data: function (term, page) { // page is the one-based page number tracked by Select2
+                    return {
+                        q: term, //search term
+                        page: page // page number
+                    };
+                },
+                results: function (data, page) {
+                    var more = (page * 20) < data.total; // whether or not there are more results available
+         
+                    // notice we return the value of more so Select2 knows if more results can be loaded
+                    return {results: data.data, more: more};
+                }
+            },
+            formatResult: function(data){
+                var markup = data.no_rekening+' - '+data.nama+'<br/>'+data.alamat;
+                return markup;
+            }, 
+            formatSelection: function(data){
+                $('#sisa_saldo').val(money_format(data.saldo));
+                get_saldo_penarikan_simpanan_bebas(data.id);
+                return data.no_rekening+' - '+data.nama;
+            }
+        });
+        
+        $('#norek_cari').select2({
+            width: '100%',
+            ajax: {
+                url: "<?= base_url('api/masterdata_auto/anggota_auto') ?>",
                 dataType: 'json',
                 quietMillis: 100,
                 data: function (term, page) { // page is the one-based page number tracked by Select2
@@ -53,35 +83,22 @@
             }
         });
         
-        $('#norek_cari').select2({
-            width: '100%',
-            ajax: {
-                url: "<?= base_url('api/masterdata_auto/norek_tabungan_auto') ?>",
-                dataType: 'json',
-                quietMillis: 100,
-                data: function (term, page) { // page is the one-based page number tracked by Select2
-                    return {
-                        q: term, //search term
-                        page: page // page number
-                    };
-                },
-                results: function (data, page) {
-                    var more = (page * 20) < data.total; // whether or not there are more results available
-         
-                    // notice we return the value of more so Select2 knows if more results can be loaded
-                    return {results: data.data, more: more};
-                }
-            },
-            formatResult: function(data){
-                var markup = data.no_rekening+' - '+data.nama+'<br/>'+data.alamat;
-                return markup;
-            }, 
-            formatSelection: function(data){
-                $('#sisa_saldo').val(money_format(data.saldo));
-                return data.no_rekening+' - '+data.nama;
+        $('.form-control').change(function() {
+            if ($(this).val() !== '') {
+                dc_validation_remove($(this));
             }
         });
     });
+    
+    function get_saldo_penarikan_simpanan_bebas(id_anggota) {
+        $.ajax({
+            type: 'GET',
+            url: '<?= base_url('api/transaksi/saldo_simpanan_bebas') ?>/page/1/id/'+id_anggota,
+            success: function(data) {
+                $('#sisa_saldo').val(money_format(data.sisa));
+            }
+        });
+    }
     
     function get_list_penarikan_tabungan(p, id) {
         $('#datamodal_search').modal('hide');
@@ -184,6 +201,13 @@
 
     function konfirmasi_save() {
         //$('#isi_penarikan_tabungan').val(tinyMCE.get('isi').getContent());
+        if ($('#nominal_tabungan').val() === '' || $('#nominal_tabungan').val() === '0') {
+            dc_validation('#nominal_tabungan', 'Nominal tidak boleh kosong !'); return false;
+        }
+        
+        if (parseFloat($('#nominal_tabungan').val()) > parseFloat($('#sisa_saldo').val())) {
+            dc_validation('#nominal_tabungan','Penarikan tidak boleh lebih besar dari sisa saldo !'); return false;
+        }
         bootbox.dialog({
             message: "Anda yakin akan menyimpan data ini?",
             title: "Konfirmasi Simpan",

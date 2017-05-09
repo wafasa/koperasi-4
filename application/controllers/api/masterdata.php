@@ -108,4 +108,41 @@ class Masterdata extends REST_Controller {
     function transaksi_lain_delete() {
         $this->db->delete('tb_jenis_transaksi', array('id' => $this->get('id')));
     }
+    
+    function kategori_anggotas_get() {
+        if (!$this->get('page')) {
+            $this->response(NULL, 400);
+        }
+        
+        $start = ($this->get('page') - 1) * $this->limit;
+        
+        $search= array(
+            'id' => $this->get('id'),
+            'nama' => get_safe('nama')
+        );
+        
+        $data = $this->m_masterdata->get_list_kategori_anggota($this->limit, $start, $search);
+        $data['page'] = (int)$this->get('page');
+        $data['limit'] = $this->limit;
+        
+        if($data){
+            $this->response($data, 200); // 200 being the HTTP response code
+        }else{
+            $this->response(array('error' => 'Data tidak ditemukan'), 404);
+        }
+    }
+    
+    function kategori_anggota_post() {
+        $param = array(
+            'id' => post_safe('id'),
+            'nama' => post_safe('nama'),
+            'keterangan' => post_safe('keterangan')
+        );
+        $data = $this->m_masterdata->save_kategori_anggota($param);
+        $this->response($data, 200);
+    }
+    
+    function kategori_anggota_delete() {
+        $this->db->delete('tb_kategori_anggota', array('id' => $this->get('id')));
+    }
 }

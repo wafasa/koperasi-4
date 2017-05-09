@@ -22,4 +22,9 @@ class Masterdata extends CI_Controller {
         $data['title'] = 'Data Jenis Transaksi Lain';
         $this->load->view('masterdata/transaksi-lain', $data);
     }
+    
+    function kategori_anggota() {
+        $data['title'] = 'Kategori Anggota';
+        $this->load->view('masterdata/kategori-anggota', $data);
+    }
 }

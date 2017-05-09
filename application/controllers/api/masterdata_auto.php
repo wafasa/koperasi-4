@@ -82,4 +82,18 @@ class Masterdata_auto extends REST_Controller{
         $this->response($data, 200);
     }
     
+    function kategori_anggota_auto_get() {
+        $param = array(
+            'search' => get_safe('q')
+        );
+        $start = $this->start(get_safe('page'));
+        $data = $this->m_masterdata->get_auto_kategori_anggota($param, $start, $this->limit);
+        if ((get_safe('page') == 1) & (get_safe('q') == '')) {
+            $pilih[] = array('id'=>'', 'nama' =>'-');
+            $data['data'] = array_merge($pilih, $data['data']);
+            $data['total'] += 1;
+        }
+        $this->response($data, 200);
+    }
+    
 }

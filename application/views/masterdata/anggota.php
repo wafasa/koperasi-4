@@ -36,10 +36,10 @@
             get_list_anggota(1);
         });
         
-        $('#parent_code').select2({
+        $('#kategori_nasabah').select2({
             width: '100%',
             ajax: {
-                url: "<?= base_url('api/masterdata_auto/anggota_auto') ?>",
+                url: "<?= base_url('api/masterdata_auto/kategori_anggota_auto') ?>",
                 dataType: 'json',
                 quietMillis: 100,
                 data: function (term, page) { // page is the one-based page number tracked by Select2
@@ -57,11 +57,11 @@
                 }
             },
             formatResult: function(data){
-                var markup = data.kode+' - '+data.nama_program;
+                var markup = data.nama;
                 return markup;
             }, 
             formatSelection: function(data){
-                return data.kode+' - '+data.nama_program;
+                return data.nama;
             }
         });
     });
@@ -98,6 +98,7 @@
                     str+= '<tr data-tt-id='+i+' class="'+highlight+'">'+
                             '<td align="center">'+((i+1) + ((data.page - 1) * data.limit))+'</td>'+
                             '<td align="center">'+datefmysql(v.tgl_masuk)+'</td>'+
+                            '<td>'+v.kategori+'</td>'+
                             '<td>'+v.no_rekening+'</td>'+
                             '<td>'+v.no_ktp+'</td>'+
                             '<td>'+v.nama+'</td>'+
@@ -155,6 +156,8 @@
                 $('#alamat').val(data.alamat);
                 $('#jumlah').val(money_format(data.simpanan_pokok));
                 $('#jumlah_simpanan_wajib').val(money_format(data.simpanan_wajib));
+                $('#kategori_nasabah').val(data.id_kategori);
+                $('#s2id_kategori_nasabah a .select2-chosen').html(data.kategori);
             }
         });
     }
@@ -275,11 +278,11 @@
                         <tr>
                             <th width="3%">No</th>
                             <th width="7%">Tgl Masuk</th>
+                            <th width="15%" class="left">Kategori</th>
                             <th width="10%" class="left">No. Rek</th>
                             <th width="10%" class="left">No. KTP</th>
                             <th width="20%" class="left">Nama</th>
-                            <th width="30%" class="left">Alamat</th>
-                            <!--<th width="10%" class="right">Simpanan Wajib</th>-->
+                            <th width="25%" class="left">Alamat</th>
                             <th width="10%"></th>
                         </tr>
                         </thead>
@@ -308,6 +311,12 @@
                         <label class="control-label col-lg-3">Tanggal Daftar:</label>
                         <div class="col-lg-8">
                             <input type="text" name="tanggal" class="form-control" style="width: 145px;" id="tanggal" value="<?= date("d/m/Y") ?>" />
+                        </div>
+                    </div>
+                    <div class="form-group tight">
+                        <label class="control-label col-lg-3">Kategori Nasabah:</label>
+                        <div class="col-lg-8">
+                            <input type="text" name="kategori_nasabah"  class="select2-input" id="kategori_nasabah"  />
                         </div>
                     </div>
                     <div class="form-group tight">

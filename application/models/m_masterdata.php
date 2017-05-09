@@ -25,24 +25,25 @@ class M_masterdata extends CI_Model {
     function get_list_anggota($limit = null, $start = null, $search = null) {
         $q = null; $r = NULL;
         if ($search['id'] !== '') {
-            $q.=" and id = '".$search['id']."'";
+            $q.=" and a.id = '".$search['id']."'";
         }
         if ($search['nama'] !== '') {
-            $q.=" and nama like '%".$search['nama']."%'";
+            $q.=" and a.nama like '%".$search['nama']."%'";
         }
         if ($search['no_rekening'] !== '') {
-            $q.=" and no_rekening like '%".$search['no_rekening']."%'";
+            $q.=" and a.no_rekening like '%".$search['no_rekening']."%'";
         }
         if ($search['awal'] !== '' and $search['akhir'] !== '') {
-            $q.=" and tgl_masuk between '".date2mysql($search['awal'])."' and '".date2mysql($search['akhir'])."'";
+            $q.=" and a.tgl_masuk between '".date2mysql($search['awal'])."' and '".date2mysql($search['akhir'])."'";
         }
         
-        $select = "select * ";
+        $select = "select a.*, IFNULL(ka.nama,'') as kategori ";
         $count  = "select count(*) as count ";
         $sql = " 
-            from tb_anggota
-            where id is not NULL $q 
-                order by id desc
+            from tb_anggota a 
+            left join tb_kategori_anggota ka on (a.id_kategori = ka.id)
+            where a.id is not NULL $q 
+                order by a.id desc
                 ";
         $limitation = null;
         if ($limit !== NULL) {
@@ -66,6 +67,7 @@ class M_masterdata extends CI_Model {
         $this->db->trans_begin();
         $data_anggota = array(
             'id' => post_safe('id'),
+            'id_kategori' => (post_safe('kategori_nasabah') !== '')?post_safe('kategori_nasabah'):NULL,
             'no_ktp' => post_safe('noktp'),
             'nama' => post_safe('nama'),
             'alamat' => post_safe('alamat'),
@@ -234,6 +236,64 @@ class M_masterdata extends CI_Model {
         $count  = "select count(*) as count ";
         $sql = "
             from tb_jenis_transaksi
+            where nama like '%".$search['search']."%'
+                $q
+                ";
+        $result = $this->db->query($select.$sql.$limitation)->result();
+        $data['data'] = $result;
+        $data['total'] = $this->db->query($count.$sql)->row()->count;
+        
+        return $data;
+    }
+    
+    function get_list_kategori_anggota($limit = null, $start = null, $search = null) {
+        $q = null;
+        if ($search['id'] !== '') {
+            $q.=" and id = '".$search['id']."'";
+        }
+        
+        if ($search['nama'] !== '') {
+            $q.=" and nama like '%".$search['nama']."%'";
+        }
+        
+        $select = "select * ";
+        $count  = "select count(*) as count ";
+        $sql = " 
+            from tb_kategori_anggota
+            where id is not NULL";
+        $limitation = null;
+        if ($limit !== NULL) {
+            $limitation.=" limit $start , $limit";
+        }
+        $order=" order by nama desc";
+        //echo $sql . $q . $order. $limitation;
+        $result = $this->db->query($select.$sql.$q.$order.$limitation)->result();
+        $data['data'] = $result;
+        $data['jumlah'] = $this->db->query($count.$sql.$q)->row()->count;
+        return $data;
+    }
+    
+    function save_kategori_anggota($data) {
+        if ($data['id'] === '') {
+            $this->db->insert('tb_kategori_anggota', $data);
+            $result['id'] = $this->db->insert_id();
+            $result['act'] = 'add';
+        } else {
+            $this->db->where('id', $data['id']);
+            $this->db->update('tb_kategori_anggota', $data);
+            $result['id'] = $data['id'];
+            $result['act'] = 'edit';
+        }
+        return $result;
+    }
+    
+    function get_auto_kategori_anggota($search, $start, $limit) {
+        $q = NULL;
+        $limitation = " limit $start, $limit";
+        $select = "select * ";
+        $count  = "select count(*) as count ";
+        $sql = "
+            from tb_kategori_anggota
             where nama like '%".$search['search']."%'
                 $q
                 ";
